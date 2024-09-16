@@ -67,3 +67,4 @@ backend/forum/obj/Debug/net8.0/forum.RazorAssemblyInfo.cs
 backend/forum/obj/Debug/net8.0/forum.GeneratedMSBuildEditorConfig.editorconfig
 backend/forum/obj/Debug/net8.0/forum.AssemblyInfo.cs
 backend/forum/obj/Debug/net8.0/apphost
+backend/forum/appsetting.json
