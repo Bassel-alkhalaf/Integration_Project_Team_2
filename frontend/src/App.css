@@ -1,0 +1,132 @@
+Base styles for the App
+.App {
+  text-align: center;
+  background-color: #1e1e2f !important; /* Force dark background */
+  color: #e0e0e0 !important; /* Force light text */
+  min-height: 100vh !important;
+}
+
+/* Logo animation styles (optional, can be removed if not needed) */
+.App-logo {
+  height: 40vmin !important;
+  pointer-events: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear !important;
+  }
+}
+
+/* Header styling with forced darker background */
+.App-header {
+  background-color: #161625 !important; /* Force darker shade for header */
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: calc(10px + 2vmin) !important;
+  color: #e0e0e0 !important; /* Force light color text */
+}
+
+/* Link styles */
+.App-link {
+  color: #ffa726 !important; /* Bright orange for links */
+  text-decoration: none !important;
+}
+
+.App-link:hover {
+  color: #ffca28 !important; /* Lighter orange on hover */
+}
+
+/* Keyframes for logo spin (optional) */
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg) !important;
+  }
+  to {
+    transform: rotate(360deg) !important;
+  }
+}
+
+/* Sidebar styling */
+.sidebar {
+  background-color: #2b2b3b !important; /* Force sidebar dark background */
+  padding: 1rem !important;
+  border-right: 1px solid #3b3b4f !important;
+  height: 100vh !important;
+}
+
+.sidebar a {
+  color: #e0e0e0 !important; /* Force light color for sidebar links */
+  display: block !important;
+  padding: 10px !important;
+  text-decoration: none !important;
+}
+
+.sidebar a:hover {
+  background-color: #37374a !important; /* Subtle hover effect */
+  border-radius: 5px !important;
+}
+
+/* Main content area */
+.main-content {
+  padding: 2rem !important;
+  color: #e0e0e0 !important;
+}
+
+/* Forum post and comment styles */
+.forum-post {
+  background-color: #2b2b3b !important;
+  padding: 1rem !important;
+  margin: 1rem 0 !important;
+  border-radius: 8px !important;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.forum-post h2 {
+  color: #ffa726 !important; /* Force highlight for post titles */
+}
+
+.forum-comment {
+  background-color: #222233 !important;
+  padding: 0.8rem !important;
+  margin-top: 0.5rem !important;
+  border-left: 3px solid #ffa726 !important;
+  border-radius: 5px !important;
+}
+
+/* Button styles */
+button, .btn-primary {
+  background-color: #ffa726 !important;
+  color: #161625 !important;
+  border: none !important;
+  padding: 10px 20px !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+}
+
+button:hover, .btn-primary:hover {
+  background-color: #ffca28 !important; /* Force hover color */
+}
+
+/* Footer styles */
+.footer {
+  background-color: #161625 !important;
+  color: #e0e0e0 !important;
+  padding: 1rem !important;
+  text-align: center !important;
+  position: absolute !important;
+  width: 100% !important;
+  bottom: 0 !important;
+}
+
+.footer a {
+  color: #ffa726 !important;
+  text-decoration: none !important;
+}
+
+.footer a:hover {
+  color: #ffca28 !important;
+}
