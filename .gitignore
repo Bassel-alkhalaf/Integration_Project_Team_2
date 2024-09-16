@@ -207,3 +207,5 @@ backend/obj/Debug/net8.0/refint/backend.dll
 backend/obj/Debug/net8.0/staticwebassets/msbuild.build.backend.props
 backend/obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.backend.props
 backend/obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.backend.props
+backend/bin
+backend/obj
