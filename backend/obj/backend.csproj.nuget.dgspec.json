@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\basse\\OneDrive\\Documents\\Integration_Project_Team_2\\backend\\backend.csproj": {}
+    "D:\\FSD-11\\14 Integration Project\\Integration_Project_Team_2\\backend\\backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\basse\\OneDrive\\Documents\\Integration_Project_Team_2\\backend\\backend.csproj": {
+    "D:\\FSD-11\\14 Integration Project\\Integration_Project_Team_2\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\basse\\OneDrive\\Documents\\Integration_Project_Team_2\\backend\\backend.csproj",
+        "projectUniqueName": "D:\\FSD-11\\14 Integration Project\\Integration_Project_Team_2\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\Users\\basse\\OneDrive\\Documents\\Integration_Project_Team_2\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\basse\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\basse\\OneDrive\\Documents\\Integration_Project_Team_2\\backend\\obj\\",
+        "projectPath": "D:\\FSD-11\\14 Integration Project\\Integration_Project_Team_2\\backend\\backend.csproj",
+        "packagesPath": "C:\\Users\\Lorenzo\\.nuget\\packages\\",
+        "outputPath": "D:\\FSD-11\\14 Integration Project\\Integration_Project_Team_2\\backend\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\basse\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\Lorenzo\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -50,31 +46,21 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
-            "Microsoft.AspNetCore.Cors": {
+            "FirebaseAdmin": {
               "target": "Package",
-              "version": "[2.2.0, )"
+              "version": "[3.0.1, )"
             },
-            "Microsoft.AspNetCore.OpenApi": {
+            "Google.Cloud.Firestore": {
               "target": "Package",
-              "version": "[8.0.7, )"
-            },
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[8.0.8, )"
-            },
-            "Microsoft.EntityFrameworkCore.SqlServer": {
-              "target": "Package",
-              "version": "[8.0.8, )"
-            },
-            "Microsoft.EntityFrameworkCore.Tools": {
-              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
-              "suppressParent": "All",
-              "target": "Package",
-              "version": "[8.0.8, )"
+              "version": "[3.8.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.4.0, )"
+              "version": "[6.7.3, )"
+            },
+            "dotenv.net": {
+              "target": "Package",
+              "version": "[3.2.0, )"
             }
           },
           "imports": [
@@ -96,7 +82,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.400/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
