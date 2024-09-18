@@ -22,6 +22,11 @@ builder.Services.AddSingleton(FirebaseConfig.GetFirestoreDb());
 // Register services
 builder.Services.AddSingleton<PostService>();
 
+// Register services
+builder.Services.AddScoped<CommentService>();
+builder.Services.AddScoped<FriendService>();
+builder.Services.AddScoped<FriendRequestService>();
+builder.Services.AddScoped<UserService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
