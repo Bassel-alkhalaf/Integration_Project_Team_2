@@ -1,4 +1,4 @@
-import { Add as AddIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import {
 	Accordion,
 	AccordionDetails,
@@ -11,10 +11,10 @@ import {
 	ListItemText,
 	Typography,
 } from '@mui/material';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetUserCommunities } from '../hooks';
 import { Loading, UserCommunityStarBtn } from './common';
+import { CreateCommunityDialog } from './CreateCommunityDialog';
 
 interface PropsI {
 	onClickFn: () => void;
@@ -22,10 +22,7 @@ interface PropsI {
 export function UserCommunityList({ onClickFn }: PropsI) {
 	const navigate = useNavigate();
 
-	const { data, refetch, isLoading, isError, isSuccess } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
-	useEffect(() => {
-		refetch();
-	}, []);
+	const { data, isLoading, isError, isSuccess } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
 
 	if (isLoading) return <Loading />;
 
@@ -41,13 +38,7 @@ export function UserCommunityList({ onClickFn }: PropsI) {
 				<AccordionDetails sx={{ p: 0 }}>
 					<List disablePadding>
 						<ListItem disablePadding>
-							<ListItemButton onClick={() => onClickFn}>
-								<ListItemIcon>
-									<AddIcon />
-								</ListItemIcon>
-
-								<ListItemText primary={'Create a community'} />
-							</ListItemButton>
+							<CreateCommunityDialog />
 						</ListItem>
 
 						{data.map((community, index) => (

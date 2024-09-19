@@ -3,18 +3,14 @@ import { AxiosError } from 'axios';
 import { leaveCommunity } from '../../../api';
 import { useGenericErrHandler } from '../../errorHandler/useGenericErrHandler';
 
-export const useLeaveCommunity = (
-	userId: string,
-	communityId: string,
-	options?: { onSuccess: (data?: unknown) => void }
-) => {
+export const useLeaveCommunity = (userId: string) => {
 	const errorHandler = useGenericErrHandler();
+
 	return useMutation({
-		mutationFn: () => leaveCommunity(userId, communityId),
+		mutationFn: (communityId: string) => leaveCommunity(userId, communityId),
 		onError: err => {
 			console.error(err);
 			errorHandler(err as AxiosError);
 		},
-		...options,
 	});
 };

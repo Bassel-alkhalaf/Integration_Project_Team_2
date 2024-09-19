@@ -18,16 +18,20 @@ export function UserCommunityStarBtn({ community }: PropsI) {
 			checkedIcon={<Star />}
 			defaultChecked={community.isStarred}
 			onChange={(e, checked) =>
-				updateIsStarred({
-					communityId: community.id,
-					isStarred: checked,
-					onSuccess: () => {
-						e.target.checked = checked;
-						enqueueSnackbar(`${checked ? 'Added' : 'Removed'} star for "${community.name}"`, {
-							variant: 'success',
-						});
+				updateIsStarred(
+					{
+						communityId: community.id,
+						isStarred: checked,
 					},
-				})
+					{
+						onSuccess: () => {
+							e.target.checked = checked;
+							enqueueSnackbar(`${checked ? 'Added' : 'Removed'} star for "${community.name}"`, {
+								variant: 'success',
+							});
+						},
+					}
+				)
 			}
 		/>
 	);

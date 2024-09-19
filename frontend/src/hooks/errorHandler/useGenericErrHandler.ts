@@ -12,9 +12,9 @@ export const useGenericErrHandler = () => {
 				return () => navigate('/access-denied');
 			case '404':
 				return () => navigate('/not-found');
-			default:
-				alert(`An error occurred.\n${err.message}`);
-				return;
+			// default:
+			// 	alert(`An error occurred.\n${err.message}`);
+			// 	return;
 		}
 	};
 };
