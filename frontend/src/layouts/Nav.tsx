@@ -1,3 +1,4 @@
+import { Star, StarBorderOutlined } from '@mui/icons-material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import FeedIcon from '@mui/icons-material/Feed';
@@ -13,20 +14,28 @@ import {
 	AppBar,
 	Box,
 	Button,
+	Checkbox,
 	Divider,
 	IconButton,
 	Link,
 	List,
+	ListItem,
+	ListItemButton,
+	ListItemIcon,
+	ListItemText,
 	Drawer as MuiDrawer,
 	Toolbar,
 	Typography,
 	useMediaQuery,
 } from '@mui/material';
 import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
-import { useState } from 'react';
+import { enqueueSnackbar } from 'notistack';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavItem, UserAvatarMenu } from '../components';
 import { useAuth } from '../contexts';
+import { useGetUserCommunities } from '../hooks';
+import { useUpdateIsStarred } from '../hooks/apiHooks/userCommunity/useUpdateIsStarred';
 
 const drawerWidth = 240;
 
@@ -83,6 +92,13 @@ export function Nav() {
 		isMobile && setOpen(false);
 	};
 
+	const { data, refetch, isSuccess } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
+	useEffect(() => {
+		refetch();
+	}, []);
+
+	const { mutate: updateIsStarred } = useUpdateIsStarred('pdVWPPaFz6M2EFhoyzg5');
+
 	const drawerContent = (open: boolean) => (
 		<>
 			<Toolbar />
@@ -137,7 +153,40 @@ export function Nav() {
 			</List>
 
 			<List sx={{ overflow: 'auto', flexGrow: 1, display: open ? 'block' : 'none' }} disablePadding>
-				{/* render communities */}
+				{isSuccess &&
+					data.map((community, index) => (
+						<ListItem key={index} disablePadding>
+							<ListItemButton
+								onClick={() => {
+									closeDrawerOnMobile();
+									navigate(`/community/${community.id}`);
+								}}>
+								<ListItemIcon onClick={e => e.stopPropagation()}>
+									<Checkbox
+										color='warning'
+										icon={<StarBorderOutlined />}
+										checkedIcon={<Star />}
+										defaultChecked={community.isStarred}
+										onChange={(e, checked) =>
+											updateIsStarred({
+												communityId: community.id,
+												isStarred: checked,
+												onSuccess: () => {
+													e.target.checked = checked;
+													enqueueSnackbar(
+														`${checked ? 'Added' : 'Removed'} star for "${community.name}"`,
+														{ variant: 'success' }
+													);
+												},
+											})
+										}
+									/>
+								</ListItemIcon>
+
+								<ListItemText primary={community.name} />
+							</ListItemButton>
+						</ListItem>
+					))}
 			</List>
 		</>
 	);
