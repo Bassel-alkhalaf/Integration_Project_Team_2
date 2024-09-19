@@ -1,9 +1,9 @@
-import { Add, ExpandMore, Star, StarBorderOutlined } from '@mui/icons-material';
+import { Add as AddIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import {
 	Accordion,
 	AccordionDetails,
 	AccordionSummary,
-	Checkbox,
+	Alert,
 	List,
 	ListItem,
 	ListItemButton,
@@ -11,12 +11,10 @@ import {
 	ListItemText,
 	Typography,
 } from '@mui/material';
-import { enqueueSnackbar } from 'notistack';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetUserCommunities } from '../hooks';
-import { useUpdateIsStarred } from '../hooks/apiHooks/userCommunity/useUpdateIsStarred';
-import { Loading } from './Loading';
+import { Loading, UserCommunityStarBtn } from './common';
 
 interface PropsI {
 	onClickFn: () => void;
@@ -29,15 +27,14 @@ export function UserCommunityList({ onClickFn }: PropsI) {
 		refetch();
 	}, []);
 
-	const { mutate: updateIsStarred } = useUpdateIsStarred('pdVWPPaFz6M2EFhoyzg5');
-
 	if (isLoading) return <Loading />;
-	if (isError) return;
+
+	if (isError) return <Alert severity='error'>An error occurred.</Alert>;
 
 	if (isSuccess)
 		return (
 			<Accordion defaultExpanded disableGutters elevation={0} square>
-				<AccordionSummary expandIcon={<ExpandMore />}>
+				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
 					<Typography>My Communities</Typography>
 				</AccordionSummary>
 
@@ -46,7 +43,7 @@ export function UserCommunityList({ onClickFn }: PropsI) {
 						<ListItem disablePadding>
 							<ListItemButton onClick={() => onClickFn}>
 								<ListItemIcon>
-									<Add />
+									<AddIcon />
 								</ListItemIcon>
 
 								<ListItemText primary={'Create a community'} />
@@ -61,29 +58,7 @@ export function UserCommunityList({ onClickFn }: PropsI) {
 										navigate(`/community/${community.id}`);
 									}}>
 									<ListItemIcon onClick={e => e.stopPropagation()}>
-										<Checkbox
-											color='warning'
-											icon={<StarBorderOutlined />}
-											checkedIcon={<Star />}
-											defaultChecked={community.isStarred}
-											onChange={(e, checked) =>
-												updateIsStarred({
-													communityId: community.id,
-													isStarred: checked,
-													onSuccess: () => {
-														e.target.checked = checked;
-														enqueueSnackbar(
-															`${checked ? 'Added' : 'Removed'} star for "${
-																community.name
-															}"`,
-															{
-																variant: 'success',
-															}
-														);
-													},
-												})
-											}
-										/>
+										<UserCommunityStarBtn community={community} />
 									</ListItemIcon>
 
 									<ListItemText primary={community.name} />
