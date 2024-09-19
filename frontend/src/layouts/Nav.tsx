@@ -2,8 +2,6 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import FeedIcon from '@mui/icons-material/Feed';
 import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined';
-import ForumIcon from '@mui/icons-material/Forum';
-import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import HomeIcon from '@mui/icons-material/Home';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -26,6 +24,7 @@ import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavItem, UserAvatarMenu } from '../components';
+import { UserCommunityList } from '../components/UserCommunityList';
 import { useAuth } from '../contexts';
 
 const drawerWidth = 240;
@@ -83,6 +82,13 @@ export function Nav() {
 		isMobile && setOpen(false);
 	};
 
+	// const { data, refetch, isSuccess } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
+	// useEffect(() => {
+	// 	refetch();
+	// }, []);
+
+	// const { mutate: updateIsStarred } = useUpdateIsStarred('pdVWPPaFz6M2EFhoyzg5');
+
 	const drawerContent = (open: boolean) => (
 		<>
 			<Toolbar />
@@ -125,7 +131,7 @@ export function Nav() {
 
 			<Divider />
 
-			<List disablePadding>
+			{/* <List disablePadding>
 				<NavItem
 					open={open}
 					path='/communities/me'
@@ -134,11 +140,59 @@ export function Nav() {
 					selectedIcon={<ForumIcon />}
 					onClickFn={closeDrawerOnMobile}
 				/>
-			</List>
+			</List> */}
 
-			<List sx={{ overflow: 'auto', flexGrow: 1, display: open ? 'block' : 'none' }} disablePadding>
-				{/* render communities */}
-			</List>
+			<UserCommunityList onClickFn={closeDrawerOnMobile} />
+
+			{/* <List sx={{ overflow: 'auto', flexGrow: 1, display: open ? 'block' : 'none' }} disablePadding>
+				<ListItem disablePadding>
+					<ListItemButton
+						onClick={() => {
+							closeDrawerOnMobile();
+						}}>
+						<ListItemIcon>
+							<AddIcon />
+						</ListItemIcon>
+
+						<ListItemText primary={'Create a community'} />
+					</ListItemButton>
+				</ListItem>
+
+				{isSuccess &&
+					data.map((community, index) => (
+						<ListItem key={index} disablePadding>
+							<ListItemButton
+								onClick={() => {
+									closeDrawerOnMobile();
+									navigate(`/community/${community.id}`);
+								}}>
+								<ListItemIcon onClick={e => e.stopPropagation()}>
+									<Checkbox
+										color='warning'
+										icon={<StarBorderOutlined />}
+										checkedIcon={<Star />}
+										defaultChecked={community.isStarred}
+										onChange={(e, checked) =>
+											updateIsStarred({
+												communityId: community.id,
+												isStarred: checked,
+												onSuccess: () => {
+													e.target.checked = checked;
+													enqueueSnackbar(
+														`${checked ? 'Added' : 'Removed'} star for "${community.name}"`,
+														{ variant: 'success' }
+													);
+												},
+											})
+										}
+									/>
+								</ListItemIcon>
+
+								<ListItemText primary={community.name} />
+							</ListItemButton>
+						</ListItem>
+					))}
+			</List> */}
 		</>
 	);
 

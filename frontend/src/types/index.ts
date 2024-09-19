@@ -2,3 +2,4 @@
 
 // this file will only contain export statements, e.g.
 export * from './auth.type';
+export * from './community.type';

@@ -6,7 +6,9 @@ import { AuthProvider } from './contexts';
 import Routes from './routes';
 
 function App() {
-	const queryClient = new QueryClient();
+	const queryClient = new QueryClient({
+		defaultOptions: { queries: { enabled: false } },
+	});
 
 	return (
 		<BrowserRouter>

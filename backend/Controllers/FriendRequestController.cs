@@ -1,4 +1,3 @@
-// Controllers/FriendRequestsController.cs
 using Microsoft.AspNetCore.Mvc;
 using backend.Models;
 using backend.Services;
@@ -8,11 +7,11 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class FriendRequestsController : ControllerBase
+    public class FriendRequestController : ControllerBase
     {
         private readonly FriendRequestService _friendRequestService;
 
-        public FriendRequestsController(FriendRequestService friendRequestService)
+        public FriendRequestController(FriendRequestService friendRequestService)
         {
             _friendRequestService = friendRequestService;
         }
