@@ -7,8 +7,6 @@ namespace backend.Models
     public class FriendRequest
     {
         [FirestoreDocumentId]
-        
-        [FirestoreProperty]
         public string Id { get; set; }               // Unique ID for the friend request
         
         [FirestoreProperty]
@@ -18,7 +16,7 @@ namespace backend.Models
         public string ReceiverId { get; set; }       // ID of the user receiving the friend request
         
         [FirestoreProperty]
-        public DateTime CreatedAt { get; set; }      // The date and time when the friend request was created
+        public Timestamp CreatedAt { get; set; }      // The date and time when the friend request was created
         
         [FirestoreProperty]
         public string Status { get; set; }           // Status of the friend request ("Pending", "Accepted", "Denied", "Canceled")

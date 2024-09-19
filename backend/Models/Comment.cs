@@ -17,9 +17,9 @@ namespace backend.Models
         public string Content { get; set; }         // The content of the comment
         
         [FirestoreProperty]
-        public DateTime CreatedAt { get; set; }     // The date and time when the comment was created
+        public Timestamp CreatedAt { get; set; }     // The date and time when the comment was created
         
         [FirestoreProperty]
-        public DateTime? UpdatedAt { get; set; }
+        public Timestamp? UpdatedAt { get; set; }
     }
 }

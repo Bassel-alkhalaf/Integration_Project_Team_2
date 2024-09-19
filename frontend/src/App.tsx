@@ -7,7 +7,7 @@ import Routes from './routes';
 
 function App() {
 	const queryClient = new QueryClient({
-		defaultOptions: { queries: { enabled: false, refetchOnWindowFocus: false } },
+		defaultOptions: { queries: { enabled: false } },
 	});
 
 	return (

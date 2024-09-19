@@ -20,6 +20,6 @@ namespace backend.Models
         public string Role { get; set; }             // Role of the user ("Admin", "User")
         
         [FirestoreProperty]
-        public DateTime CreatedAt { get; set; }      // The date and time when the user was created
+        public Timestamp CreatedAt { get; set; }      // The date and time when the user was created
     }
 }

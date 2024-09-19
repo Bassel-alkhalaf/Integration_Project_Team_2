@@ -1,10 +1,7 @@
-import { Star, StarBorderOutlined } from '@mui/icons-material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import FeedIcon from '@mui/icons-material/Feed';
 import FeedOutlinedIcon from '@mui/icons-material/FeedOutlined';
-import ForumIcon from '@mui/icons-material/Forum';
-import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import HomeIcon from '@mui/icons-material/Home';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -14,28 +11,21 @@ import {
 	AppBar,
 	Box,
 	Button,
-	Checkbox,
 	Divider,
 	IconButton,
 	Link,
 	List,
-	ListItem,
-	ListItemButton,
-	ListItemIcon,
-	ListItemText,
 	Drawer as MuiDrawer,
 	Toolbar,
 	Typography,
 	useMediaQuery,
 } from '@mui/material';
 import { CSSObject, Theme, styled, useTheme } from '@mui/material/styles';
-import { enqueueSnackbar } from 'notistack';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavItem, UserAvatarMenu } from '../components';
+import { UserCommunityList } from '../components/UserCommunityList';
 import { useAuth } from '../contexts';
-import { useGetUserCommunities } from '../hooks';
-import { useUpdateIsStarred } from '../hooks/apiHooks/userCommunity/useUpdateIsStarred';
 
 const drawerWidth = 240;
 
@@ -92,12 +82,12 @@ export function Nav() {
 		isMobile && setOpen(false);
 	};
 
-	const { data, refetch, isSuccess } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
-	useEffect(() => {
-		refetch();
-	}, []);
+	// const { data, refetch, isSuccess } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
+	// useEffect(() => {
+	// 	refetch();
+	// }, []);
 
-	const { mutate: updateIsStarred } = useUpdateIsStarred('pdVWPPaFz6M2EFhoyzg5');
+	// const { mutate: updateIsStarred } = useUpdateIsStarred('pdVWPPaFz6M2EFhoyzg5');
 
 	const drawerContent = (open: boolean) => (
 		<>
@@ -141,7 +131,7 @@ export function Nav() {
 
 			<Divider />
 
-			<List disablePadding>
+			{/* <List disablePadding>
 				<NavItem
 					open={open}
 					path='/communities/me'
@@ -150,9 +140,24 @@ export function Nav() {
 					selectedIcon={<ForumIcon />}
 					onClickFn={closeDrawerOnMobile}
 				/>
-			</List>
+			</List> */}
 
-			<List sx={{ overflow: 'auto', flexGrow: 1, display: open ? 'block' : 'none' }} disablePadding>
+			<UserCommunityList onClickFn={closeDrawerOnMobile} />
+
+			{/* <List sx={{ overflow: 'auto', flexGrow: 1, display: open ? 'block' : 'none' }} disablePadding>
+				<ListItem disablePadding>
+					<ListItemButton
+						onClick={() => {
+							closeDrawerOnMobile();
+						}}>
+						<ListItemIcon>
+							<AddIcon />
+						</ListItemIcon>
+
+						<ListItemText primary={'Create a community'} />
+					</ListItemButton>
+				</ListItem>
+
 				{isSuccess &&
 					data.map((community, index) => (
 						<ListItem key={index} disablePadding>
@@ -187,7 +192,7 @@ export function Nav() {
 							</ListItemButton>
 						</ListItem>
 					))}
-			</List>
+			</List> */}
 		</>
 	);
 
