@@ -29,7 +29,7 @@ export function JoinCommunityBtn({ community, isJoined }: PropsI) {
 	const handleClick = () => {
 		joinCommunity(communityId, {
 			onSuccess: res => {
-				queryClient.invalidateQueries({ queryKey: userCommunityQueryKeys.all });
+				queryClient.invalidateQueries();
 				addUserCommunity(res);
 				enqueueSnackbar(`Joined "${communityName}"`, { variant: 'success' });
 			},

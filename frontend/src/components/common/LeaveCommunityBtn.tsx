@@ -26,7 +26,7 @@ export function LeaveCommunityBtn({ community, isJoined }: PropsI) {
 	const handleClick = () => {
 		leaveCommunity(communityId, {
 			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: userCommunityQueryKeys.all });
+				queryClient.invalidateQueries();
 				removeUserCommunity(communityId);
 				enqueueSnackbar(`Left "${communityName}"`, { variant: 'success' });
 			},
