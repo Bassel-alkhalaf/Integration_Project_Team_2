@@ -2,11 +2,15 @@ import { Route, Routes } from 'react-router-dom';
 import { MainLayout } from '../layouts';
 import { Home } from '../pages';
 
+import Register  from '../pages/Auth/Register';
+
 function AppRoutes() {
 	return (
 		<Routes>
 			<Route path='/' element={<MainLayout />}>
 				<Route index element={<Home />} />
+                
+
 
 				{/* <Route
 					path='unauthorized'
@@ -42,6 +46,10 @@ function AppRoutes() {
 				/> */}
 			</Route>
 
+            <Route path='register' element={<Register />} />
+            
+
+            
 			{/* <Route path='/' element={<GuestRoute />}>
 				<Route path='login' element={<Login />} />
 				<Route path='register' element={<Register />} />
