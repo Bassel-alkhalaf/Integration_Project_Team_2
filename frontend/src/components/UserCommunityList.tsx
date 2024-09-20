@@ -1,63 +1,57 @@
-import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import { ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import {
-	Accordion,
-	AccordionDetails,
-	AccordionSummary,
 	Alert,
+	CircularProgress,
+	Collapse,
+	Divider,
 	List,
 	ListItem,
 	ListItemButton,
-	ListItemIcon,
 	ListItemText,
-	Typography,
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { useGetUserCommunities } from '../hooks';
-import { Loading, UserCommunityStarBtn } from './common';
+import { grey } from '@mui/material/colors';
+import { useGetUserCommunities, useToggleOpenEl } from '../hooks';
 import { CreateCommunityDialog } from './CreateCommunityDialog';
+import { UserCommunityItem } from './UserCommunityItem';
 
-interface PropsI {
-	onClickFn: () => void;
-}
-export function UserCommunityList({ onClickFn }: PropsI) {
-	const navigate = useNavigate();
+export function UserCommunityList() {
+	const { isOpen, toggleEl } = useToggleOpenEl(true);
 
-	const { data, isLoading, isError, isSuccess } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
+	const { data, isLoading, isError } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
 
-	if (isLoading) return <Loading />;
+	const renderList = () => {
+		if (isLoading)
+			return (
+				<ListItem sx={{ display: 'flex', justifyContent: 'center', pb: 2 }}>
+					<CircularProgress size={25} />
+				</ListItem>
+			);
 
-	if (isError) return <Alert severity='error'>An error occurred.</Alert>;
+		if (isError) return <Alert severity='error'>An error occurred.</Alert>;
 
-	if (isSuccess)
-		return (
-			<Accordion defaultExpanded disableGutters elevation={0} square>
-				<AccordionSummary expandIcon={<ExpandMoreIcon />}>
-					<Typography>My Communities</Typography>
-				</AccordionSummary>
+		return data?.map((community, index) => <UserCommunityItem key={index} community={community} />);
+	};
 
-				<AccordionDetails sx={{ p: 0 }}>
-					<List disablePadding>
-						<ListItem disablePadding>
-							<CreateCommunityDialog />
-						</ListItem>
+	return (
+		<List disablePadding>
+			<Divider />
 
-						{data.map((community, index) => (
-							<ListItem key={index} disablePadding>
-								<ListItemButton
-									onClick={() => {
-										onClickFn();
-										navigate(`/community/${community.id}`);
-									}}>
-									<ListItemIcon onClick={e => e.stopPropagation()}>
-										<UserCommunityStarBtn community={community} />
-									</ListItemIcon>
+			<ListItem disablePadding sx={{ backgroundColor: grey[200] }}>
+				<ListItemButton onClick={toggleEl} sx={{ height: '56px' }}>
+					<ListItemText primary='My Communities' />
+					{isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+				</ListItemButton>
+			</ListItem>
 
-									<ListItemText primary={community.name} />
-								</ListItemButton>
-							</ListItem>
-						))}
-					</List>
-				</AccordionDetails>
-			</Accordion>
-		);
+			<Collapse in={isOpen} unmountOnExit>
+				<List>
+					<CreateCommunityDialog />
+
+					{renderList()}
+				</List>
+			</Collapse>
+
+			<Divider />
+		</List>
+	);
 }

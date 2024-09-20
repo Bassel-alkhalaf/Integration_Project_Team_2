@@ -1,12 +1,14 @@
 import { Route, Routes } from 'react-router-dom';
 import { MainLayout } from '../layouts';
-import { Home } from '../pages';
+import { Home, Search } from '../pages';
 
 function AppRoutes() {
 	return (
 		<Routes>
 			<Route path='/' element={<MainLayout />}>
 				<Route index element={<Home />} />
+
+				<Route path='/search' element={<Search />} />
 
 				{/* <Route
 					path='unauthorized'

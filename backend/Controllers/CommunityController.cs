@@ -1,5 +1,4 @@
 ﻿using backend.DTOs.Community;
-using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,9 +18,17 @@ namespace backend.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
-            var community = await _communityService.GetCommunityAsync(id);
-            if (community == null) return NotFound();
-            return Ok(community);
+            try
+            {
+                var community = await _communityService.GetCommunityAsync(id);
+                if (community == null) return NotFound();
+                return Ok(community);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, new { message = "server_error" });
+            }
         }
 
         [HttpPost("userId/{userId}")]

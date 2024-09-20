@@ -17,6 +17,7 @@ export function UserCommunityStarBtn({ community }: PropsI) {
 			icon={<StarBorderOutlined />}
 			checkedIcon={<Star />}
 			defaultChecked={community.isStarred}
+			onClick={e => e.stopPropagation()}
 			onChange={(e, checked) =>
 				updateIsStarred(
 					{
