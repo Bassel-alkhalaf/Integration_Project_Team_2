@@ -28,8 +28,8 @@ namespace backend.Controllers
         {
             try
             {
-                await _userCommunityService.JoinCommunityAsync(userId, communityId);
-                return Ok(new { message = "join_community_success" });
+                var joinedCommunity = await _userCommunityService.JoinCommunityAsync(userId, communityId);
+                return Ok(joinedCommunity);
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace backend.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, new { message = "server_error" });
             }
         }
     }

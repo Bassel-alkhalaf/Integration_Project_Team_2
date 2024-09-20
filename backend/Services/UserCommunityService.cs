@@ -46,12 +46,15 @@ namespace backend.Services
                 }
             }
 
-            return res;
+            return res
+                .OrderByDescending(c => c.IsStarred)
+                .ThenBy(c => c.Name)
+                .ToList();
         }
 
-        public async Task JoinCommunityAsync(string userId, string communityId)
+        public async Task<UserCommunityResponseDto> JoinCommunityAsync(string userId, string communityId)
         {
-            await _firestoreDb.RunTransactionAsync(async transaction =>
+            return await _firestoreDb.RunTransactionAsync(async transaction =>
             {
                 DocumentReference userCommunityRef = _firestoreDb.Collection("user_communities").Document($"{userId}_{communityId}");
                 DocumentSnapshot snapshot = await transaction.GetSnapshotAsync(userCommunityRef);
@@ -63,7 +66,8 @@ namespace backend.Services
 
                 DocumentReference communityRef = _firestoreDb.Collection("communities").Document(communityId);
                 DocumentSnapshot communitySnapshot = await transaction.GetSnapshotAsync(communityRef);
-                var currentCount = communitySnapshot.GetValue<int>("UserCount");
+                var community = communitySnapshot.ConvertTo<Community>();
+                var currentCount = community.UserCount;
 
                 var timestamp = Timestamp.GetCurrentTimestamp();
 
@@ -78,6 +82,16 @@ namespace backend.Services
 
                 transaction.Set(userCommunityRef, userCommunity);
                 transaction.Update(communityRef, "UserCount", currentCount + 1);
+
+                return new UserCommunityResponseDto
+                {
+                    Id = community.Id,
+                    Name = community.Name,
+                    Description = community.Description,
+                    UserCount = community.UserCount,
+                    CreatedAt = community.CreatedAt,
+                    IsStarred = userCommunity.IsStarred,
+                };
             });
         }
 
@@ -92,11 +106,12 @@ namespace backend.Services
                 {
                     throw new Exception("community_not_joined");
                 }
-                transaction.Delete(userCommunityRef);
 
                 var communityRef = _firestoreDb.Collection("communities").Document(communityId);
                 var communitySnapshot = await transaction.GetSnapshotAsync(communityRef);
                 var currentCount = communitySnapshot.GetValue<int>("UserCount");
+
+                transaction.Delete(userCommunityRef);
                 transaction.Update(communityRef, "UserCount", currentCount - 1);
             });
         }

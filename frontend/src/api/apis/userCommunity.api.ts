@@ -1,4 +1,4 @@
-import { GetUserCommunitiesResDTO } from '../../types';
+import { GetUserCommunitiesResDTO, UserCommunityT } from '../../types';
 import { USER_COMMUNITY_ENDPOINT } from '../endpoints';
 import { sendRequest } from './request';
 
@@ -21,7 +21,7 @@ export const joinCommunity = async (userId: string, communityId: string) => {
 		endpoint: url,
 	});
 
-	return res;
+	return res.data as UserCommunityT;
 };
 
 export const leaveCommunity = async (userId: string, communityId: string) => {
