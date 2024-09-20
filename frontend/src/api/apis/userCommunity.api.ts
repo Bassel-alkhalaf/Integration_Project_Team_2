@@ -1,4 +1,4 @@
-import { GetUserCommunityResDTO } from '../../types';
+import { GetUserCommunitiesResDTO } from '../../types';
 import { USER_COMMUNITY_ENDPOINT } from '../endpoints';
 import { sendRequest } from './request';
 
@@ -10,7 +10,7 @@ export const getUserCommunities = async (userId: string) => {
 		endpoint: url,
 	});
 
-	return res.data as GetUserCommunityResDTO;
+	return res.data as GetUserCommunitiesResDTO;
 };
 
 export const joinCommunity = async (userId: string, communityId: string) => {

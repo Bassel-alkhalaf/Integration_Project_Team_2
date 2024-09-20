@@ -3,12 +3,14 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
 	Alert,
+	Avatar,
 	Button,
 	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogContentText,
 	DialogTitle,
+	ListItem,
 	ListItemButton,
 	ListItemIcon,
 	ListItemText,
@@ -19,13 +21,13 @@ import { AxiosError } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { INITIAL_COMMUNITY_CREATE_REQ_OBJ, userCommunityQueryKeys } from '../consts';
-import { useCreateCommunity, useToggleMuiDialog } from '../hooks';
+import { useCreateCommunity, useToggleOpenEl } from '../hooks';
 import { CommunityCreateSchema } from '../schemas';
 import { CommunityCreateDTO } from '../types';
 import { RHFTextField } from './common';
 
 export function CreateCommunityDialog() {
-	const { isOpen, fullScreen, openDialog, closeDialog } = useToggleMuiDialog();
+	const { isOpen, isMobile, openEl, closeEl } = useToggleOpenEl();
 
 	const queryClient = useQueryClient();
 	const { mutate: createCommunity, isPending } = useCreateCommunity('pdVWPPaFz6M2EFhoyzg5');
@@ -42,7 +44,7 @@ export function CreateCommunityDialog() {
 	} = methods;
 
 	const handleDialogClose = () => {
-		closeDialog();
+		closeEl();
 		reset();
 	};
 
@@ -67,18 +69,21 @@ export function CreateCommunityDialog() {
 
 	return (
 		<>
-			<ListItemButton onClick={openDialog}>
-				<ListItemIcon>
-					<AddIcon />
-				</ListItemIcon>
-
-				<ListItemText primary={'Create a community'} />
-			</ListItemButton>
+			<ListItem disablePadding>
+				<ListItemButton onClick={openEl}>
+					<ListItemIcon>
+						<Avatar>
+							<AddIcon />
+						</Avatar>
+					</ListItemIcon>
+					<ListItemText primary='Create a community' />
+				</ListItemButton>
+			</ListItem>
 
 			<FormProvider {...methods}>
 				<Dialog
 					open={isOpen}
-					fullScreen={fullScreen}
+					fullScreen={isMobile}
 					onClose={handleDialogClose}
 					PaperProps={{
 						component: 'form',

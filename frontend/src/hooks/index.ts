@@ -3,4 +3,4 @@
 // this file will only contain export statements
 export * from './apiHooks';
 
-export * from './useToggleMuiDialog/useToggleMuiDialog';
+export * from './useToggleOpen/useToggleOpen';

@@ -9,6 +9,8 @@ export type CommunityT = {
 	createdAt: string;
 };
 
+export type GetCommunitiesResDTO = CommunityT[];
+
 export type CommunityCreateDTO = z.infer<typeof CommunityCreateSchema>;
 
 export type CommunityUpdateDTO = z.infer<typeof CommunityUpdateSchema>;
