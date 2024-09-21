@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/posts")]
-    public class PostController : Controller
+    [Route("api/[controller]")]
+    public class PostController : ControllerBase
     {
         private readonly PostService _postService;
 

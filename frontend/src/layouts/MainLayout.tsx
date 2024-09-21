@@ -1,19 +1,54 @@
+import { Box, CssBaseline, Stack, Toolbar } from '@mui/material';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Footer } from './Footer';
+import { Header } from './Header';
 import { Nav } from './Nav';
 
+const drawerWidth = 240;
+
 export function MainLayout() {
+	const [mobileOpen, setMobileOpen] = useState(false);
+	const [isClosing, setIsClosing] = useState(false);
+
+	const handleDrawerClose = () => {
+		setIsClosing(true);
+		setMobileOpen(false);
+	};
+
+	const handleDrawerTransitionEnd = () => {
+		setIsClosing(false);
+	};
+
+	const handleDrawerToggle = () => {
+		if (!isClosing) {
+			setMobileOpen(!mobileOpen);
+		}
+	};
+
 	return (
-		<div className='d-flex flex-column vh-100'>
-			<Nav />
+		<Box sx={{ display: 'flex', height: '100vh' }}>
+			<CssBaseline />
+			<Header handleDrawerToggle={handleDrawerToggle} />
 
-			<div className='d-flex flex-column flex-grow-1 overflow-auto'>
-				<div className='flex-grow-1 py-3'>
-					<Outlet />
-				</div>
+			<Nav
+				drawerWidth={drawerWidth}
+				mobileOpen={mobileOpen}
+				handleDrawerClose={handleDrawerClose}
+				handleDrawerTransitionEnd={handleDrawerTransitionEnd}
+			/>
 
-				<Footer />
-			</div>
-		</div>
+			<Stack component='main' sx={{ flexGrow: 1, width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
+				<Toolbar />
+
+				<Stack sx={{ flexGrow: 1, overflow: 'auto' }}>
+					<Box sx={{ flexGrow: 1, p: 3 }}>
+						<Outlet />
+					</Box>
+
+					<Footer />
+				</Stack>
+			</Stack>
+		</Box>
 	);
 }

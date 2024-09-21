@@ -14,6 +14,9 @@ namespace backend.Models
         public string UserId { get; set; } // ID of the user who created the post
 
         [FirestoreProperty]
+        public string Title { get; set; } // Post title
+
+        [FirestoreProperty]
         public string Content { get; set; } // Post content
 
         [FirestoreProperty]
@@ -23,9 +26,15 @@ namespace backend.Models
         public List<string> ImageUrls { get; set; } // List of image URLs associated with the post
 
         [FirestoreProperty]
-        public DateTime CreatedAt { get; set; }
+        public int CommentCount { get; set; }
 
         [FirestoreProperty]
-        public DateTime UpdatedAt { get; set; }
+        public int LikeCount { get; set; }
+
+        [FirestoreProperty]
+        public Timestamp CreatedAt { get; set; }
+
+        [FirestoreProperty]
+        public Timestamp? UpdatedAt { get; set; }
     }
 }
