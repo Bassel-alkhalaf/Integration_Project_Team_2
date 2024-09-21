@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import { MainLayout } from '../layouts';
-import { Home, Search } from '../pages';
+import { Home, Search,Login, Register  } from '../pages';
 
 function AppRoutes() {
 	return (
@@ -9,7 +9,8 @@ function AppRoutes() {
 				<Route index element={<Home />} />
 
 				<Route path='/search' element={<Search />} />
-
+				<Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 				{/* <Route
 					path='unauthorized'
 					element={

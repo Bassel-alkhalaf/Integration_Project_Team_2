@@ -1,3 +1,9 @@
+// Import necessary Firebase modules
+import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+
+
 const {
 	VITE_FIREBASE_API_KEY,
 	VITE_FIREBASE_AUTH_DOMAIN,
@@ -15,3 +21,9 @@ export const firebaseConfig = {
 	messagingSenderId: VITE_FIREBASE_MESSAGING_SENDER_ID,
 	appId: VITE_FIREBASE_APP_ID,
 };
+// Initialize Firebase app
+const app = initializeApp(firebaseConfig);
+
+// Export the Firebase Authentication instance
+export const auth = getAuth(app);
+export const db = getFirestore(app);
