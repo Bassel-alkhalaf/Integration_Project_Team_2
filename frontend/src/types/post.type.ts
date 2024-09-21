@@ -1,13 +1,14 @@
 export interface Post {
-    postId: string;
-    authorId: string;
-    communityId?: string;
+    id: string;
+    authorId: string,
+    title: string;
     text: string;
-    images: string[];
-    commentsCount: number;
-    likesCount: number;
+    images?: string[];
+    authorName: string;
+    authorImg: string;
     createdAt: Date;
-    updatedAt: Date;
-    visibility: "Public" | "Private" | "Exclusive";
-    comments: string[];
+    updatedAt?: Date;
+    commentCount: number;
+    likeCount: number;
+    visibility: 'public' | 'private' | 'friends';
   }

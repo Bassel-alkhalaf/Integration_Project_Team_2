@@ -1,32 +1,39 @@
-﻿using backend.Services;
+﻿using backend.Models;
+using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/posts")]
-    public class PostController : Controller
+    [Route("api/[controller]")]
+    public class PostsController : ControllerBase
     {
         private readonly PostService _postService;
 
-        public PostController(PostService postService)
+        public PostsController(PostService postService)
         {
             _postService = postService;
         }
 
-        // GET: api/post
         [HttpGet]
-        public async Task<IActionResult> GetAllPosts()
+        public async Task<ActionResult<List<Post>>> GetPosts([FromQuery] int limit = 4)
         {
-            try
-            {
-                var posts = await _postService.GetAllPostsAsync();
-                return Ok(posts);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
+            var posts = await _postService.GetAllPosts(limit);
+            return Ok(posts);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> CreatePost([FromForm] Post post)
+        {
+            await _postService.CreatePost(post);
+            return Ok();
+        }
+
+        [HttpDelete("{postId}")]
+        public async Task<ActionResult> DeletePost(string postId)
+        {
+            await _postService.DeletePost(postId);
+            return Ok();
         }
     }
 }

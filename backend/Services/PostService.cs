@@ -12,17 +12,37 @@ namespace backend.Services
             _firestoreDb = firestoreDb;
         }
 
-        public async Task<List<Post>> GetAllPostsAsync()
+        public async Task<List<Post>> GetAllPosts(int limit)
         {
-            var posts = new List<Post>();
-            var query = _firestoreDb.Collection("posts");
-            var querySnapshot = await query.GetSnapshotAsync();
-            foreach (var documentSnapshot in querySnapshot.Documents)
+        CollectionReference postsRef = _firestoreDb.Collection("posts");
+        QuerySnapshot snapshot = await postsRef.Limit(limit).GetSnapshotAsync();
+        List<Post> posts = new List<Post>();
+
+        foreach (DocumentSnapshot document in snapshot.Documents)
+        {
+            if (document.Exists)
             {
-                var post = documentSnapshot.ConvertTo<Post>();
+                Post post = document.ConvertTo<Post>();
                 posts.Add(post);
             }
-            return posts;
+        }
+        return posts;
+        }
+
+        public async Task CreatePost(Post post)
+        {
+            post.PostId = Guid.NewGuid().ToString();
+            post.CreatedAt = DateTime.UtcNow;
+            post.UpdatedAt = DateTime.UtcNow;
+
+            DocumentReference docRef = _firestoreDb.Collection("posts").Document(post.PostId);
+            await docRef.SetAsync(post);
+        }
+
+        public async Task DeletePost(string postId)
+        {
+            DocumentReference docRef = _firestoreDb.Collection("posts").Document(postId);
+            await docRef.DeleteAsync();
         }
     }
 }
