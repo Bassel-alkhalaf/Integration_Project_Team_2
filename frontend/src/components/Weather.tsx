@@ -1,13 +1,31 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+
+interface Weather {
+  name: string;
+  main: {
+    temp: number;
+  };
+  weather: {
+    description: string;
+    icon: string;
+  }[];
+}
+
 const WeatherComponent = () => {
-  const [weatherData, setWeatherData] = useState(null);
+  const [weatherData, setWeatherData] = useState<Weather | null>(null); 
+
   const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
-  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Montreal&appid=${apiKey}`;
+  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Montreal&appid=${apiKey}&units=metric&lang=zh_cn`;
 
   useEffect(() => {
-    axios.get(apiUrl).then(response => setWeatherData(response.data));
+    axios
+      .get(apiUrl)
+      .then(response => setWeatherData(response.data))
+      .catch(error => {
+        console.error("Error fetching the weather data", error);
+      });
   }, [apiUrl]);
 
   if (!weatherData) return <div>Loading...</div>;

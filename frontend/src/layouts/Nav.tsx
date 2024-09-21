@@ -26,6 +26,7 @@ import { useNavigate } from 'react-router-dom';
 import { NavItem, UserAvatarMenu } from '../components';
 import { UserCommunityList } from '../components/UserCommunityList';
 import { useAuth } from '../contexts';
+import WeatherComponent from '../components/Weather';
 
 const drawerWidth = 240;
 
@@ -193,6 +194,12 @@ export function Nav() {
 						</ListItem>
 					))}
 			</List> */}
+
+    <Box sx={{ flexGrow: 1 }}></Box> 
+      
+      <Box sx={{ padding: 2, textAlign: 'center' }}>
+        <WeatherComponent />
+      </Box>
 		</>
 	);
 
