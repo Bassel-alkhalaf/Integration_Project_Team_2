@@ -80,7 +80,10 @@ export function Nav() {
 	};
 
 	const closeDrawerOnMobile = () => {
-		isMobile && setOpen(false);
+		//isMobile && setOpen(false);
+		if (isMobile) {
+			setOpen(false);
+	}
 	};
 
 	// const { data, refetch, isSuccess } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
@@ -195,11 +198,11 @@ export function Nav() {
 					))}
 			</List> */}
 
-    <Box sx={{ flexGrow: 1 }}></Box> 
+    {/*<Box sx={{ flexGrow: 1 }}></Box> 
       
       <Box sx={{ padding: 2, textAlign: 'center' }}>
         <WeatherComponent />
-      </Box>
+      </Box>*/}
 		</>
 	);
 
