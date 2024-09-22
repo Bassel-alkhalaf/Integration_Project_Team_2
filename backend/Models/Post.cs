@@ -41,6 +41,9 @@ namespace backend.Models
         public int LikeCount { get; set; }
 
         [FirestoreProperty]
+        public int DislikeCount { get; set; }
+
+        [FirestoreProperty]
         public string Visibility { get; set; }  // "public", "private", or "friends"
     }
 }

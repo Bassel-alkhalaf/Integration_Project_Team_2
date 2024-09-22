@@ -11,18 +11,19 @@ const Home: React.FC = () => {
   const { mutate: createPost } = useCreatePost();
   const [open, setOpen] = useState(false);
   const [newPost, setNewPost] = useState<Post>({
-    id: '',
-    authorId: '', // Assign this when creating the post
-    title: '',
-    text: '',
-    images: [],
-    authorName: '', // Assign this when creating the post
-    authorImg: '', // Assign this when creating the post
-    createdAt: new Date(),
-    updatedAt: undefined,
-    commentCount: 0,
-    likeCount: 0,
-    visibility: 'public',
+    PostId: '',
+    AuthorId: '', // Assign this when creating the post
+    Title: '',
+    Text: '',
+    Images: [],
+    AuthorName: '', // Assign this when creating the post
+    AuthorImg: '', // Assign this when creating the post
+    CreatedAt: new Date(),
+    UpdatedAt: undefined,
+    CommentCount: 0,
+    LikeCount: 0,
+    DislikeCount:0,
+    Visibility: 'public',
   });
 
   const handleOpen = () => setOpen(true);
@@ -30,17 +31,17 @@ const Home: React.FC = () => {
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setNewPost({ ...newPost, images: [...Array.from(event.target.files)].map(file => URL.createObjectURL(file)) });
+      setNewPost({ ...newPost, Images: [...Array.from(event.target.files)].map(file => URL.createObjectURL(file)) });
     }
   };
 
   const handleCreatePost = () => {
     const postData: Post = {
       ...newPost,
-      id: '', // Set this to your generated ID logic or leave for backend to handle
-      authorId: 'your-author-id', // Replace with actual logic to get the author ID
-      authorName: 'Your Name', // Replace with actual logic to get the author's name
-      authorImg: 'default-image-url', // Replace with actual logic to get the author's image
+       
+      AuthorId: 'your-author-PostId', // Replace with actual logic to get the author ID
+      AuthorName: 'Your Name', // Replace with actual logic to get the author's name
+      AuthorImg: 'default-image-url', // Replace with actual logic to get the author's image
     };
     createPost(postData);
     handleClose();
@@ -58,7 +59,7 @@ const Home: React.FC = () => {
               <React.Fragment key={i}>
                 {Array.isArray(group.data) && group.data.length > 0 ? (
                   group.data.map((post: Post) => (
-                    <PostItem key={post.id} post={post} />
+                    <PostItem key={post.PostId} post={post} />
                   ))
                 ) : (
                   <p>No posts in this group.</p> // Optional message for empty groups
@@ -91,24 +92,24 @@ const Home: React.FC = () => {
           <TextField
             label="Post Title"
             fullWidth
-            value={newPost.title}
-            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+            value={newPost.Title}
+            onChange={(e) => setNewPost({ ...newPost, Title: e.target.value })}
           />
           <TextField
             label="Post Text"
             fullWidth
             multiline
-            value={newPost.text}
-            onChange={(e) => setNewPost({ ...newPost, text: e.target.value })}
+            value={newPost.Text}
+            onChange={(e) => setNewPost({ ...newPost, Text: e.target.value })}
           />
 
           {/* Visibility Dropdown */}
           <FormControl fullWidth variant="outlined" margin="normal">
-            <InputLabel id="visibility-label">Visibility</InputLabel>
+            <InputLabel id="Visibility-label">Visibility</InputLabel>
             <Select
-              labelId="visibility-label"
-              value={newPost.visibility}
-              onChange={(e) => setNewPost({ ...newPost, visibility: e.target.value as Post['visibility'] })}
+              labelId="Visibility-label"
+              value={newPost.Visibility}
+              onChange={(e) => setNewPost({ ...newPost, Visibility: e.target.value as Post['Visibility'] })}
               label="Visibility"
             >
               <MenuItem value="public">Public</MenuItem>
@@ -121,19 +122,19 @@ const Home: React.FC = () => {
           <input
             accept="image/*"
             style={{ display: 'none' }}
-            id="upload-images"
+            id="upload-Images"
             multiple
             type="file"
             onChange={handleImageUpload}
           />
-          <label htmlFor="upload-images">
+          <label htmlFor="upload-Images">
             <IconButton color="primary" aria-label="upload pictures" component="span">
               <UploadIcon />
             </IconButton>
           </label>
 
           {/* Show Selected Images */}
-          {newPost.images?.map((image, idx) => (
+          {newPost.Images?.map((image, idx) => (
             <div key={idx}>{image}</div>
           ))}
         </DialogContent>
