@@ -60,6 +60,7 @@ using Microsoft.AspNetCore.Mvc;
 using backend.Models;
 using backend.Services;
 using FirebaseAdmin.Auth;
+using Google.Cloud.Firestore;
 
 namespace backend.Controllers
 {
