@@ -1,6 +1,9 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { GenericInfo } from '../components';
 import { MainLayout } from '../layouts';
-import { Home, Search } from '../pages';
+import { Home, Login, Register, Search } from '../pages';
+import { Role } from '../types';
+import { RoleBasedRoute } from './RoleBasedRoute';
 
 function AppRoutes() {
 	return (
@@ -10,21 +13,22 @@ function AppRoutes() {
 
 				<Route path='/search' element={<Search />} />
 
-				{/* <Route
-					path='unauthorized'
+				<Route
+					path='access-denied'
 					element={
-						<Redirect
+						<GenericInfo
 							msgType='warning'
 							title='Access denied'
 							msg='You do not have permission to view this page.'
+							autoRedirect={true}
 						/>
 					}
 				/>
 
 				<Route
-					path='error'
+					path='server-error'
 					element={
-						<Redirect
+						<GenericInfo
 							msgType='error'
 							title='An error occurred'
 							msg='The server encountered an error while processing your request. Please try again later.'
@@ -33,23 +37,24 @@ function AppRoutes() {
 				/>
 
 				<Route
-					path='page-not-found'
+					path='not-found'
 					element={
-						<Redirect
+						<GenericInfo
 							msgType='info'
-							title='Page not found'
-							msg='The page you are looking for is not found.'
+							title='Not found'
+							msg='The resource you are looking for is not found.'
+							autoRedirect={true}
 						/>
 					}
-				/> */}
+				/>
 			</Route>
 
-			{/* <Route path='/' element={<GuestRoute />}>
+			<Route element={<RoleBasedRoute allowedRoles={[Role.Guest]} />}>
 				<Route path='login' element={<Login />} />
 				<Route path='register' element={<Register />} />
 			</Route>
 
-			<Route path='*' element={<Navigate to='/page-not-found' replace />} /> */}
+			<Route path='*' element={<Navigate to='/not-found' replace />} />
 		</Routes>
 	);
 }

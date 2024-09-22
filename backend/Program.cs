@@ -23,6 +23,9 @@ builder.Services.AddScoped<FriendRequestService>();
 builder.Services.AddScoped<UserService>(); 
 builder.Services.AddScoped<SearchService>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<FirebaseAuthService>();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {

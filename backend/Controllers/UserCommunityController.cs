@@ -1,4 +1,5 @@
 ﻿using backend.DTOs.UserCommunity;
+using backend.Middlewares;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,28 +7,35 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [FirebaseAuth]
     public class UserCommunityController : ControllerBase
     {
         private readonly UserCommunityService _userCommunityService;
+        public readonly FirebaseAuthService _firebaseAuthService;
 
-        public UserCommunityController(UserCommunityService userCommunityService)
+        public UserCommunityController(UserCommunityService userCommunityService, FirebaseAuthService firebaseAuthService)
         {
             _userCommunityService = userCommunityService;
+            _firebaseAuthService = firebaseAuthService;
         }
 
-        [HttpGet("userId/{userId}")]
-        public async Task<IActionResult> Get(string userId)
+        [HttpGet()]
+        public async Task<IActionResult> Get()
         {
+            var userId = _firebaseAuthService.GetUserId();
+
             var communities = await _userCommunityService.GetUserCommunitiesAsync(userId);
             if (communities == null) return NotFound();
             return Ok(communities);
         }
 
-        [HttpPost("userId/{userId}/communityId/{communityId}")]
-        public async Task<IActionResult> Join(string userId, string communityId)
+        [HttpPost("communityId/{communityId}")]
+        public async Task<IActionResult> Join(string communityId)
         {
             try
             {
+                var userId = _firebaseAuthService.GetUserId();
+
                 var joinedCommunity = await _userCommunityService.JoinCommunityAsync(userId, communityId);
                 return Ok(joinedCommunity);
             }
@@ -38,11 +46,13 @@ namespace backend.Controllers
             }
         }
 
-        [HttpDelete("userId/{userId}/communityId/{communityId}")]
-        public async Task<IActionResult> Leave(string userId, string communityId)
+        [HttpDelete("communityId/{communityId}")]
+        public async Task<IActionResult> Leave(string communityId)
         {
             try
             {
+                var userId = _firebaseAuthService.GetUserId();
+
                 await _userCommunityService.LeaveCommunityAsync(userId, communityId);
                 return Ok(new { message = "leave_community_success" });
             }
@@ -53,11 +63,13 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPatch("userId/{userId}/communityId/{communityId}")]
-        public async Task<IActionResult> ToggleIsStarred(string userId, string communityId, [FromBody] UserCommunityUpdateDto updateData)
+        [HttpPatch("communityId/{communityId}")]
+        public async Task<IActionResult> ToggleIsStarred(string communityId, [FromBody] UserCommunityUpdateDto updateData)
         {
             try
             {
+                var userId = _firebaseAuthService.GetUserId();
+
                 bool isStarred = updateData.IsStarred;
                 await _userCommunityService.UpdateIsStarredAsync(userId, communityId, isStarred);
                 return Ok(new { message = isStarred ? "starred_community_success" : "unStarred_community_success" });

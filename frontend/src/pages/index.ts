@@ -4,3 +4,5 @@
 export * from './Community/Community';
 export * from './Home/Home';
 export * from './Search/Search';
+export { default as Login } from './Login'; 
+export { default as Register } from './Register'; 

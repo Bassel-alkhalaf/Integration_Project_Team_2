@@ -44,7 +44,7 @@ export function CommunityCard({ community }: PropsI) {
 			</CardContent>
 			<CardActions>
 				<JoinCommunityBtn community={community} isJoined={!!isJoined} />
-				<LeaveCommunityBtn community={community} isJoined={!!isJoined} />
+				{!!isJoined && <LeaveCommunityBtn community={community} />}
 			</CardActions>
 		</Card>
 	);

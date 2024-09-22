@@ -4,16 +4,23 @@ import { envConfig } from '../../config';
 type RequestOptionsT = {
 	endpoint: string;
 	method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-	headers?: { [key: string]: string };
+	accessToken?: string;
 	body?: unknown;
 };
 
-export const sendRequest = async ({ endpoint, method = 'GET', headers, body }: RequestOptionsT) => {
+const getHeaders = (accessToken: string) => {
+	return {
+		'Content-Type': 'application/json',
+		Authorization: `Bearer ${accessToken}`,
+	};
+};
+
+export const sendRequest = async ({ endpoint, method = 'GET', accessToken = '', body }: RequestOptionsT) => {
 	const url = `${envConfig.BASE_API}/${endpoint}`;
 
 	try {
 		const config = {
-			headers,
+			headers: getHeaders(accessToken),
 		};
 
 		switch (method) {

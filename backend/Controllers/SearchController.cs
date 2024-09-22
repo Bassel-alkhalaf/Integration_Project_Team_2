@@ -1,4 +1,5 @@
-﻿using backend.Services;
+﻿using backend.Middlewares;
+using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers

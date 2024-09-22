@@ -1,8 +1,8 @@
 import { Avatar, SxProps, Theme } from '@mui/material';
-import { User } from '../types';
+import { UserInfoT } from '../types';
 
 interface Props {
-	user: User;
+	user: UserInfoT;
 	sx?: SxProps<Theme>;
 }
 
@@ -38,13 +38,13 @@ export function UserAvatar({ user, sx }: Props) {
 		};
 	}
 
-	const { user_username, user_first_name, user_last_name, user_profile_image_link } = user;
-	const fullName = `${user_first_name} ${user_last_name}`;
+	const { email, firstName, lastName, profileImageUrl } = user;
+	const fullName = `${firstName} ${lastName}`;
 
 	return (
 		<>
-			{user_profile_image_link ? (
-				<Avatar alt={user_username} src={user_profile_image_link} sx={{ ...sx }} />
+			{profileImageUrl ? (
+				<Avatar alt={email} src={profileImageUrl} sx={{ ...sx }} />
 			) : (
 				<Avatar {...stringAvatar(fullName)} />
 			)}

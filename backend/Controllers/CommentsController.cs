@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.Models;
 using backend.Services;
+using backend.Middlewares;
 
 
 namespace backend.Controllers
@@ -33,6 +34,7 @@ namespace backend.Controllers
         }
 
         [HttpPost]
+        [FirebaseAuth]
         public async Task<ActionResult<Comment>> Post([FromBody] Comment comment)
         {
             await _commentService.AddCommentAsync(comment);
@@ -40,6 +42,7 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [FirebaseAuth]
         public async Task<ActionResult<Comment>> Put(string id, [FromBody] Comment updatedComment)
         {
             await _commentService.UpdateCommentAsync(id, updatedComment);
@@ -47,6 +50,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [FirebaseAuth]
         public async Task<ActionResult> Delete(string id)
         {
             await _commentService.DeleteCommentAsync(id);
