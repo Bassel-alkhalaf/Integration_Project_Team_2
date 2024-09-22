@@ -1,6 +1,4 @@
 using FirebaseAdmin.Auth;
-using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
 
 namespace backend.Firebase
 {
