@@ -37,3 +37,12 @@ export const fetchPosts = async ({ pageParam = 1 }: { pageParam?: number }) => {
 
     return res.data.message;
   };
+
+  // Edit an existing post
+  export const editPostRequest = async (postData: Post) => {
+    return sendRequest({
+      endpoint: `posts/${postData.postId}`, // Assuming postData contains the post ID
+      method: 'PUT',
+      body: postData,
+    });
+  };

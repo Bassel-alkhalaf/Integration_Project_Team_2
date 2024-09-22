@@ -61,7 +61,7 @@ const Home: React.FC = () => {
               <React.Fragment key={i}>
                 {Array.isArray(group.data) && group.data.length > 0 ? (
                   group.data.map((post: Post) => (
-                    <PostItem key={i} post={post} />
+                    <PostItem key={i} post={post}/>
                     
                   ))
                 ) : (

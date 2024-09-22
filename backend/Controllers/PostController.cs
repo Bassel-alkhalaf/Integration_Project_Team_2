@@ -37,7 +37,7 @@ namespace backend.Controllers
             return Ok();
         }
 
-        [HttpDelete("{postId}")]
+        [HttpDelete("posts/delete/{postId}")]
         public async Task<ActionResult> DeletePost(string postId)
         {
             await _postService.DeletePost(postId);
