@@ -40,20 +40,20 @@ function App() {
   const queryClient = new QueryClient();
 
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
-          <SnackbarProvider
-            autoHideDuration={1500}
-            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            disableWindowBlurListener
-          >
-            <Routes />
-          </SnackbarProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-      </BrowserRouter>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <BrowserRouter>
+            <SnackbarProvider
+              autoHideDuration={1500}
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+              disableWindowBlurListener
+            >
+              <Routes />
+            </SnackbarProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </BrowserRouter>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

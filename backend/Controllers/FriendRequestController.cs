@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.Models;
 using backend.Services;
+using backend.Middlewares;
 
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [FirebaseAuth]
     public class FriendRequestController : ControllerBase
     {
         private readonly FriendRequestService _friendRequestService;

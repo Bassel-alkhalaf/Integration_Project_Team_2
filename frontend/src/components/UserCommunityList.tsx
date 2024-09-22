@@ -10,6 +10,7 @@ import {
 	ListItemText,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import { useAuth } from '../contexts';
 import { useGetUserCommunities, useToggleOpenEl } from '../hooks';
 import { CreateCommunityDialog } from './CreateCommunityDialog';
 import { UserCommunityItem } from './UserCommunityItem';
@@ -17,7 +18,8 @@ import { UserCommunityItem } from './UserCommunityItem';
 export function UserCommunityList() {
 	const { isOpen, toggleEl } = useToggleOpenEl(true);
 
-	const { data, isLoading, isError } = useGetUserCommunities('pdVWPPaFz6M2EFhoyzg5');
+	const { accessToken } = useAuth();
+	const { data, isLoading, isError } = useGetUserCommunities(accessToken as string);
 
 	const renderList = () => {
 		if (isLoading)

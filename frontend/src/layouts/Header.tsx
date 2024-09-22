@@ -10,7 +10,7 @@ interface PropsI {
 }
 
 export function Header({ handleDrawerToggle }: PropsI) {
-  const { user, logout } = useAuth(); // Updated
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));

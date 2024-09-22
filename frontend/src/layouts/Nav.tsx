@@ -10,6 +10,7 @@ import {
 } from '@mui/icons-material';
 import { Box, Divider, Drawer, List, Toolbar } from '@mui/material';
 import { NavItem, UserCommunityList } from '../components';
+import { useAuth } from '../contexts';
 
 interface PropsI {
 	drawerWidth: number;
@@ -19,6 +20,8 @@ interface PropsI {
 }
 
 export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd }: PropsI) {
+	const { user } = useAuth();
+
 	const drawer = (
 		<>
 			<Toolbar />
@@ -26,24 +29,27 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 			<List disablePadding>
 				<NavItem path='/' label='Home' icon={<HomeOutlinedIcon />} selectedIcon={<HomeIcon />} />
 
-				<NavItem
-					path='/friends'
-					label='My Friends'
-					icon={<PeopleAltOutlinedIcon />}
-					selectedIcon={<PeopleAltIcon />}
-				/>
-
-				<NavItem
-					path='/posts/me'
-					label='My Posts'
-					icon={<AccountCircleOutlinedIcon />}
-					selectedIcon={<AccountCircleIcon />}
-				/>
+				{user && (
+					<>
+						<NavItem
+							path='/friends'
+							label='My Friends'
+							icon={<PeopleAltOutlinedIcon />}
+							selectedIcon={<PeopleAltIcon />}
+						/>
+						<NavItem
+							path='/posts/me'
+							label='My Posts'
+							icon={<AccountCircleOutlinedIcon />}
+							selectedIcon={<AccountCircleIcon />}
+						/>
+					</>
+				)}
 
 				<NavItem path='/posts' label='All Posts' icon={<FeedOutlinedIcon />} selectedIcon={<FeedIcon />} />
 			</List>
 
-			<UserCommunityList />
+			{user && <UserCommunityList />}
 		</>
 	);
 

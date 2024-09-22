@@ -61,11 +61,13 @@ using backend.Models;
 using backend.Services;
 using FirebaseAdmin.Auth;
 using Google.Cloud.Firestore;
+using backend.Middlewares;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [FirebaseAuth]
     public class UsersController : ControllerBase
     {
         private readonly UserService _userService;

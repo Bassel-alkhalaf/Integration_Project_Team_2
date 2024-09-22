@@ -3,6 +3,7 @@ import { Checkbox } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
 import { userCommunityQueryKeys } from '../../consts';
+import { useAuth } from '../../contexts';
 import { useUpdateIsStarred } from '../../hooks';
 import { UserCommunityT } from '../../types';
 import { sortUserCommunities } from '../../utils';
@@ -12,8 +13,10 @@ interface PropsI {
 }
 
 export function UserCommunityStarBtn({ community }: PropsI) {
-	const { mutate: updateIsStarred } = useUpdateIsStarred('pdVWPPaFz6M2EFhoyzg5');
 	const queryClient = useQueryClient();
+
+	const { accessToken } = useAuth();
+	const { mutate: updateIsStarred } = useUpdateIsStarred(accessToken as string);
 
 	const updateUserCommunity = (checked: boolean) => {
 		queryClient.setQueryData<UserCommunityT[]>(userCommunityQueryKeys.all, oldCommunities => {

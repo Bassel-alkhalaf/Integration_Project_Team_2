@@ -21,6 +21,7 @@ import { AxiosError } from 'axios';
 import { enqueueSnackbar } from 'notistack';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { INITIAL_COMMUNITY_CREATE_REQ_OBJ, userCommunityQueryKeys } from '../consts';
+import { useAuth } from '../contexts';
 import { useCreateCommunity, useToggleOpenEl } from '../hooks';
 import { CommunityCreateSchema } from '../schemas';
 import { CommunityCreateDTO } from '../types';
@@ -30,7 +31,9 @@ export function CreateCommunityDialog() {
 	const { isOpen, isMobile, openEl, closeEl } = useToggleOpenEl();
 
 	const queryClient = useQueryClient();
-	const { mutate: createCommunity, isPending } = useCreateCommunity('pdVWPPaFz6M2EFhoyzg5');
+
+	const { accessToken } = useAuth();
+	const { mutate: createCommunity, isPending } = useCreateCommunity(accessToken as string);
 
 	const methods = useForm<CommunityCreateDTO>({
 		resolver: zodResolver(CommunityCreateSchema),

@@ -1,4 +1,5 @@
 ﻿using backend.DTOs.Community;
+using backend.Middlewares;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +10,12 @@ namespace backend.Controllers
     public class CommunityController : ControllerBase
     {
         private readonly CommunityService _communityService;
+        private readonly FirebaseAuthService _firebaseAuthService;
 
-        public CommunityController(CommunityService communityService)
+        public CommunityController(CommunityService communityService, FirebaseAuthService firebaseAuthService)
         {
             _communityService = communityService;
+            _firebaseAuthService = firebaseAuthService;
         }
 
         [HttpGet("{id}")]
@@ -31,11 +34,14 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPost("userId/{userId}")]
-        public async Task<IActionResult> Create(string userId, [FromBody] CommunityCreateDto communityCreateData)
+        [HttpPost()]
+        [FirebaseAuth]
+        public async Task<IActionResult> Create([FromBody] CommunityCreateDto communityCreateData)
         {
             try
             {
+                var userId = _firebaseAuthService.GetUserId();
+
                 await _communityService.CreateCommunityAsync(userId, communityCreateData);
                 return Ok(new { message = "community_create_success" });
             }
@@ -52,6 +58,7 @@ namespace backend.Controllers
         }
 
         [HttpPatch("{id}")]
+        [FirebaseAuth]
         public async Task<IActionResult> Update(string id, [FromBody] CommunityUpdateDto communityUpdateData)
         {
             try
@@ -67,6 +74,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id}")]
+        [FirebaseAuth]
         public async Task<IActionResult> Delete(string id)
         {
             try
