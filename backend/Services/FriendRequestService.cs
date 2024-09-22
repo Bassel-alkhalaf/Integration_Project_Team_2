@@ -53,12 +53,19 @@ namespace backend.Services
 
             return friendRequests;
         }
-
+        
         public async Task AddFriendRequestAsync(FriendRequest friendRequest)
         {
-            DocumentReference docRef = _db.Collection("friendRequests").Document(friendRequest.Id);
+            // Generate a new document reference (Firebase will generate the ID)
+            DocumentReference docRef = _db.Collection("friendRequests").Document();
+
+            // Set the generated ID to the friend request object
+            friendRequest.Id = docRef.Id;
+
+            // Save the friend request to Firestore with the generated ID
             await docRef.SetAsync(friendRequest);
         }
+
 
         public async Task UpdateFriendRequestAsync(string id, FriendRequest friendRequest)
         {

@@ -54,24 +54,35 @@ namespace backend.Controllers
 
 
         [HttpPost]
-        public async Task<ActionResult<FriendRequest>> Post([FromBody] FriendRequest friendRequest) // *
+        public async Task<ActionResult<FriendRequest>> Post([FromBody] FriendRequest friendRequest)
         {
+            // Get the authenticated user's ID
             string senderId = _firebaseAuthService.GetUserId();
 
+            // If no authenticated user, return Unauthorized
             if (string.IsNullOrEmpty(senderId))
             {
                 return Unauthorized();
             }
 
-            // Check if the authenticated user's ID matches the SenderId of the friend request
+            // Ensure the SenderId matches the authenticated user's ID
             if (friendRequest.SenderId != senderId)
             {
                 return BadRequest("Sender ID does not match the authenticated user.");
             }
-            
+
+            // Set default values
+            friendRequest.Status ??= "Pending";                      // Default status to "Pending"
+            friendRequest.CreatedAt = DateTime.UtcNow; // Set the creation time to the current UTC time
+
+            // Call the service to add the friend request, where the ID is generated
             await _friendRequestService.AddFriendRequestAsync(friendRequest);
+
+            // Return the created friend request with the generated ID
             return CreatedAtAction(nameof(Get), new { id = friendRequest.Id }, friendRequest);
         }
+
+
 
         // [HttpPut("/{action}/{id}")]
         // public async Task<ActionResult<FriendRequest>> Put(string action, string id, [FromBody] FriendRequest updatedFriendRequest)
