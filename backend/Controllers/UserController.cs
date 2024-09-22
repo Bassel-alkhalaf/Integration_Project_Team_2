@@ -102,7 +102,7 @@ namespace backend.Controllers
                 {
                     Email = user.Email,
                     Password = user.Password,
-                    DisplayName = $"{user.Firstname} {user.Lastname}"
+                    DisplayName = $"{user.FirstName} {user.LastName}"
                 });
 
                 // Set Firebase User ID as the Firestore document ID

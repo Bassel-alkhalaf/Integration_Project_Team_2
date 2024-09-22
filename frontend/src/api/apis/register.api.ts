@@ -1,8 +1,8 @@
 // register.api.ts
 
-import { auth } from '../../config/firebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { doc, getFirestore, setDoc, Timestamp } from 'firebase/firestore';
+import { auth } from '../../config/firebaseConfig';
 
 export const registerUser = async (userData: {
   email: string;
@@ -21,13 +21,13 @@ export const registerUser = async (userData: {
   // Store additional user data in Firestore
   const db = getFirestore(); // Get Firestore instance
   await setDoc(doc(db, 'users', user.uid), {
-    id: user.uid,
-    email: user.email,
-    firstName: firstName,
-    lastName: lastName,
-    gender: gender,
-    bio: bio || '',
-    createdAt: new Date().toISOString()
+    Id: user.uid,
+    Email: user.email,
+    FirstName: firstName,
+    LastName: lastName,
+    Gender: gender,
+    Bio: bio || '',
+    CreatedAt: Timestamp.now(),
   });
 
   return user;

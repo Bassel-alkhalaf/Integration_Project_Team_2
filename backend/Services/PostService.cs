@@ -36,8 +36,8 @@ namespace backend.Services
                     Author = new UserInfoDto
                     {
                         Id = user.Id,
-                        Firstname = user.Firstname,
-                        Lastname = user.Lastname,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
                         Bio = user.Bio,
                         ProfileImageUrl = user.ProfileImageUrl,
                         Role = user.Role,

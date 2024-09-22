@@ -6,8 +6,8 @@ export enum Role {
 
 export type UserInfoDTO = {
 	id: string;
-	firstname: string;
-	lastname: string;
+	firstName: string;
+	lastName: string;
 	dob: Date;
 	gender: string;
 	bio: string;

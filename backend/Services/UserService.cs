@@ -99,8 +99,8 @@ namespace backend.Services
             return new UserInfoDto
             {
                 Id = user.Id,
-                Firstname = user.Firstname,
-                Lastname = user.Lastname,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 DOB = user.DOB,
                 Gender = user.Gender,
                 Bio = user.Bio,

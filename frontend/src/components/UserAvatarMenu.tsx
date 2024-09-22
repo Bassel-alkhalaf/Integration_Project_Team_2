@@ -1,10 +1,12 @@
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts';
 import { UserAvatar } from './UserAvatar';
 
 export function UserAvatarMenu() {
-	const { auth, logout } = useAuth();
+	const { user, logout } = useAuth();
+	const navigate = useNavigate();
 
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -16,12 +18,17 @@ export function UserAvatarMenu() {
 		setAnchorElUser(null);
 	};
 
+	const handleLogout = async () => {
+		await logout();
+		navigate('/login');
+	};
+
 	return (
-		auth && (
+		user && (
 			<Box sx={{ flexGrow: 0 }}>
-				<Tooltip title={auth.user.username}>
+				<Tooltip title={user.email}>
 					<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-						<UserAvatar user={auth.user} />
+						<UserAvatar user={user} />
 					</IconButton>
 				</Tooltip>
 				<Menu
@@ -54,7 +61,7 @@ export function UserAvatarMenu() {
 						<Typography>Settings</Typography>
 					</MenuItem>
 					<Divider /> */}
-					<MenuItem onClick={logout}>
+					<MenuItem onClick={handleLogout}>
 						<Typography>Logout</Typography>
 					</MenuItem>
 				</Menu>

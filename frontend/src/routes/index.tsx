@@ -20,6 +20,7 @@ function AppRoutes() {
 							msgType='warning'
 							title='Access denied'
 							msg='You do not have permission to view this page.'
+							autoRedirect={true}
 						/>
 					}
 				/>
@@ -31,7 +32,6 @@ function AppRoutes() {
 							msgType='error'
 							title='An error occurred'
 							msg='The server encountered an error while processing your request. Please try again later.'
-							autoRedirect={true}
 						/>
 					}
 				/>
@@ -43,6 +43,7 @@ function AppRoutes() {
 							msgType='info'
 							title='Not found'
 							msg='The resource you are looking for is not found.'
+							autoRedirect={true}
 						/>
 					}
 				/>
@@ -53,7 +54,7 @@ function AppRoutes() {
 				<Route path='register' element={<Register />} />
 			</Route>
 
-			<Route path='*' element={<Navigate to='/page-not-found' replace />} />
+			<Route path='*' element={<Navigate to='/not-found' replace />} />
 		</Routes>
 	);
 }

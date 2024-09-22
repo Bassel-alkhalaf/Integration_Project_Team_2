@@ -10,15 +10,10 @@ interface PropsI {
 }
 
 export function Header({ handleDrawerToggle }: PropsI) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
-  };
 
   return (
     <AppBar position='fixed' sx={{ zIndex: theme.zIndex.drawer + 1 }}>
@@ -50,12 +45,7 @@ export function Header({ handleDrawerToggle }: PropsI) {
         </Box>
 
         {user ? (
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-            <UserAvatarMenu />
-            <Button onClick={handleLogout} color='inherit'>
-              Logout
-            </Button>
-          </Box>
+          <UserAvatarMenu />
         ) : (
           <Box
             sx={{

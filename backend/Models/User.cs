@@ -9,10 +9,10 @@ namespace backend.Models
         public string Id { get; set; }               // Unique ID for the user
 
         [FirestoreProperty]
-        public string Firstname { get; set; }        // User's First Name
+        public string FirstName { get; set; }        // User's First Name
 
         [FirestoreProperty]
-        public string Lastname { get; set; }         // User's Last Name
+        public string LastName { get; set; }         // User's Last Name
 
         [FirestoreProperty]
         public DateTime DOB { get; set; }            // User's Date of Birth
