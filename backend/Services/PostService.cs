@@ -40,11 +40,11 @@ namespace backend.Services
 
         public async Task CreatePost(Post post)
         {
-            post.PostId = Guid.NewGuid().ToString();
-            post.CreatedAt = DateTime.UtcNow;
-            post.UpdatedAt = DateTime.UtcNow;
+            post.postId = Guid.NewGuid().ToString();
+            post.createdAt = DateTime.UtcNow;
+            post.updatedAt = DateTime.UtcNow;
 
-            DocumentReference docRef = _firestoreDb.Collection("posts").Document(post.PostId);
+            DocumentReference docRef = _firestoreDb.Collection("posts").Document(post.postId);
             await docRef.SetAsync(post);
         }
 

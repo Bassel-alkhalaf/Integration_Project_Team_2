@@ -31,7 +31,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("posts/create")]
-        public async Task<ActionResult> CreatePost([FromForm] Post post)
+        public async Task<ActionResult> CreatePost([FromBody] Post post)
         {
             await _postService.CreatePost(post);
             return Ok();

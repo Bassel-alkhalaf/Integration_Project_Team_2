@@ -44,6 +44,7 @@ const Home: React.FC = () => {
       authorName: 'Your Name', // Replace with actual logic to get the author's name
       authorImg: 'default-image-url', // Replace with actual logic to get the author's image
     };
+    console.log(postData);
     createPost(postData);
     handleClose();
   };
