@@ -19,6 +19,6 @@ namespace backend.Models
         public Timestamp CreatedAt { get; set; }      // The date and time when the friend request was created
         
         [FirestoreProperty]
-        public string Status { get; set; }           // Status of the friend request ("Pending", "Accepted", "Denied", "Canceled")
+        public string Status { get; set; }             // Status of the friend request ("Pending", "Accepted", "Denied", "Canceled")
     }
 }

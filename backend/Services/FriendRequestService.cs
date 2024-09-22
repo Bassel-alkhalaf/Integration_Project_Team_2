@@ -26,6 +26,21 @@ namespace backend.Services
             return null;
         }
 
+        public async Task<IEnumerable<FriendRequest>> GetFriendRequestsByReceiverIdAsync(string receiverId)
+        {
+            // Create a query to get friend requests where ReceiverId matches the given receiverId
+            Query query = _db.Collection("friendRequests").WhereEqualTo("ReceiverId", receiverId);
+            QuerySnapshot snapshot = await query.GetSnapshotAsync();
+            var friendRequests = new List<FriendRequest>();
+
+            foreach (DocumentSnapshot document in snapshot.Documents)
+            {
+                friendRequests.Add(document.ConvertTo<FriendRequest>());
+            }
+
+            return friendRequests;
+        }
+
         public async Task<IEnumerable<FriendRequest>> GetAllFriendRequestsAsync()
         {
             QuerySnapshot snapshot = await _db.Collection("friendRequests").GetSnapshotAsync();

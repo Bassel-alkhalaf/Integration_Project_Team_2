@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const userInfo = await getUserInfo(currentUser.uid);
 
         setUser({ ...userInfo, email: currentUser.email } as UserInfoT);
+        console.log(accessToken)
         setAccessToken(token);
       }
     });
