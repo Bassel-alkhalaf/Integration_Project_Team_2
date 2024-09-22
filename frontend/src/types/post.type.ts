@@ -1,15 +1,15 @@
 export interface Post {
-    PostId: string;
-    AuthorId: string,
-    Title: string;
-    Text: string;
-    Images?: string[];
-    AuthorName: string;
-    AuthorImg: string;
-    CreatedAt: Date;
-    UpdatedAt?: Date;
-    CommentCount: number;
-    LikeCount: number;
-    DislikeCount: number;
-    Visibility: string;
+    postId: string;
+    authorId: string,
+    title: string;
+    text: string;
+    images?: string[];
+    authorName: string;
+    authorImg: string;
+    createdAt: Date;
+    updatedAt?: Date;
+    commentCount: number;
+    likeCount: number;
+    dislikeCount: number;
+    visibility: string;
   }

@@ -30,9 +30,9 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
   const [disliked, setDisliked] = useState(false);
 
   const handleDelete = () => {
-    deletePost(post.PostId);
+    deletePost(post.postId);
   };
-
+  console.log(post);
   const toggleLike = () => {
     setLiked(prev => !prev);
     if (disliked) setDisliked(false); // Unselect dislike if like is pressed
@@ -56,34 +56,34 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
     <Card sx={{ marginBottom: 2, padding: 2 }}>
       <CardContent>
         <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
-          <Avatar src={post.AuthorImg} alt={post.AuthorName} sx={{ marginRight: 2 }} />
-          <Typography variant="h6">{post.AuthorName}</Typography>
+          <Avatar src={post.authorImg} alt={post.authorName} sx={{ marginRight: 2 }} />
+          <Typography variant="h6">{post.authorName}</Typography>
         </div>
         <Typography variant="body2" color="textSecondary">
-          {post.Text}
+          {post.text}
         </Typography>
-        {post.Images?.length ? (
+        {post.images?.length ? (
           <div style={{ marginTop: 10 }}>
-            {post.Images.map((imgUrl, index) => (
+            {post.images.map((imgUrl, index) => (
               <img key={index} src={imgUrl} alt={`Post image ${index}`} style={{ maxWidth: "100%" }} />
             ))}
           </div>
         ) : null}
         <Typography variant="caption" color="textSecondary">
-          Posted on {new Date(post.CreatedAt).toLocaleDateString()}
+          Posted on {new Date(post.createdAt).toLocaleDateString()}
         </Typography>
       </CardContent>
       <CardActions>
         <IconButton onClick={toggleLike} aria-label="like" sx={{ color: liked ? 'blue' : 'inherit' }}>
           <ThumbUp />
           <Typography variant="body2" sx={{ marginLeft: 1 }}>
-            {post.LikeCount}
+            {post.likeCount}
           </Typography>
         </IconButton>
         <IconButton onClick={toggleDislike} aria-label="dislike" sx={{ color: disliked ? 'red' : 'inherit' }}>
           <ThumbDown />
           <Typography variant="body2" sx={{ marginLeft: 1 }}>
-            {post.DislikeCount}
+            {post.dislikeCount}
           </Typography>
         </IconButton>
         {isOwner && (
@@ -94,7 +94,7 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
       </CardActions>
       <Accordion sx={{ width: '100%', marginTop: 1 }}>
         <AccordionSummary expandIcon={<ExpandMore />}>
-          <Typography>Comments ({post.CommentCount})</Typography>
+          <Typography>Comments ({post.commentCount})</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <form onSubmit={handleSubmit} style={{ width: '100%' }}>
