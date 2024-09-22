@@ -2,17 +2,22 @@ import { sendRequest } from './request';
 import { Post } from "../../types/post.type";
 import { POST_ENDPOINT } from '../endpoints';
 
+
+
+const LIMIT = 5;
+
+
 // Fetch all posts with pagination
-export const fetchPosts = async (limit: number): Promise<Post[]> => {
+export const fetchPosts = async ({ pageParam = 1 }: { pageParam?: number }) => {
+  const url = `${POST_ENDPOINT}?limit=${LIMIT}&page=${pageParam}`;
+  const res = await sendRequest({
+    endpoint: url,
+    method: 'GET',
+  });
 
-  const url = `${POST_ENDPOINT}?limit=${limit}`
-    const res = await sendRequest({
-      endpoint: url,
-      method: 'GET',
-    });
+  return res;
+};
 
-    return res.data as Post[];
-  };
   
   // Create a new post
   export const createPostRequest = async (postData: Post) => {

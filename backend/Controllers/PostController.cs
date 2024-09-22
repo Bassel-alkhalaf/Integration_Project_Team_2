@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("/")]
     public class PostsController : ControllerBase
     {
         private readonly PostService _postService;
@@ -15,14 +15,22 @@ namespace backend.Controllers
             _postService = postService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<Post>>> GetPosts([FromQuery] int limit = 4)
+       [HttpGet("/posts")]
+        public async Task<IActionResult> GetPosts([FromQuery] int limit = 5, [FromQuery] int page = 1)
         {
-            var posts = await _postService.GetAllPosts(limit);
-            return Ok(posts);
+            try
+            {
+                var posts = await _postService.GetPosts(limit, page);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                // Handle error
+                return StatusCode(500, $"Error fetching posts: {ex.Message}");
+            }
         }
 
-        [HttpPost]
+        [HttpPost("posts/create")]
         public async Task<ActionResult> CreatePost([FromForm] Post post)
         {
             await _postService.CreatePost(post);

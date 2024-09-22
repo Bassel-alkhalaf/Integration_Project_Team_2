@@ -8,10 +8,10 @@ namespace backend.Models
     public class Post
     {
         [FirestoreDocumentId]
-        public string Id { get; set; }
+        public string PostId { get; set; }
         
         [FirestoreProperty]
-        public string authorId { get; set; }
+        public string AuthorId { get; set; }
 
         [FirestoreProperty]
         public string Title { get; set; }
