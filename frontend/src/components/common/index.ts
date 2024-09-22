@@ -1,3 +1,4 @@
+export * from './GenericInfo';
 export * from './JoinCommunityBtn';
 export * from './LeaveCommunityBtn';
 export * from './Loading';

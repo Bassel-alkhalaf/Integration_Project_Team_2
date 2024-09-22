@@ -64,6 +64,7 @@
 
 using Google.Cloud.Firestore;
 using backend.Models;
+using backend.DTOs.Users;
 
 namespace backend.Services
 {
@@ -84,7 +85,7 @@ namespace backend.Services
         }
 
         // Method to fetch a user by their ID from Firestore
-        public async Task<User?> GetUserAsync(string id)
+        public async Task<UserInfoDto?> GetUserAsync(string id)
         {
             DocumentReference docRef = _firestoreDb.Collection("users").Document(id);
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
@@ -94,7 +95,19 @@ namespace backend.Services
                 return null;
             }
 
-            return snapshot.ConvertTo<User>();
+            var user = snapshot.ConvertTo<User>();
+            return new UserInfoDto
+            {
+                Id = user.Id,
+                Firstname = user.Firstname,
+                Lastname = user.Lastname,
+                DOB = user.DOB,
+                Gender = user.Gender,
+                Bio = user.Bio,
+                ProfileImageUrl = user.ProfileImageUrl,
+                Role = user.Role,
+                CreatedAt = user.CreatedAt,
+            };
         }
 
         // Method to get all users from Firestore

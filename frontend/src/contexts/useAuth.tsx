@@ -1,11 +1,13 @@
 // contexts/useAuth.tsx
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../config/firebaseConfig';
 import { useQueryClient } from '@tanstack/react-query';
+import { getUserInfo } from '../api';
+import { UserInfoT } from '../types';
 
 interface AuthContextProps {
-  user: User | null;
+  user: UserInfoT | null;
   accessToken: string | null;
   logout: () => Promise<void>;
 }
@@ -23,19 +25,18 @@ const AuthContext = createContext<AuthContextProps>({
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserInfoT | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-
       if (currentUser) {
         const token = await currentUser.getIdToken();
+        const userInfo = await getUserInfo(currentUser.uid);
+
+        setUser({ ...userInfo, email: currentUser.email } as UserInfoT);
         setAccessToken(token);
-      } else {
-        setAccessToken(null);
       }
     });
 
