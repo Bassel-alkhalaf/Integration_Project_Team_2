@@ -35,6 +35,7 @@ import { SnackbarProvider } from 'notistack';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts'; // Import from the updated contexts
 import Routes from './routes';
+import { AuthProvider } from './contexts';
 
 function App() {
   const queryClient = new QueryClient();

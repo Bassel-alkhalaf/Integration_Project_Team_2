@@ -4,6 +4,7 @@ import { MainLayout } from '../layouts';
 import { Home, Login, Register, Search } from '../pages';
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
+import Home from '../pages/Home/Home';
 
 function AppRoutes() {
 	return (
