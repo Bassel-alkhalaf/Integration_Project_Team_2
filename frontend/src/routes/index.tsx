@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { GenericInfo } from '../components';
 import { MainLayout } from '../layouts';
-import { Home, Login, Register, Search } from '../pages';
+import { Login, Register, Search } from '../pages';
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
 import Home from '../pages/Home/Home';
