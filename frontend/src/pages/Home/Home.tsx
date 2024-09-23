@@ -1,10 +1,11 @@
 // src/pages/Home.tsx
 import React, { useState } from 'react';
 import { useFetchPosts, useCreatePost } from '../../hooks/apiHooks';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, MenuItem, Select, InputLabel, FormControl, Stack } from '@mui/material';
 import PostItem from '../../components/PostItem';
 import UploadIcon from '@mui/icons-material/Upload';
 import { Post } from '../../types/post.type'; // Adjust the import based on your file structure
+import { UserCommunitySelect } from '../../components/UserCommunitySelect';
 
 export const Home: React.FC = () => {
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useFetchPosts();
@@ -13,6 +14,7 @@ export const Home: React.FC = () => {
   const [newPost, setNewPost] = useState<Post>({
     postId: '',
     authorId: '', // Assign this when creating the post
+    communityId: '',
     title: '',
     text: '',
     images: [],
@@ -89,9 +91,13 @@ export const Home: React.FC = () => {
       </div>
 
       {/* Create Post Dialog */}
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle>Create a Post</DialogTitle>
         <DialogContent>
+
+          <Stack gap={2} py={1}>
+          <UserCommunitySelect communityId={newPost.communityId} setCommunityId={setNewPost} />
+          
           <TextField
             label="Post Title"
             fullWidth
@@ -140,6 +146,8 @@ export const Home: React.FC = () => {
           {newPost.images?.map((image, idx) => (
             <div key={idx}>{image}</div>
           ))}
+                        
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

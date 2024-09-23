@@ -14,6 +14,9 @@ namespace backend.Models
         public string authorId { get; set; }
 
         [FirestoreProperty]
+        public string communityId { get; set; }
+
+        [FirestoreProperty]
         public string title { get; set; }
 
         [FirestoreProperty]
