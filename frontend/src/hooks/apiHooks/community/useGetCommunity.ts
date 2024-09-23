@@ -1,22 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { getUserCommunities } from '../../../api';
-import { userCommunityQueryKeys } from '../../../consts';
+import { getCommunityById } from '../../../api';
+import { communityQueryKeys } from '../../../consts';
 import { useGenericErrHandler } from '../../errorHandler/useGenericErrHandler';
 
-export const useGetUserCommunities = (accessToken: string, option: 'all' | 'owned' | 'joined' = 'all') => {
+export const useGetCommunity = (communityId: string) => {
 	const errorHandler = useGenericErrHandler();
 
 	return useQuery({
-		queryKey: option === 'all' ? userCommunityQueryKeys.all : userCommunityQueryKeys[option](),
+		queryKey: communityQueryKeys.current(communityId),
 		queryFn: () =>
-			getUserCommunities(accessToken, option)
+			getCommunityById(communityId)
 				.then(res => res)
 				.catch((err: AxiosError) => {
 					console.error(err);
 					errorHandler(err);
 					return null;
 				}),
-		enabled: !!accessToken,
 	});
 };

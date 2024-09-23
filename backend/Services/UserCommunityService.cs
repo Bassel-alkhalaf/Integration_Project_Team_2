@@ -1,7 +1,5 @@
 ﻿using backend.DTOs.Community;
-using backend.DTOs.Posts;
 using backend.DTOs.UserCommunity;
-using backend.DTOs.Users;
 using backend.Models;
 using Google.Cloud.Firestore;
 
@@ -20,30 +18,51 @@ namespace backend.Services
             _communityService = communityService;
         }
 
-        public async Task<List<UserCommunityResponseDto>> GetUserCommunitiesAsync(string userId)
+        private async Task<UserCommunityResponseDto> PopulateCommunityInfoAsync(DocumentSnapshot documentSnapshot)
+        {
+            var userCommunity = documentSnapshot.ConvertTo<UserCommunity>();
+            var community = await _communityService.GetCommunityAsync(userCommunity.CommunityId);
+
+            return new UserCommunityResponseDto
+            {
+                Id = community.Id,
+                Name = community.Name,
+                Description = community.Description,
+                UserCount = community.UserCount,
+                CreatedAt = community.CreatedAt,
+                IsStarred = userCommunity.IsStarred,
+                IsCreator = userCommunity.IsCreator,
+            };
+        }
+
+        private async Task<QuerySnapshot> GetQuerySnapshotAsync(Dictionary<string, object>? filters = null)
+        {
+            Query query = _firestoreDb.Collection("user_communities");
+
+            if (filters != null)
+            {
+                foreach (var filter in filters)
+                {
+                    query = query.WhereEqualTo(filter.Key, filter.Value);
+                }
+            }
+
+            return await query.GetSnapshotAsync();
+        }
+
+        public async Task<List<UserCommunityResponseDto>> GetUserCommunitiesAsync(string userId, bool? isCreator = null)
         {
             var res = new List<UserCommunityResponseDto>();
+            var filter = isCreator == null ? 
+                new Dictionary<string, object> { { "UserId", userId } } : 
+                new Dictionary<string, object> { { "UserId", userId }, { "IsCreator", isCreator } };
 
-            var userCommunitiesRef = _firestoreDb.Collection("user_communities")
-                .WhereEqualTo("UserId", userId);
-            var snapshot = await userCommunitiesRef.GetSnapshotAsync();
+            var snapshot = await GetQuerySnapshotAsync(filter);
 
-            foreach (var userCommunitySnapshot in snapshot.Documents)
-            {
-                var userCommunity = userCommunitySnapshot.ConvertTo<UserCommunity>();
-                var community = await _communityService.GetCommunityAsync(userCommunity.CommunityId);
-
-                if (community != null) {
-                    res.Add(new UserCommunityResponseDto
-                    {
-                        Id = community.Id,
-                        Name = community.Name,
-                        Description = community.Description,
-                        UserCount = community.UserCount,
-                        CreatedAt = community.CreatedAt,
-                        IsStarred = userCommunity.IsStarred,
-                    });
-                }
+            foreach (var item in snapshot)
+            {   
+                var populated = await PopulateCommunityInfoAsync(item);
+                res.Add(populated);
             }
 
             return res
@@ -68,7 +87,7 @@ namespace backend.Services
                 DocumentSnapshot communitySnapshot = await transaction.GetSnapshotAsync(communityRef);
                 var community = communitySnapshot.ConvertTo<Community>();
                 var currentCount = community.UserCount;
-
+                var isCreator = userId == community.UserId;
                 var timestamp = Timestamp.GetCurrentTimestamp();
 
                 var userCommunity = new UserCommunity
@@ -78,6 +97,7 @@ namespace backend.Services
                     CommunityId = communityId,
                     IsStarred = false,
                     CreatedAt = timestamp,
+                    IsCreator = isCreator,
                 };
 
                 transaction.Set(userCommunityRef, userCommunity);
@@ -91,6 +111,7 @@ namespace backend.Services
                     UserCount = community.UserCount,
                     CreatedAt = community.CreatedAt,
                     IsStarred = userCommunity.IsStarred,
+                    IsCreator = isCreator,
                 };
             });
         }
@@ -107,12 +128,17 @@ namespace backend.Services
                     throw new Exception("community_not_joined");
                 }
 
-                var communityRef = _firestoreDb.Collection("communities").Document(communityId);
-                var communitySnapshot = await transaction.GetSnapshotAsync(communityRef);
-                var currentCount = communitySnapshot.GetValue<int>("UserCount");
+                DocumentReference communityRef = _firestoreDb.Collection("communities").Document(communityId);
+                DocumentSnapshot communitySnapshot = await transaction.GetSnapshotAsync(communityRef);
+                var community = communitySnapshot.ConvertTo<Community>();
+
+                if (community.UserId == userId)
+                {
+                    throw new Exception("creator_cannot_leave");
+                }
 
                 transaction.Delete(userCommunityRef);
-                transaction.Update(communityRef, "UserCount", currentCount - 1);
+                transaction.Update(communityRef, "UserCount", community.UserCount - 1);
             });
         }
 

@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { GenericInfo } from '../components';
 import { MainLayout } from '../layouts';
-import { Home, Login, Register, Search } from '../pages';
+import { Community, Home, Login, Register, Search } from '../pages';
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
 
@@ -10,6 +10,7 @@ function AppRoutes() {
 		<Routes>
 			<Route path='/' element={<MainLayout />}>
 				<Route index element={<Home />} />
+				<Route path='/community/:communityId' element={<Community />} />
 
 				<Route path='/search' element={<Search />} />
 

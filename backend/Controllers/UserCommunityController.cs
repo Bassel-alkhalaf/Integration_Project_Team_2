@@ -11,7 +11,7 @@ namespace backend.Controllers
     public class UserCommunityController : ControllerBase
     {
         private readonly UserCommunityService _userCommunityService;
-        public readonly FirebaseAuthService _firebaseAuthService;
+        private readonly FirebaseAuthService _firebaseAuthService;
 
         public UserCommunityController(UserCommunityService userCommunityService, FirebaseAuthService firebaseAuthService)
         {
@@ -19,13 +19,30 @@ namespace backend.Controllers
             _firebaseAuthService = firebaseAuthService;
         }
 
-        [HttpGet()]
+        [HttpGet("all")]
         public async Task<IActionResult> Get()
         {
             var userId = _firebaseAuthService.GetUserId();
 
             var communities = await _userCommunityService.GetUserCommunitiesAsync(userId);
-            if (communities == null) return NotFound();
+            return Ok(communities); 
+        }
+
+        [HttpGet("joined")]
+        public async Task<IActionResult> GetJoined()
+        {
+            var userId = _firebaseAuthService.GetUserId();
+
+            var communities = await _userCommunityService.GetUserCommunitiesAsync(userId, false);
+            return Ok(communities);
+        }
+
+        [HttpGet("owned")]
+        public async Task<IActionResult> GetOwned()
+        {
+            var userId = _firebaseAuthService.GetUserId();
+
+            var communities = await _userCommunityService.GetUserCommunitiesAsync(userId, true);
             return Ok(communities);
         }
 

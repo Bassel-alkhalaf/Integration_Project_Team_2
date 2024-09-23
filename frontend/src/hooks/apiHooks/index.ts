@@ -4,5 +4,7 @@ export * from './userCommunity/useLeaveCommunity';
 export * from './userCommunity/useUpdateIsStarred';
 
 export * from './community/useCreateCommunity';
+export * from './community/useGetCommunity';
+export * from './community/useUpdateCommunity';
 
 export * from './search/useSearchCommunities';
