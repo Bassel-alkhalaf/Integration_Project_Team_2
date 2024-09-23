@@ -2,10 +2,12 @@ import { GetUserCommunitiesResDTO, UserCommunityT } from '../../types';
 import { USER_COMMUNITY_ENDPOINT } from '../endpoints';
 import { sendRequest } from './request';
 
-export const getUserCommunities = async (accessToken: string) => {
+export const getUserCommunities = async (accessToken: string, option: 'all' | 'owned' | 'joined') => {
+	const url = `${USER_COMMUNITY_ENDPOINT}/${option}`;
+
 	const res = await sendRequest({
 		method: 'GET',
-		endpoint: USER_COMMUNITY_ENDPOINT,
+		endpoint: url,
 		accessToken,
 	});
 

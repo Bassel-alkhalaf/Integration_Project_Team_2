@@ -1,8 +1,9 @@
-﻿using Google.Cloud.Firestore;
+﻿using backend.DTOs.Users;
+using Google.Cloud.Firestore;
 
 namespace backend.DTOs.Community
 {
-    public class CommunityResponseDto
+    public class CommunityWithUserInfoDto
     {
         public string Id { get; set; }
 
@@ -13,6 +14,8 @@ namespace backend.DTOs.Community
         public int UserCount { get; set; }
 
         public Timestamp CreatedAt { get; set; }
+
+        public UserInfoDto CreatedBy { get; set; } 
 
         public string Visibility { get; set; }
     }

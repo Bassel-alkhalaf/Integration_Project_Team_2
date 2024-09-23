@@ -18,6 +18,9 @@ namespace backend.Models
         public bool IsStarred { get; set; } = false;
 
         [FirestoreProperty]
+        public bool IsCreator { get; set; } = false;
+
+        [FirestoreProperty]
         public Timestamp CreatedAt { get; set; } 
     }
 }

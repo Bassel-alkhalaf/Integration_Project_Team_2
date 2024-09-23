@@ -1,5 +1,15 @@
 import { Forum as ForumIcon } from '@mui/icons-material';
-import { Avatar, ListItem, ListItemButton, ListItemIcon, ListItemText, SxProps, Theme } from '@mui/material';
+import {
+	Avatar,
+	ListItem,
+	ListItemButton,
+	ListItemIcon,
+	ListItemText,
+	SxProps,
+	Theme,
+	Tooltip,
+	Typography,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { UserCommunityT } from '../types';
 import { UserCommunityStarBtn } from './common';
@@ -20,7 +30,13 @@ export function UserCommunityItem({ community, sx }: PropsI) {
 						<ForumIcon />
 					</Avatar>
 				</ListItemIcon>
-				<ListItemText primary={community.name} />
+				<ListItemText
+					primary={
+						<Tooltip title={community.name}>
+							<Typography noWrap>{community.name}</Typography>
+						</Tooltip>
+					}
+				/>
 
 				<UserCommunityStarBtn community={community} />
 			</ListItemButton>

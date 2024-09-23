@@ -4,3 +4,4 @@
 export * from './apiHooks';
 
 export * from './useToggleOpen/useToggleOpen';
+export * from './useUserCommunityRelationship/useUserCommunityRelationship';
