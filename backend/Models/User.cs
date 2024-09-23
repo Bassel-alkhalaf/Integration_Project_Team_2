@@ -15,7 +15,7 @@ namespace backend.Models
         public string LastName { get; set; }         // User's Last Name
 
         [FirestoreProperty]
-        public DateTime DOB { get; set; }            // User's Date of Birth
+        public string DOB { get; set; }            // User's Date of Birth
 
         [FirestoreProperty]
         public string Gender { get; set; }           // User's Gender

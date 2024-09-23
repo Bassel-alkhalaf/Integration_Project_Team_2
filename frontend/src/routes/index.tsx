@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { GenericInfo } from '../components';
 import { MainLayout } from '../layouts';
-import { Community, Home, Login, Register, Search } from '../pages';
+import { Community, Home, Login, Register, Search,Profile } from '../pages';
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
 
@@ -13,6 +13,17 @@ function AppRoutes() {
 				<Route path='/community/:communityId' element={<Community />} />
 
 				<Route path='/search' element={<Search />} />
+				{/* Protected Route for Profile */}
+				{/* <Route element={<RoleBasedRoute allowedRoles={[Role.User, Role.Admin]} />}>
+					<Route path="/profile" element={<Profile />} />
+				</Route> */}
+
+				<Route path='/profile' element={<Profile />} />
+				{/* Guest Routes */}
+			{/* <Route element={<RoleBasedRoute allowedRoles={[Role.Guest]} />}>
+				<Route path="login" element={<Login />} />
+				<Route path="register" element={<Register />} />
+			</Route> */}
 
 				<Route
 					path='access-denied'
