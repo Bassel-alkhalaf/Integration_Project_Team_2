@@ -22,3 +22,4 @@ namespace backend.Models
         public string Status { get; set; }           // Status of the friend request ("Pending", "Accepted", "Denied", "Canceled")
     }
 }
+
