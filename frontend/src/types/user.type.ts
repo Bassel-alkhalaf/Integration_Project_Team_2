@@ -14,6 +14,8 @@ export type UserInfoDTO = {
 	profileImageUrl: string;
 	role: string;
 	createdAt: string;
+
+	email: string;
 };
 
 export type UserInfoT = UserInfoDTO & {
