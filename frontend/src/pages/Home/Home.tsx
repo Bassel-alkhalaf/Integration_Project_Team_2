@@ -6,7 +6,7 @@ import PostItem from '../../components/PostItem';
 import UploadIcon from '@mui/icons-material/Upload';
 import { Post } from '../../types/post.type'; // Adjust the import based on your file structure
 
-const Home: React.FC = () => {
+export const Home: React.FC = () => {
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useFetchPosts();
   const { mutate: createPost } = useCreatePost();
   const [open, setOpen] = useState(false);
@@ -153,5 +153,3 @@ const Home: React.FC = () => {
     </div>
   );
 };
-
-export default Home;
