@@ -2,6 +2,7 @@
 using backend.DTOs.Users;
 using backend.Models;
 using Google.Cloud.Firestore;
+using Google.Type;
 
 namespace backend.Services
 {
@@ -16,37 +17,38 @@ namespace backend.Services
             _userService = userService;
         }
 
-        public async Task<List<PostWithUserInfoDto>> GetAllPostsAsync()
-        {
-            var postsResponse = new List<PostWithUserInfoDto>();
-            var query = _firestoreDb.Collection("posts");
-            var querySnapshot = await query.GetSnapshotAsync();
+        // public async Task<List<PostWithUserInfoDto>> GetAllPostsAsync()
+        // {
+        //     var postsResponse = new List<PostWithUserInfoDto>();
+        //     var query = _firestoreDb.Collection("posts");
+        //     var querySnapshot = await query.GetSnapshotAsync();
 
-            foreach (var documentSnapshot in querySnapshot.Documents)
-            {
-                var post = documentSnapshot.ConvertTo<Post>();
-                var user = await _userService.GetUserAsync(post.UserId);
+        //     foreach (var documentSnapshot in querySnapshot.Documents)
+        //     {
+        //         var post = documentSnapshot.ConvertTo<Post>();
+        //         var user = await _userService.GetUserAsync(post.authorId);
 
-                postsResponse.Add(new PostWithUserInfoDto
-                {
-                    Id = post.Id,
-                    Title = post.Title,
-                    Content = post.Content,
-                    CreatedAt = post.CreatedAt,
-                    Author = new UserInfoDto
-                    {
-                        Id = user.Id,
-                        FirstName = user.FirstName,
-                        LastName = user.LastName,
-                        Bio = user.Bio,
-                        ProfileImageUrl = user.ProfileImageUrl,
-                        Role = user.Role,
-                        CreatedAt = user.CreatedAt,
-                    }
-                });
-            }
+        //         postsResponse.Add(new PostWithUserInfoDto
+        //         {
+        //             Id = post.postId,
+        //             Title = post.title,
+        //             Content = post.text,
+        //             // CreatedAt = post.createdAt.ToDate(),
+        //             Author = new UserInfoDto
+        //             {
+        //                 Id = user.Id,
+        //                 FirstName = user.FirstName,
+        //                 LastName = user.LastName,
+        //                 Bio = user.Bio,
+        //                 ProfileImageUrl = user.ProfileImageUrl,
+        //                 Role = user.Role,
+        //                 CreatedAt = user.CreatedAt,
+        //             }
+        //         });
+        //     }
 
-            return postsResponse;
+        //     return postsResponse;
+        // }
         public async Task<List<Post>> GetPosts(int limit, int page = 1)
         {
             CollectionReference postsRef = _firestoreDb.Collection("posts");
@@ -76,8 +78,8 @@ namespace backend.Services
         public async Task CreatePost(Post post)
         {
             post.postId = Guid.NewGuid().ToString();
-            post.createdAt = DateTime.UtcNow;
-            post.updatedAt = DateTime.UtcNow;
+            post.createdAt = System.DateTime.UtcNow;
+            post.updatedAt = System.DateTime.UtcNow;
 
             DocumentReference docRef = _firestoreDb.Collection("posts").Document(post.postId);
             await docRef.SetAsync(post);

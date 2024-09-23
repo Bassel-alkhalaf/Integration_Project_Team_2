@@ -1,22 +1,25 @@
-﻿using Google.Cloud.Firestore;
+﻿﻿using Google.Cloud.Firestore;
 namespace backend.Models
 {
     [FirestoreData]
     public class Comment
     {
         [FirestoreDocumentId]
-        public string CommentId { get; set; }
+        public string Id { get; set; }             // Unique ID for the comment
         
         [FirestoreProperty]
-        public string PostId { get; set; }
+        public string PostId { get; set; }          // ID of the post this comment is related to
         
         [FirestoreProperty]
-        public string AuthorId { get; set; }
+        public string UserId { get; set; }          // ID of the user who posted the comment
         
         [FirestoreProperty]
-        public string Text { get; set; }
+        public string Content { get; set; }         // The content of the comment
         
         [FirestoreProperty]
-        public DateTime CreatedAt { get; set; }
+        public Timestamp CreatedAt { get; set; }     // The date and time when the comment was created
+        
+        [FirestoreProperty]
+        public Timestamp? UpdatedAt { get; set; }
     }
 }
