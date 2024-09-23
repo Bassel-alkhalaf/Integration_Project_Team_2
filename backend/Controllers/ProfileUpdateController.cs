@@ -3,7 +3,7 @@
 using Microsoft.AspNetCore.Mvc;
 using backend.Services;
 using FirebaseAdmin.Auth;
-using backend.Middlewares;
+// using backend.Middlewares;
 using backend.DTOs.Users;
 
 namespace backend.Controllers
@@ -21,7 +21,7 @@ namespace backend.Controllers
 
         // Get the current user's profile using their token
         [HttpGet]
-        [FirebaseAuth]
+        // [FirebaseAuth]
         public async Task<ActionResult<UserInfoDto>> GetProfile()
         {
             var firebaseToken = HttpContext.Items["User"] as FirebaseToken;
@@ -44,7 +44,7 @@ namespace backend.Controllers
 
         // Update the current user's profile using their token
         [HttpPut]
-        [FirebaseAuth]
+        // [FirebaseAuth]
         public async Task<ActionResult<UserUpdateDto>> UpdateProfile([FromBody] UserUpdateDto updatedProfile)
         {
             var firebaseToken = HttpContext.Items["User"] as FirebaseToken;
