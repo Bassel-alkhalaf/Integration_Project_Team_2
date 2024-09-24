@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { searchQueryKeys } from '../../consts';
 import { CommunitySearchResultList } from './CommunitySearchResultList';
+import { UserSearchResultList } from './UserSearchResultList';
 
 interface TabPanelProps {
 	children?: React.ReactNode;
@@ -74,7 +75,7 @@ export function Search() {
 				<CommunitySearchResultList query={query} />
 			</CustomTabPanel>
 			<CustomTabPanel value={currentTabIndex} index={2}>
-				search results of users
+				<UserSearchResultList />
 			</CustomTabPanel>
 		</Box>
 	);

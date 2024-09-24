@@ -11,3 +11,5 @@ export * from './search/useSearchCommunities';
 export * from './post/useCreatePost';
 export * from './post/useFetchPosts';
 export * from './post/useEditPost';
+
+export * from './user/useSearchUser';
