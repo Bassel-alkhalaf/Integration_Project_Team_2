@@ -1,6 +1,6 @@
 export interface Post {
     postId: string;
-    authorId: string;
+    authorId?: string;
     communityId: string;
     title: string;
     text: string;

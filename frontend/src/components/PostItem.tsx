@@ -14,50 +14,77 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
-} from '@mui/material';
-import { ThumbUp, ThumbDown, Comment, Delete, Edit, ExpandMore } from '@mui/icons-material';
+  
+} from "@mui/material";
+import {
+  ThumbUp,
+  ThumbDown,
+  Comment,
+  Delete,
+  Edit
+} from "@mui/icons-material";
 import { Post } from '../types/post.type';
-import { useDeletePost } from '../hooks/apiHooks/post/useDeletePost';
-import { useEditPost } from '../hooks/apiHooks/post/useEditPost';
-import CommentSection from './CommentSection';
-import { Link, useNavigate } from 'react-router-dom'; // Import `useNavigate` for navigation
-
+import { useDeletePost } from "../hooks/apiHooks/post/useDeletePost";
+import { useEditPost } from "../hooks/apiHooks/post/useEditPost"; // Assuming you have an edit hook
+import { useQueryClient } from "@tanstack/react-query";
+import { enqueueSnackbar } from "notistack";
+import EditPostDialogue from "./EditPostDialogue";
+import { EditPostData } from "../types/editPost.type";
+import { useNavigate } from 'react-router-dom';
 interface PostProps {
   post: Post;
+  userId: string;
 }
 
-const PostItem: React.FC<PostProps> = ({ post }) => {
+
+
+const PostItem: React.FC<PostProps> = ({ post, userId }) => {
+
+  const navigate = useNavigate();
   const { mutate: deletePost } = useDeletePost();
   const { mutate: editPost } = useEditPost();
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(post.title);
-  const [editedText, setEditedText] = useState(post.text);
-  const [isCommentsOpen, setCommentsOpen] = useState(false);
-  const navigate = useNavigate(); // Use `useNavigate` for programmatic navigation
+  const [postImages, setPostImages] = useState(post.images || []);
+  const [isCommentsOpen, setCommentsOpen] = useState(false); // State for accordion open/close
+  const queryClient = useQueryClient();
+
+
+ 
+  const isOwner = userId === post.authorId; // Check if the user owns the post
+
 
   // Handle deletion of a post
   const handleDelete = () => {
     deletePost(post.postId, {
       onSuccess: () => {
-        setDeleteDialogOpen(false); // Close dialog after deletion
+        enqueueSnackbar('Post deleted successfully!', {
+          variant: 'success',
+        })
+        setDeleteDialogOpen(false); // Close confirmation dialog after deletion
       },
     });
+    queryClient.invalidateQueries({ queryKey: ['posts'] });
   };
 
-  // Handle editing a post
-  const handleEditSubmit = () => {
-    const updatedPost: Post = {
-      ...post,
-      title: editedTitle,
-      text: editedText,
+   // Handle submitting edited post data
+   const handleEditSubmit = (data: { title: string; text: string; images?: string[] }) => {
+    const updatedPost: EditPostData = {
+      postId: post.postId,
+      title: data.title,
+      text: data.text,
+      images: data.images,
       updatedAt: new Date(),
     };
-    editPost(updatedPost);
-    setEditDialogOpen(false);
+    editPost(updatedPost, {
+      onSuccess: () => {
+        enqueueSnackbar("Post updated successfully!", { variant: "success" });
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+        setEditDialogOpen(false); // Close the dialog after successful edit
+      },
+    });
   };
 
   // Toggle like status
@@ -84,6 +111,12 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
     }
   };
 
+  const removeImage = (index: number) => {
+    const updatedImages = [...postImages];
+    updatedImages.splice(index, 1); // Remove the image at the specified index
+    setPostImages(updatedImages);
+  };
+
   return (
     <Card sx={{ marginBottom: 2, padding: 2 }}>
       <CardContent>
@@ -108,6 +141,13 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
         >
           {post.text}
         </Typography>
+        {postImages?.length > 0 && (
+          <div style={{ marginTop: 10 }}>
+            {postImages.map((imgUrl: string, index: number) => (
+              <img key={index} src={imgUrl} alt={`Post image ${index}`} style={{ maxWidth: "100%" }} />
+            ))}
+          </div>
+        )}
         <Typography variant="caption" color="textSecondary">
           Posted on {new Date(post.createdAt).toLocaleDateString()}
         </Typography>
@@ -145,50 +185,36 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
 
       {/* Comments Accordion */}
       <Accordion expanded={isCommentsOpen} sx={{ width: '100%', marginTop: 1 }}>
-        <AccordionSummary expandIcon={<ExpandMore />} onClick={toggleComments}>
-          <Typography>Comments</Typography>
+        <AccordionSummary>
+          <Typography>Comments ({post.commentCount})</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          {/* Fetch comments from the database */}
-          <CommentSection postId={post.postId} />
-          {/* If more than 3 comments, show "View All Comments" button */}
-          {post.commentCount > 3 && (
-            <Button component={Link} to={`/posts/${post.postId}`} variant="outlined">
-              View All Comments
+          <form onSubmit={() => {}} style={{ width: '100%' }}>
+            <input
+              type="text"
+              name="comment"
+              placeholder="Add a comment..."
+              required
+              style={{ width: '80%', marginRight: '8px', height:'2.1rem' }}
+            />
+            <Button type="submit" variant="contained" color="primary">
+              Submit
             </Button>
-          )}
+            </form>
+          
         </AccordionDetails>
       </Accordion>
 
       {/* Edit Post Dialog */}
-      <Dialog open={isEditDialogOpen} onClose={() => setEditDialogOpen(false)} fullWidth>
-        <DialogTitle>Edit Post</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Title"
-            value={editedTitle}
-            onChange={(e) => setEditedTitle(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Text"
-            multiline
-            value={editedText}
-            onChange={(e) => setEditedText(e.target.value)}
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleEditSubmit} color="primary" variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+       <EditPostDialogue
+        isEditDialogOpen={isEditDialogOpen}
+        setEditDialogOpen={setEditDialogOpen}
+        images={postImages}
+        removeImage={removeImage}
+        handleEditSubmit={handleEditSubmit}
+        title={post.title}
+        text={post.text}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>

@@ -1,14 +1,16 @@
-// src/api/apis/post.api.ts
-import { sendRequest } from './request';
-import { Post } from '../../types/post.type';
-import { POST_ENDPOINT } from '../endpoints';
+import { sendRequest } from "./request";
+import { Post } from "../../types/post.type";
+import { POST_ENDPOINT } from "../endpoints";
+import { EditPostData } from "../../types/editPost.type";
+
+const LIMIT = 5;
 
 // Fetch all posts with pagination
 export const fetchPosts = async ({ pageParam = 1 }: { pageParam?: number }) => {
   const url = `${POST_ENDPOINT}?limit=5&page=${pageParam}`;
   const res = await sendRequest({
     endpoint: url,
-    method: 'GET',
+    method: "GET",
   });
 
   return res;
@@ -34,17 +36,10 @@ export const deletePostRequest = async (postId: string) => {
 };
 
 // Edit an existing post
-export const editPostRequest = async (postData: Post) => {
+export const editPostRequest = async (data: EditPostData) => {
   return sendRequest({
-    endpoint: `${POST_ENDPOINT}/${postData.postId}`, // Assuming postData contains the post ID
-    method: 'PUT',
-    body: postData,
+    endpoint: `${POST_ENDPOINT}/${data.postId}`, 
+    method: "PUT", 
+    body: data,
   });
-};
-
-// Fetch post details
-export const getPostDetails = async (postId: string) => {
-  const url = `${POST_ENDPOINT}/${postId}`;
-  const res = await sendRequest({ method: 'GET', endpoint: url });
-  return res.data;
 };
