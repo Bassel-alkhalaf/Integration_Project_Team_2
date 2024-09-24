@@ -31,11 +31,11 @@ namespace backend.Controllers
         }
 
         [HttpGet("users")]
-        public async Task<IActionResult> SearchUsers([FromQuery] string query)
+        public async Task<IActionResult> SearchUsers([FromQuery] string? q)
         {
             try
             {
-                var users = await _searchService.SearchUsersAsync(query);
+                var users = await _searchService.SearchUsersAsync(q);
                 return Ok(users);
             }
             catch (Exception ex)

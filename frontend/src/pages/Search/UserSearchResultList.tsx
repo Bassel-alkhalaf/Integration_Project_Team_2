@@ -1,24 +1,19 @@
 import { Alert, Divider, List, Typography } from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 import { Loading } from "../../components";
 import { useSearchUsers } from "../../hooks/apiHooks/search/userSearchUsers";
-import { TextField } from "@mui/material";
 import { UserSearchResultItem } from "./UserSearchResultItem";
 
-export function UserSearchResultList() {
-  const [searchTerm, setSearchTerm] = useState("");
+interface PropsI {
+	query: string;
+}
+
+export function UserSearchResultList({ query }: PropsI) {
   const {
     data: results,
-    refetch,
     isLoading,
     isError,
-  } = useSearchUsers(searchTerm);
-
-  useEffect(() => {
-    if (searchTerm) {
-      refetch();
-    }
-  }, [searchTerm, refetch]);
+  } = useSearchUsers(query);
 
   if (isLoading) return <Loading />;
 
@@ -28,17 +23,9 @@ export function UserSearchResultList() {
 
   return (
     <>
-      <TextField
-        label="Search Users"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-
       <Typography gutterBottom>
         {results?.length || 0} {results?.length > 1 ? "results" : "result"} for
-        "{searchTerm}":
+        "{query}":
       </Typography>
 
       <List sx={{ width: "100%", bgcolor: "background.paper" }}>

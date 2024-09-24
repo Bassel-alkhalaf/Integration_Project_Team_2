@@ -1,5 +1,5 @@
 import { Alert, Divider, List, Typography } from '@mui/material';
-import { Fragment, useEffect } from 'react';
+import { Fragment } from 'react';
 import { Loading } from '../../components';
 import { useSearchCommunities } from '../../hooks';
 import { CommunitySearchResultItem } from './CommunitySearchResultItem';
@@ -8,11 +8,7 @@ interface PropsI {
 	query: string;
 }
 export function CommunitySearchResultList({ query }: PropsI) {
-	const { data: results, refetch, isLoading, isError } = useSearchCommunities(query);
-
-	useEffect(() => {
-		refetch();
-	}, [query]);
+	const { data: results, isLoading, isError } = useSearchCommunities(query);
 
 	if (isLoading) return <Loading />;
 
