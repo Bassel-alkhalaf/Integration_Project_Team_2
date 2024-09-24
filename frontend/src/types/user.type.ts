@@ -29,5 +29,8 @@ export interface UserUpdateDTO {
 	gender?: string;
 	bio?: string;
 	profileImageUrl?: string;
+
 }
+
+  
   

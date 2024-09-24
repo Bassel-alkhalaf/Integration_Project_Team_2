@@ -3,6 +3,7 @@ import { Container, Typography, Box, Avatar, Paper, Button, Dialog, DialogAction
 import { getUserInfo } from '../../api/apis/user.api'; 
 import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from 'firebase/auth';
 import { UserInfoDTO } from '../../types'; 
+import { useNavigate } from 'react-router-dom';
 
 // Helper function to get the default profile image based on gender
 const getDefaultProfileImage = (gender: string) => {
@@ -26,6 +27,7 @@ export function Profile() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // Initialize navigate
 
   useEffect(() => {
     const auth = getAuth();
@@ -88,6 +90,10 @@ export function Profile() {
 
   // Determine the profile image, either the user-provided one or the default based on gender
   const profileImageUrl = user?.profileImageUrl || getDefaultProfileImage(user?.gender || '');
+
+  const handleEditProfile = () => {
+    navigate('/profile/editprofile'); // Redirect to the edit profile page
+  };
 
   return (
     <Container maxWidth="sm">
@@ -160,6 +166,14 @@ export function Profile() {
               onClick={() => setOpenDialog(true)}
             >
               Change Password
+            </Button>
+
+            <Button
+              variant="contained"
+              sx={{ mt: 4, ml: 2 }} // Added margin for spacing
+              onClick={handleEditProfile}
+            >
+              Edit Profile
             </Button>
           </Box>
         )}

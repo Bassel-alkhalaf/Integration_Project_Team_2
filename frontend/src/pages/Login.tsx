@@ -20,7 +20,7 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
+    console.log('Attempting login with:', { email, password }); // Log the email and password being used
     try {
       await loginUser(email, password); // Calls the login function from the API
 
