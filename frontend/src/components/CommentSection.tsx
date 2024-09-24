@@ -5,15 +5,19 @@ import { useFetchComments } from '../hooks/apiHooks/comment/useFetchComments';
 import { useDeleteComment } from '../hooks/apiHooks/comment/useDeleteComment';
 import { useCreateComment } from '../hooks/apiHooks/comment/useCreateComment';
 import { getAuth } from 'firebase/auth';
+import { useQueryClient } from '@tanstack/react-query';
+import { commentQueryKeys } from '../consts';
 
 interface CommentSectionProps {
     postId: string;
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
+    const queryClient = useQueryClient();
+
     const [newCommentText, setNewCommentText] = useState('');
     const { data: comments, refetch } = useFetchComments(postId); // Fetch comments using the hook
-    const [localComments, setLocalComments] = useState<Comment[]>([]); // Use local state for comments
+    // const [localComments, setLocalComments] = useState<Comment[]>([]); // Use local state for comments
     const { mutate: createComment } = useCreateComment(); // Use the hook to create a comment
     const { mutate: deleteComment } = useDeleteComment(); // Use the hook to delete a comment
 
@@ -22,11 +26,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const user = auth.currentUser;
 
     // Fetch comments and update local state when comments or postId changes
-    useEffect(() => {
-        if (comments) {
-            setLocalComments(comments);
-        }
-    }, [comments]);
+    // useEffect(() => {
+    //     if (comments) {
+    //         setLocalComments(comments);
+    //     }
+    // }, [comments]);
 
     const handleCommentSubmit = () => {
         if (!newCommentText.trim()) {
@@ -47,9 +51,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         // Use the createComment hook to create a new comment
         createComment(newComment, {
             onSuccess: () => {
-                setLocalComments([...localComments, { commentId: 'new-id', postId, authorId: user.uid, text: newCommentText, createdAt: new Date() }]);
+                queryClient.invalidateQueries({ queryKey:  commentQueryKeys.all(postId) })
+                // setLocalComments([...localComments, { commentId: 'new-id', postId, authorId: user.uid, text: newCommentText, createdAt: new Date() }]);
                 setNewCommentText('');
-                refetch(); // Refetch comments after creating a new one
+                // refetch(); // Refetch comments after creating a new one
             },
             onError: (error) => {
                 console.error('Failed to submit comment:', error);
@@ -61,7 +66,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const handleDeleteComment = (commentId: string) => {
         deleteComment(commentId, {
             onSuccess: () => {
-                setLocalComments((prevComments) => prevComments.filter(comment => comment.commentId !== commentId));
+                queryClient.invalidateQueries({ queryKey: commentQueryKeys.all(postId) })
+
+                // setLocalComments((prevComments) => prevComments.filter(comment => comment.commentId !== commentId));
             },
             onError: (error) => {
                 console.error('Failed to delete comment:', error);
@@ -73,10 +80,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     return (
         <Box>
             <Typography variant="h5">Comments</Typography>
-            {localComments.slice(0, 3).map((comment) => (
-                <Box key={comment.commentId} sx={{ mt: 2 }}>
+            {comments?.slice(0, 3).map((comment, index) => (
+                <Box key={index} sx={{ mt: 2 }}>
                     <Typography variant="body2">
-                        {comment.text} (Posted by: {comment.authorId} at {new Date(comment.createdAt).toLocaleString()})
+                        {comment.content} (Posted by: {comment.authorId} at {new Date(comment.createdAt).toLocaleString()})
                     </Typography>
                     {comment.authorId === user?.uid && (
                         <Button color="secondary" onClick={() => handleDeleteComment(comment.commentId)}>

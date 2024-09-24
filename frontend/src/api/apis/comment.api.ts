@@ -6,9 +6,9 @@ import { getAuth } from 'firebase/auth';
 
 // Fetch comments for a specific post
 export const getPostComments = async (postId: string) => {
-  const url = `${COMMENT_ENDPOINT}?postId=${postId}`;
+  const url = `${COMMENT_ENDPOINT}/by-post?postId=${postId}`;
   const res = await sendRequest({ method: 'GET', endpoint: url });
-  return res.data;
+  return res.data as Comment[];
 };
 
 export const createComment = async (commentData: { postId: string; content: string }) => {
