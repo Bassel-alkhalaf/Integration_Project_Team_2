@@ -25,7 +25,9 @@ export function LeaveCommunityBtn({ community }: PropsI) {
 		});
 	};
 
-	const handleClick = () => {
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.stopPropagation();
+
 		leaveCommunity(communityId, {
 			onSuccess: () => {
 				queryClient.invalidateQueries();

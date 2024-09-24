@@ -4,3 +4,4 @@
 export * from './community.type';
 export * from './user.type';
 export * from './userCommunity.type';
+export * from './auth.type';

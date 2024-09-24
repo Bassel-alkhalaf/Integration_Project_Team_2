@@ -8,33 +8,45 @@ namespace backend.Models
     public class Post
     {
         [FirestoreDocumentId]
-        public string Id { get; set; }
+        public string postId { get; set; }
+        
+        [FirestoreProperty]
+        public string authorId { get; set; }
 
         [FirestoreProperty]
-        public string UserId { get; set; } // ID of the user who created the post
+        public string communityId { get; set; }
 
         [FirestoreProperty]
-        public string Title { get; set; } // Post title
+        public string title { get; set; }
 
         [FirestoreProperty]
-        public string Content { get; set; } // Post content
+        public string text { get; set; }
 
         [FirestoreProperty]
-        public string Visibility { get; set; } // e.g., "Public", "Friends", "CloseFriends"
+        public List<string> images { get; set; }
 
         [FirestoreProperty]
-        public List<string> ImageUrls { get; set; } // List of image URLs associated with the post
+        public string authorName { get; set; }
 
         [FirestoreProperty]
-        public int CommentCount { get; set; }
+        public string authorImg { get; set; }
 
         [FirestoreProperty]
-        public int LikeCount { get; set; }
+        public DateTime createdAt { get; set; }
 
         [FirestoreProperty]
-        public Timestamp CreatedAt { get; set; }
+        public DateTime? updatedAt { get; set; }
 
         [FirestoreProperty]
-        public Timestamp? UpdatedAt { get; set; }
+        public int commentCount { get; set; }
+
+        [FirestoreProperty]
+        public int likeCount { get; set; }
+
+        [FirestoreProperty]
+        public int dislikeCount { get; set; }
+
+        [FirestoreProperty]
+        public string visibility { get; set; }  // "public", "private", or "friends"
     }
 }

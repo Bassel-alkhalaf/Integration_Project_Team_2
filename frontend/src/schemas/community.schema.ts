@@ -5,6 +5,7 @@ export const CommunityUpdateSchema = z.object({
 		.string()
 		.min(1, { message: 'Description is required' })
 		.max(500, { message: 'Description is too long' }),
+	visibility: z.enum(['Public', 'Private']).default('Public'),
 });
 
 export const CommunityCreateSchema = CommunityUpdateSchema.extend({

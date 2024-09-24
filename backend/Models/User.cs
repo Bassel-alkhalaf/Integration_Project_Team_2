@@ -15,24 +15,26 @@ namespace backend.Models
         public string LastName { get; set; }         // User's Last Name
 
         [FirestoreProperty]
-        public DateTime DOB { get; set; }            // User's Date of Birth
+        public string DOB { get; set; }            // User's Date of Birth
 
         [FirestoreProperty]
         public string Gender { get; set; }           // User's Gender
 
-        [FirestoreProperty]
-        public string? Bio { get; set; }             // Optional biography
+         [FirestoreProperty("Bio")]
+    public string? Bio { get; set; }             // Optional biography
 
-        [FirestoreProperty]
-        public string? ProfileImageUrl { get; set; } // Optional profile image
+         [FirestoreProperty("ProfileImageUrl")]
+    public string? ProfileImageUrl { get; set; } // Optional profile image
 
         [FirestoreProperty]
         public string Role { get; set; }             // Role of the user (Admin, User)
 
-        [FirestoreProperty]
-        public Timestamp CreatedAt { get; set; }     // Timestamp when user was created
-
-        public string Email { get; set; }            // User's email for Firebase Auth (not stored in Firestore)
-        public string Password { get; set; }         // User's password for Firebase Auth (not stored in Firestore)
+        [FirestoreProperty("CreatedAt")]
+    public Timestamp CreatedAt { get; set; }     // Timestamp when user was created
+[
+    
+    FirestoreProperty("Email")]
+    public string? Email { get; set; }            // User's email for Firebase Auth (not stored in Firestore)
+        public string? Password { get; set; }         // User's password for Firebase Auth (not stored in Firestore)
     }
 }

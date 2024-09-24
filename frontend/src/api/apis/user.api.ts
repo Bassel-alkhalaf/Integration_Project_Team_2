@@ -1,4 +1,5 @@
-import { UserInfoDTO } from '../../types';
+
+import { UserInfoDTO } from '../../types/user.type';
 import { USER_ENDPOINT } from '../endpoints';
 import { sendRequest } from './request';
 
@@ -12,3 +13,4 @@ export const getUserInfo = async (userId: string) => {
 
 	return res.data as UserInfoDTO;
 };
+

@@ -1,27 +1,30 @@
-import { Card, CardActions, CardContent, Stack, Typography } from '@mui/material';
-import { useQuery } from '@tanstack/react-query';
+import { Button, Card, CardActions, CardContent, Stack, Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
-import { userCommunityQueryKeys } from '../consts';
-import { CommunityT, UserCommunityT } from '../types';
+import { useNavigate } from 'react-router-dom';
+import { useToggleOpenEl, useUserCommunityRelationship } from '../hooks';
+import { CommunityT } from '../types';
 import { JoinCommunityBtn, LeaveCommunityBtn, UserCommunityStarBtn } from './common';
+import { CommunityInputFormDialog } from './CommunityInputFormDialog';
 
 interface PropsI {
 	community: CommunityT;
 }
 
 export function CommunityCard({ community }: PropsI) {
+	const navigate = useNavigate();
+	const { isOpen, isMobile, openEl, closeEl } = useToggleOpenEl();
 	const { id, name, userCount, description, createdAt } = community;
-
-	const { data: joinedCommunities } = useQuery<UserCommunityT[]>({ queryKey: userCommunityQueryKeys.all });
-	const isJoined = useMemo(() => joinedCommunities?.find(c => c.id === id), [joinedCommunities]);
+	const { isJoined, isCreator } = useUserCommunityRelationship(id);
 
 	return (
 		<Card
+			onClick={() => navigate(`/community/${id}`)}
 			sx={{
 				position: 'relative',
 				minWidth: 'fit-content',
-				'&:hover': { transform: 'scale(1.02)', transition: '0.3s' },
+				transition: '0.5s',
+				'&:hover': { bgcolor: grey[100], cursor: 'pointer' },
 			}}
 			variant='outlined'>
 			<CardContent>
@@ -43,8 +46,21 @@ export function CommunityCard({ community }: PropsI) {
 				<Typography variant='body2'>{description}</Typography>
 			</CardContent>
 			<CardActions>
-				<JoinCommunityBtn community={community} isJoined={!!isJoined} />
-				{!!isJoined && <LeaveCommunityBtn community={community} />}
+				{isCreator ? (
+					<>
+						<Button onClick={openEl}>Edit</Button>
+						<CommunityInputFormDialog
+							isOpen={isOpen}
+							isMobile={isMobile}
+							closeEl={closeEl}
+							formData={community}
+						/>
+					</>
+				) : isJoined ? (
+					<LeaveCommunityBtn community={community} />
+				) : (
+					<JoinCommunityBtn community={community} isJoined={!!isJoined} />
+				)}
 			</CardActions>
 		</Card>
 	);

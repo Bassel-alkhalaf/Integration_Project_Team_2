@@ -7,5 +7,15 @@ export const searchQueryKeys = {
 
 export const userCommunityQueryKeys = {
 	all: ['userCommunities'] as const,
-	starred: () => [...userCommunityQueryKeys.all, 'starred'] as const,
+	joined: () => [...userCommunityQueryKeys.all, 'joined'] as const,
+	owned: () => [...userCommunityQueryKeys.all, 'owned'] as const,
+};
+
+export const communityQueryKeys = {
+	all: ['communities'] as const,
+	current: (communityId: string) => [...communityQueryKeys.all, 'current', communityId] as const,
+};
+
+export const commentQueryKeys = {
+	all: (postId: string | undefined) => ['comment', postId] as const,
 };

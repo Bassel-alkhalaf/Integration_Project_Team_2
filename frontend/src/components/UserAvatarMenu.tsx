@@ -23,6 +23,11 @@ export function UserAvatarMenu() {
 		navigate('/login');
 	};
 
+	const handleViewProfile = () => {
+		handleCloseUserMenu();
+		navigate('/profile');
+	};
+
 	return (
 		user && (
 			<Box sx={{ flexGrow: 0 }}>
@@ -61,6 +66,9 @@ export function UserAvatarMenu() {
 						<Typography>Settings</Typography>
 					</MenuItem>
 					<Divider /> */}
+					<MenuItem onClick={handleViewProfile}>
+						<Typography>View Profile</Typography>
+					</MenuItem>
 					<MenuItem onClick={handleLogout}>
 						<Typography>Logout</Typography>
 					</MenuItem>
