@@ -29,5 +29,20 @@ namespace backend.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+
+        [HttpGet("users")]
+        public async Task<IActionResult> SearchUsers([FromQuery] string query)
+        {
+            try
+            {
+                var users = await _searchService.SearchUsersAsync(query);
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
     }
 }

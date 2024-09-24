@@ -137,12 +137,5 @@ namespace backend.Controllers
             await _userService.DeleteUserAsync(id);
             return NoContent();
         }
-
-        [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<User>>> SearchUsers(string query)
-        {
-            var users = await _searchService.SearchUsersAsync(query);
-            return Ok(users);
-        }
     }
 }
