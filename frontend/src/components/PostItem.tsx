@@ -11,7 +11,6 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -27,45 +26,63 @@ import {
 import { Post } from '../types/post.type';
 import { useDeletePost } from "../hooks/apiHooks/post/useDeletePost";
 import { useEditPost } from "../hooks/apiHooks/post/useEditPost"; // Assuming you have an edit hook
+import { useQueryClient } from "@tanstack/react-query";
+import { enqueueSnackbar } from "notistack";
+import EditPostDialogue from "./EditPostDialogue";
+import { EditPostData } from "../types/editPost.type";
 
 interface PostProps {
   post: Post;
-  //onDelete: () => void; // Function to trigger re-render after delete
+  userId: string;
 }
 
-const isOwner = true;
 
-const PostItem: React.FC<PostProps> = ({ post }) => {
+
+const PostItem: React.FC<PostProps> = ({ post, userId }) => {
+
   const { mutate: deletePost } = useDeletePost();
   const { mutate: editPost } = useEditPost(); // Assuming you have this hook
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(post.title);
-  const [editedText, setEditedText] = useState(post.text);
   const [postImages, setPostImages] = useState(post.images || []);
   const [isCommentsOpen, setCommentsOpen] = useState(false); // State for accordion open/close
+  const queryClient = useQueryClient();
+
+
+ 
+  const isOwner = userId === post.authorId; // Check if the user owns the post
+
 
   const handleDelete = () => {
     deletePost(post.postId, {
       onSuccess: () => {
-        //onDelete(); // Trigger re-render after deleting the post
+        enqueueSnackbar('Post deleted successfully!', {
+          variant: 'success',
+        })
         setDeleteDialogOpen(false); // Close confirmation dialog after deletion
       },
     });
+    queryClient.invalidateQueries({ queryKey: ['posts'] });
   };
 
-  const handleEditSubmit = () => {
-    const updatedPost:Post = {
-      ...post,
-      title: editedTitle,
-      text: editedText,
-      images: postImages,
+   // Handle submitting edited post data
+   const handleEditSubmit = (data: { title: string; text: string; images?: string[] }) => {
+    const updatedPost: EditPostData = {
+      postId: post.postId,
+      title: data.title,
+      text: data.text,
+      images: data.images,
       updatedAt: new Date(),
     };
-    editPost(updatedPost);
-    setEditDialogOpen(false);
+    editPost(updatedPost, {
+      onSuccess: () => {
+        enqueueSnackbar("Post updated successfully!", { variant: "success" });
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+        setEditDialogOpen(false); // Close the dialog after successful edit
+      },
+    });
   };
 
   const toggleLike = () => {
@@ -101,9 +118,9 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
         <Typography variant="body2" color="textSecondary">
           {post.text}
         </Typography>
-        {postImages.length > 0 && (
+        {postImages?.length > 0 && (
           <div style={{ marginTop: 10 }}>
-            {postImages.map((imgUrl, index) => (
+            {postImages.map((imgUrl: string, index: number) => (
               <img key={index} src={imgUrl} alt={`Post image ${index}`} style={{ maxWidth: "100%" }} />
             ))}
           </div>
@@ -150,7 +167,7 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
 
       {/* Comments Accordion */}
       <Accordion expanded={isCommentsOpen} sx={{ width: '100%', marginTop: 1 }}>
-        <AccordionSummary expandIcon={<ExpandMore />}>
+        <AccordionSummary>
           <Typography>Comments ({post.commentCount})</Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -160,7 +177,7 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
               name="comment"
               placeholder="Add a comment..."
               required
-              style={{ width: '80%', marginRight: '8px' }}
+              style={{ width: '80%', marginRight: '8px', height:'2.1rem' }}
             />
             <Button type="submit" variant="contained" color="primary">
               Submit
@@ -170,50 +187,15 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
       </Accordion>
 
       {/* Edit Post Dialog */}
-      <Dialog open={isEditDialogOpen} onClose={() => setEditDialogOpen(false)} fullWidth>
-        <DialogTitle>Edit Post</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Title"
-            value={editedTitle}
-            onChange={(e) => setEditedTitle(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Text"
-            multiline
-            value={editedText}
-            onChange={(e) => setEditedText(e.target.value)}
-            margin="normal"
-          />
-          {postImages.length > 0 && (
-            <div style={{ marginTop: 10 }}>
-              {postImages.map((imgUrl, index) => (
-                <div key={index} style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-                  <img src={imgUrl} alt={`Post image ${index}`} style={{ maxWidth: "100px", marginRight: 10 }} />
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => removeImage(index)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleEditSubmit} color="primary" variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+       <EditPostDialogue
+        isEditDialogOpen={isEditDialogOpen}
+        setEditDialogOpen={setEditDialogOpen}
+        images={postImages}
+        removeImage={removeImage}
+        handleEditSubmit={handleEditSubmit}
+        title={post.title}
+        text={post.text}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>

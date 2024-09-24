@@ -90,5 +90,28 @@ namespace backend.Services
             DocumentReference docRef = _firestoreDb.Collection("posts").Document(postId);
             await docRef.DeleteAsync();
         }
+
+        public async Task<bool> EditPostAsync(string postId, string Title, string Text, string[]? images)
+    {
+        var postRef = _firestoreDb.Collection("posts").Document(postId);
+
+        var postData = new
+        {
+            title = Title,
+            text = Text,
+            images = images ?? [] // Use an empty array if no images are provided
+        };
+
+        try
+        {
+            await postRef.SetAsync(postData, SetOptions.MergeAll);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating post: {ex.Message}");
+            return false;
+        }
+    }
     }
 }

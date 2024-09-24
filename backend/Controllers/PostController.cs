@@ -43,5 +43,25 @@ namespace backend.Controllers
             await _postService.DeletePost(postId);
             return Ok();
         }
+
+
+         [HttpPut("posts/{postId}")]
+        public async Task<IActionResult> EditPost(string postId, [FromBody] EditPostRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.title) || string.IsNullOrEmpty(request.text))
+            {
+                return BadRequest("Invalid post data.");
+            }
+            string[] postImages = request.images ?? Array.Empty<string>();
+
+            bool result = await _postService.EditPostAsync(postId, request.title, request.text, postImages);
+            
+            if (result)
+            {
+                return NoContent(); // 204 No Content
+            }
+
+            return StatusCode(500, "An error occurred while updating the post.");
+        }
     }
 }
