@@ -12,3 +12,14 @@ export const getUserInfo = async (userId: string) => {
 
 	return res.data as UserInfoDTO;
 };
+
+export const searchUsers = async (query: string) => {
+	const url = `${USER_ENDPOINT}/search?query=${encodeURIComponent(query)}`;
+
+	const res = await sendRequest({
+			method: 'GET',
+			endpoint: url,
+	});
+
+	return res.data as UserInfoDTO[]; 
+};
