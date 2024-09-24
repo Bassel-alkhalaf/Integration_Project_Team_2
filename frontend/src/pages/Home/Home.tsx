@@ -1,13 +1,13 @@
-// src/pages/Home.tsx
 import React, { useState } from 'react';
 import { useFetchPosts, useCreatePost } from '../../hooks/apiHooks';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, MenuItem, Select, InputLabel, FormControl, Stack } from '@mui/material';
 import PostItem from '../../components/PostItem';
 import UploadIcon from '@mui/icons-material/Upload';
-import { Post } from '../../types/post.type'; // Adjust the import based on your file structure
+import { Post } from '../../types/post.type';
 import { UserCommunitySelect } from '../../components/UserCommunitySelect';
 import { useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
+import { Link } from 'react-router-dom';
 
 export const Home: React.FC = () => {
   const queryClient = useQueryClient();
@@ -16,22 +16,21 @@ export const Home: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [newPost, setNewPost] = useState<Post>({
     postId: '',
-    authorId: '', // Assign this when creating the post
+    authorId: '',
     communityId: '',
     title: '',
     text: '',
     images: [],
-    authorName: '', // Assign this when creating the post
-    authorImg: '', // Assign this when creating the post
+    authorName: '',
+    authorImg: '',
     createdAt: new Date(),
     updatedAt: undefined,
     commentCount: 0,
     likeCount: 0,
-    dislikeCount:0,
+    dislikeCount: 0,
     visibility: 'public',
   });
 
-  
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -44,12 +43,11 @@ export const Home: React.FC = () => {
   const handleCreatePost = () => {
     const postData: Post = {
       ...newPost,
-      postId:'',
-      authorId: 'your-author-postId', // Replace with actual logic to get the author ID
-      authorName: 'Your Name', // Replace with actual logic to get the author's name
-      authorImg: 'default-image-url', // Replace with actual logic to get the author's image
+      postId: '',
+      authorId: 'your-author-postId', // Adjust this to the real authorId
+      authorName: 'Your Name', // Adjust this to the real author's name
+      authorImg: 'default-image-url', // Replace with actual user image if available
     };
-    console.log(postData);
     createPost(postData, {
       onSuccess: () => {
         enqueueSnackbar('Post created successfully!', {
@@ -63,26 +61,25 @@ export const Home: React.FC = () => {
 
   return (
     <div>
-        <div className="post-list">
-          {(!data || !data.pages || data.pages.length === 0) ? (
-            <div style={{ textAlign: 'center', margin: '20px' }}>
-              <p>No posts available. Be the first to create a post!</p>
-            </div>
-          ) : (
-            data.pages.map((group, i) => (
-              <React.Fragment key={i}>
-                {Array.isArray(group.data) && group.data.length > 0 ? (
-                  group.data.map((post: Post) => (
-                    <PostItem key={i} post={post}/>
-                    
-                  ))
-                ) : (
-                  <p>No posts in this group.</p> // Optional message for empty groups
-                )}
-              </React.Fragment>
-            ))
-          )}
-        </div>
+      <div className="post-list">
+        {(!data || !data.pages || data.pages.length === 0) ? (
+          <div style={{ textAlign: 'center', margin: '20px' }}>
+            <p>No posts available. Be the first to create a post!</p>
+          </div>
+        ) : (
+          data.pages.map((group, i) => (
+            <React.Fragment key={i}>
+              {Array.isArray(group.data) && group.data.length > 0 ? (
+                group.data.map((post: Post) => (
+                  <PostItem key={post.postId} post={post} /> // Pass the post object to PostItem
+                ))
+              ) : (
+                <p>No posts in this group.</p>
+              )}
+            </React.Fragment>
+          ))
+        )}
+      </div>
 
       {/* Load More Posts */}
       {hasNextPage && data && data.pages && data.pages.length > 0 && (
@@ -104,68 +101,58 @@ export const Home: React.FC = () => {
       <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle>Create a Post</DialogTitle>
         <DialogContent>
-
           <Stack gap={2} py={1}>
-          <UserCommunitySelect communityId={newPost.communityId} setCommunityId={setNewPost} />
-          
-          <TextField
-            label="Post Title"
-            fullWidth
-            value={newPost.title}
-            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-          />
-          <TextField
-            label="Post text"
-            fullWidth
-            multiline
-            value={newPost.text}
-            onChange={(e) => setNewPost({ ...newPost, text: e.target.value })}
-          />
+            <UserCommunitySelect communityId={newPost.communityId} setCommunityId={setNewPost} />
+            <TextField
+              label="Post Title"
+              fullWidth
+              value={newPost.title}
+              onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+            />
+            <TextField
+              label="Post text"
+              fullWidth
+              multiline
+              value={newPost.text}
+              onChange={(e) => setNewPost({ ...newPost, text: e.target.value })}
+            />
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel id="visibility-label">Visibility</InputLabel>
+              <Select
+                labelId="visibility-label"
+                value={newPost.visibility}
+                onChange={(e) => setNewPost({ ...newPost, visibility: e.target.value })}
+                label="Visibility"
+              >
+                <MenuItem value="public">Public</MenuItem>
+                <MenuItem value="private">Private</MenuItem>
+                <MenuItem value="friends">Friends</MenuItem>
+              </Select>
+            </FormControl>
 
-          {/* visibility Dropdown */}
-          <FormControl fullWidth variant="outlined" margin="normal">
-            <InputLabel id="visibility-label">visibility</InputLabel>
-            <Select
-              labelId="visibility-label"
-              value={newPost.visibility}
-              onChange={(e) => setNewPost({ ...newPost, visibility: e.target.value as Post['visibility'] })}
-              label="visibility"
-            >
-              <MenuItem value="public">Public</MenuItem>
-              <MenuItem value="private">Private</MenuItem>
-              <MenuItem value="friends">Friends</MenuItem>
-            </Select>
-          </FormControl>
-
-          {/* Upload images */}
-          <input
-            accept="image/*"
-            style={{ display: 'none' }}
-            id="upload-images"
-            multiple
-            type="file"
-            onChange={handleImageUpload}
-          />
-          <label htmlFor="upload-images">
-            <IconButton color="primary" aria-label="upload pictures" component="span">
-              <UploadIcon />
-            </IconButton>
-          </label>
-
-          {/* Show Selected images */}
-          {newPost.images?.map((image, idx) => (
-            <div key={idx}>{image}</div>
-          ))}
-                        
+            <input
+              accept="image/*"
+              style={{ display: 'none' }}
+              id="upload-images"
+              multiple
+              type="file"
+              onChange={handleImageUpload}
+            />
+            <label htmlFor="upload-images">
+              <IconButton color="primary" aria-label="upload pictures" component="span">
+                <UploadIcon />
+              </IconButton>
+            </label>
+            {newPost.images?.map((image, idx) => (
+              <div key={idx}>
+                <img src={image} alt={`upload-preview-${idx}`} style={{ maxWidth: '100%', marginBottom: '10px' }} />
+              </div>
+            ))}
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleCreatePost} color="primary">
-            Submit
-          </Button>
+          <Button onClick={handleClose} color="primary">Cancel</Button>
+          <Button onClick={handleCreatePost} color="primary">Submit</Button>
         </DialogActions>
       </Dialog>
     </div>

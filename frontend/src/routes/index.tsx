@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { GenericInfo } from '../components';
 import { MainLayout } from '../layouts';
-import { Community, Home, Login, Register, Search,Profile } from '../pages';
+import { Community, Home, Login, Register, Search,Profile, PostDetail } from '../pages';
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
 
@@ -19,6 +19,7 @@ function AppRoutes() {
 				</Route> */}
 
 				<Route path='/profile' element={<Profile />} />
+				<Route path="/posts/:postId" element={<PostDetail />} />
 				{/* Guest Routes */}
 			{/* <Route element={<RoleBasedRoute allowedRoles={[Role.Guest]} />}>
 				<Route path="login" element={<Login />} />

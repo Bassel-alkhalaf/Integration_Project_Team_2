@@ -1,4 +1,3 @@
-// Login.tsx
 import React, { useState } from 'react';
 import {
   Box,
@@ -10,6 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../api/apis/login.api';
 import { enqueueSnackbar } from 'notistack';
+import { getAuth } from 'firebase/auth'; // Import Firebase authentication
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -23,6 +23,17 @@ const Login: React.FC = () => {
 
     try {
       await loginUser(email, password); // Calls the login function from the API
+
+      const auth = getAuth(); // Initialize Firebase Auth
+      const user = auth.currentUser; // Get the current logged-in user
+
+      if (user) {
+        const token = await user.getIdToken(); // Get the Firebase auth token
+        console.log('Firebase Token:', token); // Log the token
+      } else {
+        console.error('No user is logged in.');
+      }
+
       enqueueSnackbar('Login successful!', { variant: 'success' }); // Display success notification
       navigate('/'); // Navigate to the homepage after login
     } catch (err) {
