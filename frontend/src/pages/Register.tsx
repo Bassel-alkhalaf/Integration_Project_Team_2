@@ -20,6 +20,7 @@ const Register: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
+  const [dob, setDob] = useState('');
   const [lastName, setLastName] = useState('');
   const [gender, setGender] = useState(''); // Required field for gender
   const [customGender, setCustomGender] = useState(''); // Custom gender input if 'Other' is selected
@@ -44,14 +45,17 @@ const Register: React.FC = () => {
 
     const genderToSubmit = gender === 'other' ? customGender : gender;
 
+    const role = 'User'; // Hidden field to set the role as 'User'
     try {
       const userData = {
         email,
         password,
         firstName: capitalizeFirstLetter(firstName),
         lastName: capitalizeFirstLetter(lastName),
+        dob,
         gender: genderToSubmit,
         bio,
+        role, // Include role
       };
 
       await registerUser(userData);
@@ -101,6 +105,19 @@ const Register: React.FC = () => {
             fullWidth
             margin="normal"
             required
+          />
+          <TextField
+            label="Date of Birth"
+            type="date"
+            value={dob}
+            onChange={(e) => setDob(e.target.value)}
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            required
+            InputLabelProps={{
+              shrink: true,
+            }}
           />
 
           <TextField

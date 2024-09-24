@@ -1,9 +1,10 @@
-// Controllers/CommentsController.cs
 using Microsoft.AspNetCore.Mvc;
 using backend.Models;
 using backend.Services;
+using backend.DTOs.Comment;
 using backend.Middlewares;
-
+using Google.Cloud.Firestore;
+using FirebaseAdmin.Auth;
 
 namespace backend.Controllers
 {
@@ -18,41 +19,121 @@ namespace backend.Controllers
             _commentService = commentService;
         }
 
+        // Get a specific comment by ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<Comment>> Get(string id)
+        public async Task<ActionResult<CommentResponseDto>> GetCommentById(string id)
         {
             var comment = await _commentService.GetCommentAsync(id);
             if (comment == null) return NotFound();
-            return Ok(comment);
+
+            var responseDto = new CommentResponseDto
+            {
+                Id = comment.Id,
+                PostId = comment.PostId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                CreatedAt = comment.CreatedAt.ToDateTime(),
+                UpdatedAt = comment.UpdatedAt?.ToDateTime(),
+            };
+
+            return Ok(responseDto);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Comment>>> Get()
+        // Get all comments or comments filtered by postId
+        [HttpGet("by-post")]
+        public async Task<ActionResult<IEnumerable<CommentResponseDto>>> GetCommentsByPost([FromQuery] string? postId)
         {
-            var comments = await _commentService.GetAllCommentsAsync();
-            return Ok(comments);
+            var comments = postId != null
+                ? await _commentService.GetCommentsByPostIdAsync(postId)
+                : await _commentService.GetAllCommentsAsync();
+
+            var responseDtos = comments.Select(comment => new CommentResponseDto
+            {
+                Id = comment.Id,
+                PostId = comment.PostId,
+                UserId = comment.UserId,
+                Content = comment.Content,
+                CreatedAt = comment.CreatedAt.ToDateTime(),
+                UpdatedAt = comment.UpdatedAt?.ToDateTime(),
+            });
+
+            return Ok(responseDtos);
         }
 
+        // Create a new comment
         [HttpPost]
         [FirebaseAuth]
-        public async Task<ActionResult<Comment>> Post([FromBody] Comment comment)
+        public async Task<ActionResult<CommentResponseDto>> Post([FromBody] CreateCommentDto commentDto)
         {
-            await _commentService.AddCommentAsync(comment);
-            return CreatedAtAction(nameof(Get), new { id = comment.Id }, comment);
+            var firebaseToken = HttpContext.Items["User"] as FirebaseToken;
+            if (firebaseToken == null) return Unauthorized();
+
+            var newComment = new Comment
+            {
+                Id = Guid.NewGuid().ToString(),
+                PostId = commentDto.PostId,
+                UserId = firebaseToken.Uid,
+                Content = commentDto.Content,
+                CreatedAt = Timestamp.FromDateTime(DateTime.UtcNow),
+                UpdatedAt = null
+            };
+
+            await _commentService.AddCommentAsync(newComment);
+            // Increment comments count in the post document
+            bool isSuccess = await _commentService.IncrementCommentsCountAsync(commentDto.PostId);
+            var responseDto = new CommentResponseDto
+            {
+                Id = newComment.Id,
+                PostId = newComment.PostId,
+                UserId = newComment.UserId,
+                Content = newComment.Content,
+                CreatedAt = newComment.CreatedAt.ToDateTime(),
+            };
+
+           
+            return CreatedAtAction(nameof(GetCommentById), new { id = newComment.Id }, responseDto);
         }
 
+        // Update a comment by ID
         [HttpPut("{id}")]
         [FirebaseAuth]
-        public async Task<ActionResult<Comment>> Put(string id, [FromBody] Comment updatedComment)
+        public async Task<ActionResult<CommentResponseDto>> Put(string id, [FromBody] CreateCommentDto updatedCommentDto)
         {
-            await _commentService.UpdateCommentAsync(id, updatedComment);
-            return Ok(updatedComment);
+            var firebaseToken = HttpContext.Items["User"] as FirebaseToken;
+            if (firebaseToken == null) return Unauthorized();
+
+            var existingComment = await _commentService.GetCommentAsync(id);
+            if (existingComment == null) return NotFound("Comment not found");
+
+            existingComment.Content = updatedCommentDto.Content;
+            existingComment.UpdatedAt = Timestamp.FromDateTime(DateTime.UtcNow);
+
+            await _commentService.UpdateCommentAsync(id, existingComment);
+
+            var responseDto = new CommentResponseDto
+            {
+                Id = existingComment.Id,
+                PostId = existingComment.PostId,
+                UserId = existingComment.UserId,
+                Content = existingComment.Content,
+                CreatedAt = existingComment.CreatedAt.ToDateTime(),
+                UpdatedAt = existingComment.UpdatedAt?.ToDateTime(),
+            };
+
+            return Ok(responseDto);
         }
 
+        // Delete a comment by ID
         [HttpDelete("{id}")]
         [FirebaseAuth]
         public async Task<ActionResult> Delete(string id)
         {
+            var firebaseToken = HttpContext.Items["User"] as FirebaseToken;
+            if (firebaseToken == null) return Unauthorized();
+
+            var comment = await _commentService.GetCommentAsync(id);
+            if (comment == null) return NotFound("Comment not found");
+
             await _commentService.DeleteCommentAsync(id);
             return NoContent();
         }

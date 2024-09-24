@@ -1,4 +1,4 @@
-﻿using backend.Models;
+﻿using backend.DTOs.Community;
 using Google.Cloud.Firestore;
 
 namespace backend.Services
@@ -6,38 +6,35 @@ namespace backend.Services
     public class SearchService
     {
         private readonly FirestoreDb _firestoreDb;
+        private readonly CommunityService _communityService;
 
-        public SearchService (FirestoreDb firestoreDb)
+        public SearchService (FirestoreDb firestoreDb, CommunityService communityService)
         {
             _firestoreDb = firestoreDb;
+            _communityService = communityService;
         }
 
-        public async Task<List<Community>> SearchCommunitiesAsync(string? query)
+        public async Task<List<CommunityWithUserInfoDto>> SearchCommunitiesAsync(string? query)
         {
-            Query communitiesQuery = _firestoreDb.Collection("communities");
-            QuerySnapshot snapshot = await communitiesQuery.GetSnapshotAsync();
+            var allCommunities = await _communityService.GetPublicCommunitiesAsync();
 
             if (string.IsNullOrEmpty(query))
             {
-                return snapshot.Documents
-                               .Select(doc => doc.ConvertTo<Community>())
-                               .ToList();
+                return allCommunities;
             }
 
             var queryText = query.ToLower();
-            List<Community> communities = new List<Community>();
+            var results = new List<CommunityWithUserInfoDto>();
 
-            foreach (DocumentSnapshot doc in snapshot.Documents)
+            foreach (var community in allCommunities)
             {
-                var community = doc.ConvertTo<Community>();
-
                 if (community.Name.ToLower().Contains(queryText))
                 {
-                    communities.Add(community);
+                    results.Add(community);
                 }
             }
 
-            return communities;
+            return results;
         }
     }
 }

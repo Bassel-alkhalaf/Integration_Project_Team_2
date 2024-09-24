@@ -61,7 +61,7 @@ using backend.Models;
 using backend.Services;
 using FirebaseAdmin.Auth;
 using Google.Cloud.Firestore;
-using backend.Middlewares;
+ using backend.Middlewares;
 
 namespace backend.Controllers
 {
@@ -92,7 +92,7 @@ namespace backend.Controllers
         }
 
         [HttpPost]
-        [FirebaseAuth]
+         [FirebaseAuth]
         public async Task<ActionResult<User>> Post([FromBody] User user)
         {
             try
@@ -121,7 +121,7 @@ namespace backend.Controllers
         }
 
         [HttpPut("{id}")]
-        [FirebaseAuth]
+        // [FirebaseAuth]
         public async Task<ActionResult<User>> Put(string id, [FromBody] User updatedUser)
         {
             await _userService.UpdateUserAsync(id, updatedUser);
@@ -129,7 +129,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        [FirebaseAuth]
+         [FirebaseAuth]
         public async Task<ActionResult> Delete(string id)
         {
             await _userService.DeleteUserAsync(id);

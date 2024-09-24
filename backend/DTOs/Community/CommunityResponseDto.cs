@@ -13,5 +13,7 @@ namespace backend.DTOs.Community
         public int UserCount { get; set; }
 
         public Timestamp CreatedAt { get; set; }
+
+        public string Visibility { get; set; }
     }
 }

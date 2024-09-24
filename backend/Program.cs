@@ -7,6 +7,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Load environment variables from .env file
 DotEnv.Load();
 
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // Initialize Firebase
 FirebaseConfig.Initialize();
 
@@ -22,6 +40,8 @@ builder.Services.AddScoped<FriendshipService>();
 builder.Services.AddScoped<FriendRequestService>();
 builder.Services.AddScoped<UserService>(); 
 builder.Services.AddScoped<SearchService>();
+
+builder.Services.AddScoped<ProfileUpdateService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<FirebaseAuthService>();
@@ -60,8 +80,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
+app.UseCors("AllowAll");
+ app.UseAuthorization();
 
 app.MapControllers();
 

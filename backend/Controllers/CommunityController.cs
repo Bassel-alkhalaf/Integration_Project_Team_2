@@ -72,21 +72,5 @@ namespace backend.Controllers
                 return StatusCode(500, new { message = "server_error" });
             }
         }
-
-        [HttpDelete("{id}")]
-        [FirebaseAuth]
-        public async Task<IActionResult> Delete(string id)
-        {
-            try
-            {
-                await _communityService.DeleteCommunityAsync(id);
-                return Ok(new { message = "community_delete_success" });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return StatusCode(500, new { message = "server_error" });
-            }
-        }
     }
 }

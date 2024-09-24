@@ -15,5 +15,7 @@ namespace backend.DTOs.UserCommunity
         public Timestamp CreatedAt { get; set; }
 
         public bool IsStarred { get; set; }
+
+        public bool IsCreator { get; set; }
     }
 }

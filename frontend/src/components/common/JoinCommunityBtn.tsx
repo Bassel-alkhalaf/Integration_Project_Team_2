@@ -29,7 +29,9 @@ export function JoinCommunityBtn({ community, isJoined }: PropsI) {
 		});
 	};
 
-	const handleClick = () => {
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.stopPropagation();
+
 		joinCommunity(communityId, {
 			onSuccess: res => {
 				queryClient.invalidateQueries();

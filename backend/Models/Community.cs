@@ -19,5 +19,11 @@ namespace backend.Models
 
         [FirestoreProperty]
         public Timestamp CreatedAt { get; set; }
+
+        [FirestoreProperty]
+        public string UserId { get; set; }  // Id of the user who created this community
+
+        [FirestoreProperty]
+        public string Visibility { get; set; }  // "Public", "Private"
     }
 }
