@@ -70,10 +70,12 @@ namespace backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;
+        private readonly SearchService _searchService;
 
-        public UserController(UserService userService)
+        public UserController(UserService userService, SearchService searchService)
         {
             _userService = userService;
+            _searchService = searchService;
         }
 
         [HttpGet("{id}")]
@@ -134,6 +136,13 @@ namespace backend.Controllers
         {
             await _userService.DeleteUserAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<User>>> SearchUsers(string query)
+        {
+            var users = await _searchService.SearchUsersAsync(query);
+            return Ok(users);
         }
     }
 }
