@@ -16,7 +16,7 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
-import { ThumbUp, ThumbDown, Comment, Delete, Edit, ExpandMore } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, Comment, Delete, Edit, ExpandMore, Margin } from "@mui/icons-material";
 import { Post } from "../types/post.type";
 import { useDeletePost } from "../hooks/apiHooks/post/useDeletePost";
 import { useEditPost } from "../hooks/apiHooks/post/useEditPost"; 
@@ -42,8 +42,7 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postImages, setPostImages] = useState(post.images || []);
   const [isCommentsOpen, setCommentsOpen] = useState(false); // State for accordion open/close
-  const [editedTitle, setEditedTitle] = useState(post.title);
-  const [editedText, setEditedText] = useState(post.text);
+
 
   const queryClient = useQueryClient();
   const isOwner = userId === post.authorId; // Check if the user owns the post
@@ -186,12 +185,15 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
         <AccordionDetails>
           {/* Fetch comments from the database */}
           <CommentSection postId={post.postId} />
+         
           {/* If more than 3 comments, show "View All Comments" button */}
           {post.commentCount > 3 && (
             <Button component={Link} to={`/posts/${post.postId}`} variant="outlined">
               View All Comments
             </Button>
+            
           )}
+        
         </AccordionDetails>
       </Accordion>
 

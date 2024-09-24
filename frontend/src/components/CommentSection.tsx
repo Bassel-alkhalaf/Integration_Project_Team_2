@@ -43,18 +43,20 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             return;
         }
 
-        const newComment = {
-            postId,
+        const newComment: Comment = {
+            commentId: 'new-id', // This will be replaced by a real ID from the backend
+            postId: postId!,
+            authorId: user.uid, // Current user's UID
             content: newCommentText,
+            createdAt: new Date(),
         };
-
         // Use the createComment hook to create a new comment
         createComment(newComment, {
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey:  commentQueryKeys.all(postId) })
+                queryClient.invalidateQueries({ queryKey: commentQueryKeys.all(postId)})
                 // setLocalComments([...localComments, { commentId: 'new-id', postId, authorId: user.uid, text: newCommentText, createdAt: new Date() }]);
                 setNewCommentText('');
-                // refetch(); // Refetch comments after creating a new one
+                //refetch(); 
             },
             onError: (error) => {
                 console.error('Failed to submit comment:', error);

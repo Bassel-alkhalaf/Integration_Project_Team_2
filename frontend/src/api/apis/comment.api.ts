@@ -11,7 +11,7 @@ export const getPostComments = async (postId: string) => {
   return res.data as Comment[];
 };
 
-export const createComment = async (commentData: { postId: string; content: string }) => {
+export const createComment = async (commentData: Comment) => {
   // Get the user's token from Firebase Auth
   const token = await getAuth().currentUser?.getIdToken();
   if (!token) throw new Error('User is not authenticated');

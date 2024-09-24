@@ -9,7 +9,7 @@ import { Post } from '../../types/post.type';
 import { UserCommunitySelect } from '../../components/UserCommunitySelect';
 import { useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
-import { Link } from 'react-router-dom';
+
 
 export const Home: React.FC = () => {
   const queryClient = useQueryClient();

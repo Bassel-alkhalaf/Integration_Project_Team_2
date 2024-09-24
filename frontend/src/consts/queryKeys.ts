@@ -17,5 +17,5 @@ export const communityQueryKeys = {
 };
 
 export const commentQueryKeys = {
-	all: (postId: string) => ['comment', postId] as const,
+	all: (postId: string | undefined) => ['comment', postId] as const,
 };

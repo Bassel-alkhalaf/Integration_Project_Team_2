@@ -56,5 +56,28 @@ namespace backend.Services
             DocumentReference docRef = _db.Collection("comments").Document(id);
             await docRef.DeleteAsync();
         }
+        
+        // Increment comments count in the Post object by postId
+        public async Task<bool> IncrementCommentsCountAsync(string postId)
+        {
+            try
+            {
+                // Reference to the post document in Firestore
+                DocumentReference postDocRef = _db.Collection("posts").Document(postId);
+
+                // Use Firestore's atomic Increment operation to increase comments count by 1
+                await postDocRef.UpdateAsync(new Dictionary<string, object>
+            {
+                { "commentCount", FieldValue.Increment(1) }
+            });
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error incrementing comments count: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

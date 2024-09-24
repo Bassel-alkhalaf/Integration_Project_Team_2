@@ -15,7 +15,7 @@ namespace backend.Controllers
             _postService = postService;
         }
 
-       [HttpGet("/posts")]
+        [HttpGet("/posts")]
         public async Task<IActionResult> GetPosts([FromQuery] int limit = 5, [FromQuery] int page = 1)
         {
             try
@@ -45,7 +45,7 @@ namespace backend.Controllers
         }
 
 
-         [HttpPut("posts/{postId}")]
+        [HttpPut("posts/{postId}")]
         public async Task<IActionResult> EditPost(string postId, [FromBody] EditPostRequest request)
         {
             if (request == null || string.IsNullOrEmpty(request.title) || string.IsNullOrEmpty(request.text))
@@ -55,13 +55,32 @@ namespace backend.Controllers
             string[] postImages = request.images ?? Array.Empty<string>();
 
             bool result = await _postService.EditPostAsync(postId, request.title, request.text, postImages);
-            
+
             if (result)
             {
                 return NoContent(); // 204 No Content
             }
 
             return StatusCode(500, "An error occurred while updating the post.");
+        }
+
+        // GET api/posts/{postId}
+        [HttpGet("posts/{postId}")]
+        public async Task<IActionResult> GetPostDetails(string postId)
+        {
+            if (string.IsNullOrEmpty(postId))
+            {
+                return BadRequest("Post ID is required.");
+            }
+
+            var post = await _postService.GetPostDetailsAsync(postId);
+
+            if (post == null)
+            {
+                return NotFound($"Post with ID {postId} was not found.");
+            }
+
+            return Ok(post);
         }
     }
 }

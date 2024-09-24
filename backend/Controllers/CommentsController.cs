@@ -25,7 +25,7 @@ namespace backend.Controllers
         {
             var comment = await _commentService.GetCommentAsync(id);
             if (comment == null) return NotFound();
-            
+
             var responseDto = new CommentResponseDto
             {
                 Id = comment.Id,
@@ -79,7 +79,8 @@ namespace backend.Controllers
             };
 
             await _commentService.AddCommentAsync(newComment);
-
+            // Increment comments count in the post document
+            bool isSuccess = await _commentService.IncrementCommentsCountAsync(commentDto.PostId);
             var responseDto = new CommentResponseDto
             {
                 Id = newComment.Id,
@@ -89,6 +90,7 @@ namespace backend.Controllers
                 CreatedAt = newComment.CreatedAt.ToDateTime(),
             };
 
+           
             return CreatedAtAction(nameof(GetCommentById), new { id = newComment.Id }, responseDto);
         }
 

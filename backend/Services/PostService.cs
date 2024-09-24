@@ -92,26 +92,40 @@ namespace backend.Services
         }
 
         public async Task<bool> EditPostAsync(string postId, string Title, string Text, string[]? images)
-    {
-        var postRef = _firestoreDb.Collection("posts").Document(postId);
+        {
+            var postRef = _firestoreDb.Collection("posts").Document(postId);
 
-        var postData = new
-        {
-            title = Title,
-            text = Text,
-            images = images ?? [] // Use an empty array if no images are provided
-        };
+            var postData = new
+            {
+                title = Title,
+                text = Text,
+                images = images ?? [] // Use an empty array if no images are provided
+            };
 
-        try
-        {
-            await postRef.SetAsync(postData, SetOptions.MergeAll);
-            return true;
+            try
+            {
+                await postRef.SetAsync(postData, SetOptions.MergeAll);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating post: {ex.Message}");
+                return false;
+            }
         }
-        catch (Exception ex)
+
+        public async Task<Post> GetPostDetailsAsync(string postId)
         {
-            Console.WriteLine($"Error updating post: {ex.Message}");
-            return false;
+            var docRef = _firestoreDb.Collection("posts").Document(postId);
+            var snapshot = await docRef.GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                return snapshot.ConvertTo<Post>();
+            }
+
+            return null;
         }
-    }
+
     }
 }
