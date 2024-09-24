@@ -10,7 +10,7 @@ export const useEditPost = () => {
   const errorHandler = useGenericErrHandler();
 
   return useMutation({
-    mutationFn: (postData: EditPostData) => editPostRequest(postData),
+    mutationFn: (postData: Post) => editPostRequest(postData),
     onError: (err: AxiosError) => {
       console.error(err);
       errorHandler(err);

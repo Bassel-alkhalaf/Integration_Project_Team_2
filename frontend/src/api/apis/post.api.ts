@@ -7,7 +7,7 @@ const LIMIT = 5;
 
 // Fetch all posts with pagination
 export const fetchPosts = async ({ pageParam = 1 }: { pageParam?: number }) => {
-  const url = `${POST_ENDPOINT}?limit=5&page=${pageParam}`;
+  const url = `${POST_ENDPOINT}?limit=${LIMIT}&page=${pageParam}`;
   const res = await sendRequest({
     endpoint: url,
     method: "GET",
@@ -36,10 +36,17 @@ export const deletePostRequest = async (postId: string) => {
 };
 
 // Edit an existing post
-export const editPostRequest = async (data: EditPostData) => {
+export const editPostRequest = async (postData: Post) => {
   return sendRequest({
-    endpoint: `${POST_ENDPOINT}/${data.postId}`, 
+    endpoint: `${POST_ENDPOINT}/${postData.postId}`, 
     method: "PUT", 
-    body: data,
+    body: postData,  // Make sure 'postData' includes all necessary fields
   });
+};
+
+// Fetch Post details
+export const getPostDetails = async (postId: string) => {
+  const url = `${POST_ENDPOINT}/${postId}`;
+  const res = await sendRequest({ method: 'GET', endpoint: url });
+  return res.data;
 };
