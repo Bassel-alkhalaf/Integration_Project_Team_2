@@ -6,6 +6,7 @@ import { Header } from './Header';
 import { Nav } from './Nav';
 
 const drawerWidth = 240;
+const footerHeight = 60;
 
 export function MainLayout() {
 	const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,28 +28,39 @@ export function MainLayout() {
 	};
 
 	return (
-		<Box sx={{ display: 'flex', height: '100vh' }}>
+		<Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
 			<CssBaseline />
 			<Header handleDrawerToggle={handleDrawerToggle} />
 
-			<Nav
-				drawerWidth={drawerWidth}
-				mobileOpen={mobileOpen}
-				handleDrawerClose={handleDrawerClose}
-				handleDrawerTransitionEnd={handleDrawerTransitionEnd}
-			/>
+			<Box sx={{ display: 'flex', flexGrow: 1 }}>
+				<Nav
+					drawerWidth={drawerWidth}
+					mobileOpen={mobileOpen}
+					handleDrawerClose={handleDrawerClose}
+					handleDrawerTransitionEnd={handleDrawerTransitionEnd}
+				/>
 
-			<Stack component='main' sx={{ flexGrow: 1, width: { sm: `calc(100% - ${drawerWidth}px)` } }}>
+				<Stack 
+				component='main' 
+				sx={{ flexGrow: 1, 
+				width: { sm: `calc(100% - ${drawerWidth}px)` },
+				overflow: 'auto', }}>
+
 				<Toolbar />
 
-				<Stack sx={{ flexGrow: 1, overflow: 'auto' }}>
-					<Box sx={{ flexGrow: 1, p: 3 }}>
-						<Outlet />
-					</Box>
+				<Box sx={{ flexGrow: 1, p: 3 }}> 
+					<Outlet />
+				</Box>
 
-					<Footer />
+				
 				</Stack>
-			</Stack>
+			</Box>
+
+			
+			<Box component="footer" sx={{ height: `${footerHeight}px`, width: '100%' }}>
+				<Footer />
+			</Box>
 		</Box>
+			
 	);
 }
