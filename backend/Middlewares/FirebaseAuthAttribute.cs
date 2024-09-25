@@ -1,4 +1,6 @@
-﻿using FirebaseAdmin.Auth;
+﻿// Middlewares/FirebaseAuthAttribute.cs
+
+using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +12,8 @@ namespace backend.Middlewares
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
             var authorizationHeader = context.HttpContext.Request.Headers["Authorization"].ToString();
+
+            Console.WriteLine("Authorization Header: " + authorizationHeader);
 
             if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer "))
             {
@@ -23,9 +27,11 @@ namespace backend.Middlewares
             {
                 var decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
                 context.HttpContext.Items["User"] = decodedToken;
+                Console.WriteLine("Token verified. UID: " + decodedToken.Uid);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Exception in FirebaseAuthAttribute: " + ex.ToString());
                 context.Result = new UnauthorizedResult();
             }
         }

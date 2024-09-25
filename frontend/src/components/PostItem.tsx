@@ -6,80 +6,99 @@ import {
   IconButton,
   Typography,
   Avatar,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   TextField,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from "@mui/material";
-import {
-  ThumbUp,
-  ThumbDown,
-  Comment,
-  Delete,
-  Edit,
-  ExpandMore,
-} from "@mui/icons-material";
-import { Post } from '../types/post.type';
+import { ThumbUp, ThumbDown, Comment, Delete, Edit, ExpandMore, Margin } from "@mui/icons-material";
+import { Post } from "../types/post.type";
 import { useDeletePost } from "../hooks/apiHooks/post/useDeletePost";
-import { useEditPost } from "../hooks/apiHooks/post/useEditPost"; // Assuming you have an edit hook
+import { useEditPost } from "../hooks/apiHooks/post/useEditPost"; 
+import { useQueryClient } from "@tanstack/react-query";
+import { enqueueSnackbar } from "notistack";
+import EditPostDialogue from "./EditPostDialogue";
+import { EditPostData } from "../types/editPost.type";
+import { Link, useNavigate } from "react-router-dom";
+import CommentSection from "./CommentSection";
 
 interface PostProps {
   post: Post;
-  //onDelete: () => void; // Function to trigger re-render after delete
+  userId: string;
 }
 
-const isOwner = true;
-
-const PostItem: React.FC<PostProps> = ({ post }) => {
+const PostItem: React.FC<PostProps> = ({ post, userId }) => {
+  const navigate = useNavigate();
   const { mutate: deletePost } = useDeletePost();
-  const { mutate: editPost } = useEditPost(); // Assuming you have this hook
+  const { mutate: editPost } = useEditPost();
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(post.title);
-  const [editedText, setEditedText] = useState(post.text);
   const [postImages, setPostImages] = useState(post.images || []);
   const [isCommentsOpen, setCommentsOpen] = useState(false); // State for accordion open/close
 
+
+  const queryClient = useQueryClient();
+  const isOwner = userId === post.authorId; // Check if the user owns the post
+
+  // Handle deletion of a post
   const handleDelete = () => {
     deletePost(post.postId, {
       onSuccess: () => {
-        //onDelete(); // Trigger re-render after deleting the post
+        setDeleteDialogOpen(false);
+        enqueueSnackbar("Post deleted successfully!", { variant: "success" });
         setDeleteDialogOpen(false); // Close confirmation dialog after deletion
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
       },
     });
   };
 
-  const handleEditSubmit = () => {
-    const updatedPost:Post = {
-      ...post,
-      title: editedTitle,
-      text: editedText,
-      images: postImages,
+  // Handle submitting edited post data
+  const handleEditSubmit = (data: { title: string; text: string; images?: string[] }) => {
+    const updatedPost: Post = {
+      ...post, // Spread existing post object to retain unchanged fields
+      title: data.title,
+      text: data.text,
+      images: data.images || post.images, // Keep existing images if no new ones are provided
       updatedAt: new Date(),
     };
-    editPost(updatedPost);
-    setEditDialogOpen(false);
+    editPost(updatedPost, {
+      onSuccess: () => {
+        enqueueSnackbar("Post updated successfully!", { variant: "success" });
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+        setEditDialogOpen(false); // Close the dialog after successful edit
+      },
+    });
   };
 
+  // Toggle like status
   const toggleLike = () => {
-    setLiked(prev => !prev);
-    if (disliked) setDisliked(false); // Unselect dislike if like is pressed
+    setLiked((prev) => !prev);
+    if (disliked) setDisliked(false);
   };
 
+  // Toggle dislike status
   const toggleDislike = () => {
-    setDisliked(prev => !prev);
-    if (liked) setLiked(false); // Unselect like if dislike is pressed
+    setDisliked((prev) => !prev);
+    if (liked) setLiked(false);
   };
 
+  // Toggle comments section visibility
   const toggleComments = () => {
-    setCommentsOpen(prev => !prev); // Toggle comments accordion
+    setCommentsOpen((prev) => !prev);
+  };
+
+  // Navigate to PostDetail.tsx when title or text is clicked
+  const navigateToPostDetail = () => {
+    if (post.postId) {
+      navigate(`/posts/${post.postId}`);
+    }
   };
 
   const removeImage = (index: number) => {
@@ -95,15 +114,26 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
           <Avatar src={post.authorImg} alt={post.authorName} sx={{ marginRight: 2 }} />
           <Typography variant="h6">{post.authorName}</Typography>
         </div>
-        <Typography variant="h5" gutterBottom>
+        {/* Clicking on the title or text navigates to PostDetail */}
+        <Typography
+          variant="h5"
+          gutterBottom
+          onClick={navigateToPostDetail}
+          sx={{ cursor: "pointer" }} // Make it clickable
+        >
           {post.title}
         </Typography>
-        <Typography variant="body2" color="textSecondary">
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          onClick={navigateToPostDetail}
+          sx={{ cursor: "pointer" }} // Make it clickable
+        >
           {post.text}
         </Typography>
-        {postImages.length > 0 && (
+        {postImages?.length > 0 && (
           <div style={{ marginTop: 10 }}>
-            {postImages.map((imgUrl, index) => (
+            {postImages.map((imgUrl: string, index: number) => (
               <img key={index} src={imgUrl} alt={`Post image ${index}`} style={{ maxWidth: "100%" }} />
             ))}
           </div>
@@ -117,24 +147,23 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
           </Typography>
         )}
       </CardContent>
+
       <CardActions>
-        <IconButton onClick={toggleLike} aria-label="like" sx={{ color: liked ? 'blue' : 'inherit' }}>
+        <IconButton onClick={toggleLike} aria-label="like" sx={{ color: liked ? "blue" : "inherit" }}>
           <ThumbUp />
           <Typography variant="body2" sx={{ marginLeft: 1 }}>
             {post.likeCount}
           </Typography>
         </IconButton>
-        <IconButton onClick={toggleDislike} aria-label="dislike" sx={{ color: disliked ? 'red' : 'inherit' }}>
+        <IconButton onClick={toggleDislike} aria-label="dislike" sx={{ color: disliked ? "red" : "inherit" }}>
           <ThumbDown />
           <Typography variant="body2" sx={{ marginLeft: 1 }}>
             {post.dislikeCount}
           </Typography>
         </IconButton>
-        <IconButton onClick={toggleComments} aria-label="comments" sx={{ marginLeft: 'auto' }}>
+        {/* Clicking the comments icon will toggle the comments section */}
+        <IconButton onClick={toggleComments} aria-label="comments" sx={{ marginLeft: "auto" }}>
           <Comment />
-          <Typography variant="body2" sx={{ marginLeft: 1 }}>
-            {post.commentCount}
-          </Typography>
         </IconButton>
         {isOwner && (
           <>
@@ -149,71 +178,35 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
       </CardActions>
 
       {/* Comments Accordion */}
-      <Accordion expanded={isCommentsOpen} sx={{ width: '100%', marginTop: 1 }}>
-        <AccordionSummary expandIcon={<ExpandMore />}>
+      <Accordion expanded={isCommentsOpen} sx={{ width: "100%", marginTop: 1 }}>
+        <AccordionSummary expandIcon={<ExpandMore />} onClick={toggleComments}>
           <Typography>Comments ({post.commentCount})</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <form onSubmit={() => {}} style={{ width: '100%' }}>
-            <input
-              type="text"
-              name="comment"
-              placeholder="Add a comment..."
-              required
-              style={{ width: '80%', marginRight: '8px' }}
-            />
-            <Button type="submit" variant="contained" color="primary">
-              Submit
+          {/* Fetch comments from the database */}
+          <CommentSection postId={post.postId} />
+         
+          {/* If more than 3 comments, show "View All Comments" button */}
+          {post.commentCount > 3 && (
+            <Button component={Link} to={`/posts/${post.postId}`} variant="outlined">
+              View All Comments
             </Button>
-          </form>
+            
+          )}
+        
         </AccordionDetails>
       </Accordion>
 
       {/* Edit Post Dialog */}
-      <Dialog open={isEditDialogOpen} onClose={() => setEditDialogOpen(false)} fullWidth>
-        <DialogTitle>Edit Post</DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Title"
-            value={editedTitle}
-            onChange={(e) => setEditedTitle(e.target.value)}
-            margin="normal"
-          />
-          <TextField
-            fullWidth
-            label="Text"
-            multiline
-            value={editedText}
-            onChange={(e) => setEditedText(e.target.value)}
-            margin="normal"
-          />
-          {postImages.length > 0 && (
-            <div style={{ marginTop: 10 }}>
-              {postImages.map((imgUrl, index) => (
-                <div key={index} style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-                  <img src={imgUrl} alt={`Post image ${index}`} style={{ maxWidth: "100px", marginRight: 10 }} />
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => removeImage(index)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleEditSubmit} color="primary" variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <EditPostDialogue
+        isEditDialogOpen={isEditDialogOpen}
+        setEditDialogOpen={setEditDialogOpen}
+        images={postImages}
+        removeImage={removeImage}
+        handleEditSubmit={handleEditSubmit}
+        title={post.title}
+        text={post.text}
+      />
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
@@ -225,7 +218,7 @@ const PostItem: React.FC<PostProps> = ({ post }) => {
           <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
             Cancel
           </Button>
-          <Button onClick={() => handleDelete()} color="secondary" variant="contained">
+          <Button onClick={handleDelete} color="secondary" variant="contained">
             Delete
           </Button>
         </DialogActions>

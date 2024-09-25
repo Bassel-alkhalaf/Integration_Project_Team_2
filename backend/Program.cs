@@ -41,6 +41,8 @@ builder.Services.AddScoped<FriendRequestService>();
 builder.Services.AddScoped<UserService>(); 
 builder.Services.AddScoped<SearchService>();
 
+builder.Services.AddScoped<ProfileUpdateService>();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<FirebaseAuthService>();
 
@@ -78,8 +80,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAll");
-app.UseAuthorization();
+
+ app.UseAuthorization();
 
 app.MapControllers();
 

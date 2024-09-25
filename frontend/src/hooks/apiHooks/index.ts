@@ -8,8 +8,12 @@ export * from './community/useGetCommunity';
 export * from './community/useUpdateCommunity';
 
 export * from './search/useSearchCommunities';
-export * from './post/useCreatePost';
-export * from './post/useFetchPosts';
-export * from './post/useEditPost';
+export * from './search/useSearchUsers';
 
-export * from './user/useSearchUser';
+export * from './post/useCreatePost';
+export * from './post/useEditPost';
+export * from './post/useFetchPosts';
+
+export * from './comment/useCreateComment';
+export * from './comment/useDeleteComment';
+export * from './comment/useFetchComments';
