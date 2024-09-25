@@ -3,12 +3,15 @@ import { Fragment } from "react";
 import { Loading } from "../../components";
 import { useSearchUsers } from "../../hooks";
 import { UserSearchResultItem } from "./UserSearchResultItem";
+import { useAuth } from "../../contexts";
 
 interface PropsI {
 	query: string;
 }
 
 export function UserSearchResultList({ query }: PropsI) {
+  const { user: currentUser } = useAuth();
+
   const {
     data: results,
     isLoading,
@@ -29,7 +32,7 @@ export function UserSearchResultList({ query }: PropsI) {
       </Typography>
 
       <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-        {results.map((user, index) => (
+        {results.map((user, index) => user.id != currentUser?.id && (
           <Fragment key={user.id}>
             <UserSearchResultItem user={user} />
             {index !== results.length - 1 && <Divider />}
