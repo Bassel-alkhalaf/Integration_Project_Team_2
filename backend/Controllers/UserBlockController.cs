@@ -59,10 +59,11 @@ namespace backend.Controllers
             }
         }
 
-        // Route: GET /UserBlock/user/{userId}
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetBlocksForUser(string userId)
+        // Route: GET /UserBlock/user/
+        [HttpGet("user")]
+        public async Task<IActionResult> GetBlocksForUser()
         {
+            string userId = _firebaseAuthService.GetUserId();
             var blocks = await _userBlockService.GetBlocksByUserIdAsync(userId);
             if (blocks == null || blocks.Count == 0)
             {
