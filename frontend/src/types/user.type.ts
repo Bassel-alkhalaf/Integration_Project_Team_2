@@ -8,7 +8,7 @@ export type UserInfoDTO = {
 	id: string;
 	firstName: string;
 	lastName: string;
-	dob: Date;
+	dob: string;
 	gender: string;
 	bio: string;
 	profileImageUrl: string;
