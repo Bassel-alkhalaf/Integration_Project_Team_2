@@ -368,7 +368,7 @@ import { Post } from '../../types/post.type'; // Import Post type
 import { getAuth, onAuthStateChanged } from "firebase/auth"; // Firebase Auth for comment submission
 import { useQueryClient } from '@tanstack/react-query';
 import { Edit, Delete } from '@mui/icons-material'; // Import the Edit and Delete icons
-import CommentSection from '../../components/CommentSection'; // Import CommentSection component
+import FullCommentSection from '../../components/FullCommentSection'; // Import CommentSection component
 
 export default function PostDetail() {
     const { postId } = useParams<{ postId: string }>();
@@ -441,7 +441,7 @@ export default function PostDetail() {
 
                     {/* Reuse CommentSection component here */}
                     <Box sx={{ mt: 4 }}>
-                        <CommentSection postId={post.postId} />
+                        <FullCommentSection postId={post.postId} />
                     </Box>
                 </Box>
             ) : (
