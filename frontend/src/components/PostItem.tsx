@@ -203,14 +203,14 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
         </AccordionSummary>
         <AccordionDetails>
           {/* Fetch comments from the database */}
-          <CommentSection postId={post.postId} />
+          <CommentSection postId={post.postId} commentCount={commentCount} />
          
-          {/* If more than 3 comments, show "View All Comments" button */}
+          {/* If more than 3 comments, show "View All Comments" button
           {commentCount > 3 && (
             <Button component={Link} to={`/posts/${post.postId}`} variant="outlined">
               View All Comments
             </Button>
-          )}
+          )} */}
         </AccordionDetails>
       </Accordion>
 

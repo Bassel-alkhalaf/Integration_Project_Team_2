@@ -10,9 +10,11 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { commentQueryKeys } from '../consts';
 import { Edit, Delete } from '@mui/icons-material';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
 interface CommentSectionProps {
     postId: string;
+    commentCount: number; // Accept commentCount as prop
 }
 
 interface CommentWithUser extends Comment {
@@ -21,7 +23,7 @@ interface CommentWithUser extends Comment {
     avatarUrl?: string; // Optional: Avatar for professional touch
 }
 
-const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
+const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount }) => {
     const queryClient = useQueryClient();
     const [newCommentText, setNewCommentText] = useState('');
     const { data: comments } = useFetchComments(postId); // Fetch comments using the hook
@@ -143,7 +145,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1d3557', marginBottom: '20px' }}>
                 Comments
             </Typography>
-            {commentData?.slice(0, 3).map((comment, index) => {
+            {commentData
+                ?.sort((a, b) =>new Date(b.createdAt).getTime()- new Date(a.createdAt).getTime() ) // Sort by creation date, oldest to newest
+                .slice(0, 3) // Limit to first 3 comments
+                .map((comment, index) => {
                 const isOwner = comment.UserId === currentUser?.uid;
 
                 return (
@@ -194,6 +199,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                 );
             })}
 
+            {/* Add "View All Comments" button after the comments */}
+            {commentCount > 3 && (
+                <Button component={Link} to={`/posts/${postId}`} variant="outlined" sx={{ marginTop: 2 }}>
+                    View All Comments
+                </Button>
+            )}
+
             <Box sx={{ mt: 4 }}>
                 <TextField
                     label="Add a comment"
@@ -204,7 +216,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                     rows={4}
                     sx={{ backgroundColor: '#ffffff', borderRadius: '4px' }}
                 />
-                
                 <Button variant="contained" color="primary" onClick={handleCommentSubmit} sx={{ mt: 2, backgroundColor: '#1d3557' }}>
                     Submit Comment
                 </Button>
