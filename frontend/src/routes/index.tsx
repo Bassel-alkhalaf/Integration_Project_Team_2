@@ -2,13 +2,10 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { GenericInfo } from '../components';
 import { MainLayout } from '../layouts';
 
-import { Community, Home, Login, Register, Search,Profile, PostDetail,EditProfile } from '../pages';
-
-
+import { Community, EditProfile, Friends, Home, Login, PostDetail, Profile, Register, Search } from '../pages';
 
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
-
 
 function AppRoutes() {
 	return (
@@ -18,6 +15,7 @@ function AppRoutes() {
 				<Route path='/community/:communityId' element={<Community />} />
 
 				<Route path='/search' element={<Search />} />
+				<Route path='/friends' element={<Friends />} />
 				{/* Protected Route for Profile */}
 				{/* <Route element={<RoleBasedRoute allowedRoles={[Role.User, Role.Admin]} />}>
 					<Route path="/profile" element={<Profile />} />
@@ -25,15 +23,9 @@ function AppRoutes() {
 
 				<Route path='/profile' element={<Profile />} />
 
-				<Route path="/posts/:postId" element={<PostDetail />} />
+				<Route path='/posts/:postId' element={<PostDetail />} />
 
 				<Route path='/profile/editprofile' element={<EditProfile />} />
-
-				{/* Guest Routes */}
-			{/* <Route element={<RoleBasedRoute allowedRoles={[Role.Guest]} />}>
-				<Route path="login" element={<Login />} />
-				<Route path="register" element={<Register />} />
-			</Route> */}
 
 				<Route
 					path='access-denied'

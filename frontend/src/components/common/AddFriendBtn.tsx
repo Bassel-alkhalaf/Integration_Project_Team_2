@@ -1,50 +1,31 @@
-import {
-    Button,
-} from "@mui/material";
-
+import { LoadingButton } from '@mui/lab';
+import { useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
-import { sendRequest } from "../../api";
+import { useAuth } from '../../contexts';
+import { useCreateFriendRequest } from '../../hooks';
 
 interface AddFriendsProps {
-    senderId: string;
-    recieverId: string;
-    authToken: string;
+	receiverId: string;
 }
 
-const AddFriendBtn = ({ senderId, recieverId, authToken }: AddFriendsProps) => {
+export function AddFriendBtn({ receiverId }: AddFriendsProps) {
+	const { accessToken } = useAuth();
+	const queryClient = useQueryClient();
+	const { mutate: sendFriendRequest, isPending } = useCreateFriendRequest(accessToken as string);
 
-    async function handleBtnClick() {
-        const friendRequestInfo = {
-            SenderId: senderId,
-            ReceiverId: recieverId
-        };
-    
-        try {
-            const response = await sendRequest({
-                endpoint: "api/friendrequest",
-                method: 'POST',
-                accessToken: authToken,
-                body: friendRequestInfo
-            });
-    
-            if (response.status === 200 || response.status === 201) {
-                enqueueSnackbar("Friend successfully added!", { variant: 'success' });
-            }
-        } 
-        catch (e) {
-            const err = e as Error;
-            enqueueSnackbar(err.message, { variant: 'error' });
-        }
-    
-    }
+	const handleBtnClick = () => {
+		sendFriendRequest(receiverId, {
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: ['friendRequests'] });
+				enqueueSnackbar('Friend request sent successfully', { variant: 'success' });
+			},
+			onError: () => enqueueSnackbar('Failed to send friend request', { variant: 'error' }),
+		});
+	};
 
-    return (  
-        <Button 
-            variant="contained"
-            color="primary"
-            onClick={handleBtnClick}
-        >Add Friend</Button>
-    );
+	return (
+		<LoadingButton loading={isPending} onClick={handleBtnClick} size='small'>
+			Add Friend
+		</LoadingButton>
+	);
 }
- 
-export default AddFriendBtn;

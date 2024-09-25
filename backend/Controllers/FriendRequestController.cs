@@ -2,13 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using backend.Models;
 using backend.Services;
 using backend.Middlewares;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [FirebaseAuth]
     public class FriendRequestController : ControllerBase
     {
@@ -21,7 +19,7 @@ namespace backend.Controllers
             _firebaseAuthService = firebaseAuthService;
         }
 
-        // Route: GET /api/friendrequest/{id}
+        // Route: GET /FriendRequest/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<FriendRequest>> GetFriendRequestById(string id)
         {
@@ -30,7 +28,7 @@ namespace backend.Controllers
             return Ok(friendRequest);
         }
 
-        // Route: GET /api/friendrequest/all
+        // Route: GET /FriendRequest/all
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<FriendRequest>>> GetAllFriendRequests()
         {
@@ -38,65 +36,71 @@ namespace backend.Controllers
             return Ok(friendRequests);
         }
 
-        // Route: GET /api/friendrequest/user
-        [HttpGet("user")]
-        public async Task<ActionResult<IEnumerable<FriendRequest>>> GetUserFriendRequests()
+        // Route: GET /FriendRequest/sent
+        [HttpGet("sent")]
+        public async Task<IActionResult> GetUserSentFriendRequests()
         {
-            string receiverId = _firebaseAuthService.GetUserId();
+            string userId = _firebaseAuthService.GetUserId();
 
-            if (string.IsNullOrEmpty(receiverId))
-            {
-                return Unauthorized();
-            }
-
-            var friendRequests = await _friendRequestService.GetFriendRequestsByReceiverIdAsync(receiverId);
+            var friendRequests = await _friendRequestService.GetFriendRequestsBySenderIdAsync(userId);
             return Ok(friendRequests);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<FriendRequest>> Post([FromBody] FriendRequest friendRequest)
+        // Route: GET /FriendRequest/received
+        [HttpGet("received")]
+        public async Task<IActionResult> GetUserReceivedFriendRequests()
         {
-            string senderId = _firebaseAuthService.GetUserId();
+            string userId = _firebaseAuthService.GetUserId();
 
-            if (string.IsNullOrEmpty(senderId))
-            {
-                return Unauthorized();
-            }
-
-            if (friendRequest.SenderId != senderId)
-            {
-                return BadRequest("Sender ID does not match the authenticated user.");
-            }
-
-            friendRequest.Status ??= "Pending";
-            friendRequest.CreatedAt = DateTime.UtcNow;
-
-            await _friendRequestService.AddFriendRequestAsync(friendRequest);
-            return CreatedAtAction(nameof(GetFriendRequestById), new { id = friendRequest.Id }, friendRequest);
+            var friendRequests = await _friendRequestService.GetFriendRequestsByReceiverIdAsync(userId);
+            return Ok(friendRequests);
         }
 
-        // Route: PUT /api/friendrequest/cancel/{id}
+        [HttpPost("receiverId/{receiverId}")]
+        public async Task<IActionResult> Post(string receiverId)
+        {
+            try
+            {
+                string senderId = _firebaseAuthService.GetUserId();
+
+                await _friendRequestService.AddFriendRequestAsync(senderId, receiverId);
+
+                return Ok(new { message = "friend_request_create_success" });
+            }
+            catch (InvalidOperationException ioex)
+            {
+                return BadRequest(new { message = ioex.Message });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, new { message = ex.Message });
+            }
+
+        }
+
+        // Route: PUT /FriendRequest/cancel/{id}
         [HttpPut("cancel/{id}")]
         public async Task<ActionResult<FriendRequest>> Cancel(string id)
         {
             return await HandleFriendRequestAction("cancel", id);
         }
 
-        // Route: PUT /api/friendrequest/accept/{id}
+        // Route: PUT /FriendRequest/accept/{id}
         [HttpPut("accept/{id}")]
         public async Task<ActionResult<FriendRequest>> Accept(string id)
         {
             return await HandleFriendRequestAction("accept", id);
         }
 
-        // Route: PUT /api/friendrequest/reject/{id}
+        // Route: PUT /FriendRequest/reject/{id}
         [HttpPut("reject/{id}")]
         public async Task<ActionResult<FriendRequest>> Reject(string id)
         {
             return await HandleFriendRequestAction("reject", id);
         }
 
-        // Route: DELETE /api/friendrequest/{id}
+        // Route: DELETE /FriendRequest/{id}
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string id)
         {

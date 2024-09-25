@@ -5,7 +5,7 @@ namespace backend.Models
     public class FriendRequest
     {
         [FirestoreDocumentId]
-        public string? Id { get; set; }               // This will be automatically set by Firestore
+        public string Id { get; set; } 
         
         [FirestoreProperty]
         public string SenderId { get; set; }
@@ -14,10 +14,10 @@ namespace backend.Models
         public string ReceiverId { get; set; }
         
         [FirestoreProperty]
-        public DateTime CreatedAt { get; set; }     // Automatically set when creating
-        
+        public Timestamp CreatedAt { get; set; }
+
         [FirestoreProperty]
-        public string? Status { get; set; }           // Default to "Pending"
+        public string Status { get; set; } = "Pending"; 
     }
 }
 

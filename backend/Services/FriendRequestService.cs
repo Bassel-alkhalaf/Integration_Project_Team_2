@@ -1,6 +1,8 @@
 // Services/FriendRequestService.cs
 using Google.Cloud.Firestore;
 using backend.Models;
+using backend.DTOs.Community;
+using backend.DTOs.FriendRequest;
 
 
 namespace backend.Services
@@ -8,15 +10,38 @@ namespace backend.Services
     public class FriendRequestService
     {
         private readonly FirestoreDb _db;
+        private readonly UserService _userService;
 
-        public FriendRequestService(FirestoreDb config)
+        public FriendRequestService(FirestoreDb config, UserService userService)
         {
             _db = config;
+            _userService = userService;
+        }
+
+        private async Task<FriendRequestWithUserInfoDto> PopulateUserInfoAsync(DocumentSnapshot documentSnapshot, string field)
+        {
+            var friendRequest = documentSnapshot.ConvertTo<FriendRequest>();
+            var user = await _userService.GetUserAsync(typeof(FriendRequest).GetProperty(field).GetValue(friendRequest).ToString());
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("user_not_found");
+            }
+
+            return new FriendRequestWithUserInfoDto
+            {
+                Id = friendRequest.Id,
+                UserId = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Status = friendRequest.Status,
+                CreatedAt = friendRequest.CreatedAt,
+            };
         }
 
         public async Task<FriendRequest> GetFriendRequestAsync(string id)
         {
-            DocumentReference docRef = _db.Collection("friendRequests").Document(id);
+            DocumentReference docRef = _db.Collection("friend_requests").Document(id);
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
             if (snapshot.Exists)
@@ -26,24 +51,53 @@ namespace backend.Services
             return null;
         }
 
-        public async Task<IEnumerable<FriendRequest>> GetFriendRequestsByReceiverIdAsync(string receiverId)
+        private async Task<QuerySnapshot> GetQuerySnapshotByUserIdAsync(string fieldName, string userId)
         {
-            // Create a query to get friend requests where ReceiverId matches the given receiverId
-            Query query = _db.Collection("friendRequests").WhereEqualTo("ReceiverId", receiverId);
-            QuerySnapshot snapshot = await query.GetSnapshotAsync();
-            var friendRequests = new List<FriendRequest>();
+            Query query = _db.Collection("friend_requests").WhereEqualTo(fieldName, userId);
 
-            foreach (DocumentSnapshot document in snapshot.Documents)
+            if (fieldName.Equals("ReceiverId"))
             {
-                friendRequests.Add(document.ConvertTo<FriendRequest>());
+                query = query.WhereIn("Status", new[] { "Pending", "Accepted", "Rejected" });
             }
 
-            return friendRequests;
+            return await query.GetSnapshotAsync();
+        }
+
+        public async Task<List<FriendRequestWithUserInfoDto>> GetFriendRequestsBySenderIdAsync(string senderId)
+        {
+            var snapshots = await GetQuerySnapshotByUserIdAsync("SenderId", senderId);
+            var response = new List<FriendRequestWithUserInfoDto>();
+
+            foreach (var snapshot in snapshots)
+            {
+                var friendRequest = await PopulateUserInfoAsync(snapshot, "ReceiverId");
+                response.Add(friendRequest);
+            }
+
+            return response.OrderByDescending(r => r.CreatedAt)
+                        .OrderBy(r => r.Status == "Pending" ? 0 : 1)
+                        .ToList();
+        }
+
+        public async Task<List<FriendRequestWithUserInfoDto>> GetFriendRequestsByReceiverIdAsync(string receiverId)
+        {
+            var snapshots = await GetQuerySnapshotByUserIdAsync("ReceiverId", receiverId);
+            var response = new List<FriendRequestWithUserInfoDto>();
+
+            foreach (var snapshot in snapshots)
+            {
+                var friendRequest = await PopulateUserInfoAsync(snapshot, "SenderId");
+                response.Add(friendRequest);
+            }
+
+            return response.OrderByDescending(r => r.CreatedAt)
+                      .OrderBy(r => r.Status == "Pending" ? 0 : 1)
+                      .ToList();
         }
 
         public async Task<IEnumerable<FriendRequest>> GetAllFriendRequestsAsync()
         {
-            QuerySnapshot snapshot = await _db.Collection("friendRequests").GetSnapshotAsync();
+            QuerySnapshot snapshot = await _db.Collection("friend_requests").GetSnapshotAsync();
             var friendRequests = new List<FriendRequest>();
 
             foreach (DocumentSnapshot document in snapshot.Documents)
@@ -53,29 +107,78 @@ namespace backend.Services
 
             return friendRequests;
         }
-        
-        public async Task AddFriendRequestAsync(FriendRequest friendRequest)
+
+        public async Task AddFriendRequestAsync(string senderId, string receiverId)
         {
-            // Generate a new document reference (Firebase will generate the ID)
-            DocumentReference docRef = _db.Collection("friendRequests").Document();
+            // Check if the user is trying to send a friend request to themselves
+            if (senderId == receiverId)
+            {
+                throw new InvalidOperationException("cannot_send_to_self");
+            }
+
+            // Check if the receiver exists
+            DocumentReference receiverRef = _db.Collection("users").Document(receiverId);
+            DocumentSnapshot receiverSnapshot = await receiverRef.GetSnapshotAsync();
+
+            if (!receiverSnapshot.Exists)
+            {
+                throw new InvalidOperationException("user_not_found");
+            }
+
+            // Check if friendship already exists
+            string friendshipId1 = $"{senderId}_{receiverId}";
+            string friendshipId2 = $"{receiverId}_{senderId}";
+
+            DocumentReference friendshipRef1 = _db.Collection("friendships").Document(friendshipId1);
+            DocumentReference friendshipRef2 = _db.Collection("friendships").Document(friendshipId2);
+
+            DocumentSnapshot friendshipSnapshot1 = await friendshipRef1.GetSnapshotAsync();
+            DocumentSnapshot friendshipSnapshot2 = await friendshipRef2.GetSnapshotAsync();
+
+            if (friendshipSnapshot1.Exists && friendshipSnapshot2.Exists)
+            {
+                throw new InvalidOperationException("friendship_exists");
+            }
+
+            // Check for existing friend requests
+            Query query = _db.Collection("friend_requests")
+                .WhereEqualTo("SenderId", senderId)
+                .WhereEqualTo("ReceiverId", receiverId)
+                .WhereEqualTo("Status", "Pending");
+
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+
+            if (querySnapshot.Documents.Count > 0)
+            {
+                throw new InvalidOperationException("friend_request_exists");
+            }
+
+            // Generate a new document reference
+            DocumentReference docRef = _db.Collection("friend_requests").Document();
 
             // Set the generated ID to the friend request object
-            friendRequest.Id = docRef.Id;
+            var newRequest = new FriendRequest
+            {
+                Id = docRef.Id,
+                SenderId = senderId,
+                ReceiverId = receiverId,
+                CreatedAt = Timestamp.GetCurrentTimestamp(),
+                Status = "Pending",
+            };
 
-            // Save the friend request to Firestore with the generated ID
-            await docRef.SetAsync(friendRequest);
+            await docRef.SetAsync(newRequest);
         }
 
 
         public async Task UpdateFriendRequestAsync(string id, FriendRequest friendRequest)
         {
-            DocumentReference docRef = _db.Collection("friendRequests").Document(id);
+            DocumentReference docRef = _db.Collection("friend_requests").Document(id);
             await docRef.SetAsync(friendRequest, SetOptions.MergeAll);
         }
 
         public async Task DeleteFriendRequestAsync(string id)
         {
-            DocumentReference docRef = _db.Collection("friendRequests").Document(id);
+            DocumentReference docRef = _db.Collection("friend_requests").Document(id);
             await docRef.DeleteAsync();
         }
     }
