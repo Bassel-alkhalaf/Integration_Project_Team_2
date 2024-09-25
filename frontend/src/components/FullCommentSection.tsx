@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, IconButton, TextField, Button, Card, Avatar } from '@mui/material';
+import {
+    Box, Typography, IconButton, TextField, Button, Card, Avatar, Accordion, AccordionSummary, AccordionDetails
+} from '@mui/material';
 import { Comment } from '../types/comment.type'; // Adjust the import paths as needed
 import { useFetchComments } from '../hooks/apiHooks/comment/useFetchComments';
 import { useDeleteComment } from '../hooks/apiHooks/comment/useDeleteComment';
@@ -9,21 +11,19 @@ import { getAuth, User } from 'firebase/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { commentQueryKeys } from '../consts';
-import { Edit, Delete } from '@mui/icons-material';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { Edit, Delete, ExpandMore } from '@mui/icons-material';
 
 interface CommentSectionProps {
     postId: string;
-    commentCount: number; // Accept commentCount as prop
 }
 
 interface CommentWithUser extends Comment {
     firstName?: string;
     lastName?: string;
-    avatarUrl?: string; // Optional: Avatar for professional touch
+    avatarUrl?: string; // Optional: Add avatar for professional touch
 }
 
-const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount }) => {
+const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const queryClient = useQueryClient();
     const [newCommentText, setNewCommentText] = useState('');
     const { data: comments } = useFetchComments(postId); // Fetch comments using the hook
@@ -37,6 +37,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
     const { mutate: editComment } = useEditComment(); // Use the hook to edit a comment
 
     const auth = getAuth();
+
+    // Pagination states
+    const [page, setPage] = useState(1);
+    const commentsPerPage = 3; // Number of comments to show per page
+    const totalPages = Math.ceil(commentData.length / commentsPerPage);
 
     // Fetch current authenticated user from Firebase Auth and user data from Firestore
     useEffect(() => {
@@ -66,7 +71,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                 ...comment,
                                 firstName: userData?.FirstName || 'Unknown',
                                 lastName: userData?.LastName || 'User',
-                                avatarUrl: userData?.avatarUrl || '', // Optional avatar URL
+                                avatarUrl: userData?.avatarUrl || '', // Optional: Avatar URL
                             };
                         }
                         return { ...comment, firstName: 'Unknown', lastName: 'User' };
@@ -140,71 +145,87 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
         });
     };
 
+    // Handle pagination: Previous/Next page
+    const handlePrevPage = () => setPage((prev) => Math.max(prev - 1, 1));
+    const handleNextPage = () => setPage((prev) => Math.min(prev + 1, totalPages));
+
     return (
         <Box sx={{ marginTop: '20px' }}>
             <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1d3557', marginBottom: '20px' }}>
                 Comments
             </Typography>
-            {commentData
-                ?.sort((a, b) =>new Date(b.createdAt).getTime()- new Date(a.createdAt).getTime() ) // Sort by creation date, oldest to newest
-                .slice(0, 3) // Limit to first 3 comments
-                .map((comment, index) => {
-                const isOwner = comment.UserId === currentUser?.uid;
 
-                return (
-                    <Card key={index} sx={{ display: 'flex', alignItems: 'flex-start', padding: 2, marginBottom: 2, backgroundColor: '#f8f9fa' }}>
-                        {comment.avatarUrl ? (
-                            <Avatar src={comment.avatarUrl} sx={{ marginRight: 2 }} />
-                        ) : (
-                            <Avatar sx={{ marginRight: 2 }}>{comment.firstName?.[0]}</Avatar>
-                        )}
-                        <Box sx={{ flexGrow: 1 }}>
-                            <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#2d4059' }}>
-                                {comment.firstName} {comment.lastName}
-                            </Typography>
-                            <Typography variant="body2" sx={{ color: '#6c757d', marginBottom: 1 }}>
-                                {new Date(comment.createdAt).toLocaleString()}
-                            </Typography>
-                            {editCommentId === comment.commentId ? (
-                                <TextField
-                                    value={editCommentText}
-                                    onChange={(e) => setEditCommentText(e.target.value)}
-                                    fullWidth
-                                    multiline
-                                    rows={2}
-                                    sx={{ marginBottom: 2 }}
-                                />
-                            ) : (
-                                <Typography variant="body2" sx={{ marginBottom: 1, color: '#2d4059' }}>
-                                    {comment.content}
-                                </Typography>
-                            )}
-                            {isOwner && (
-                                <Box>
-                                    <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
-                                        <Edit />
-                                    </IconButton>
-                                    <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
-                                        <Delete />
-                                    </IconButton>
-                                    {editCommentId === comment.commentId && (
-                                        <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
-                                            Save
-                                        </Button>
+            <Accordion>
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography variant="h6">View Comments</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    {commentData
+                        ?.sort((a, b) =>   new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime()) // Sort by creation date (oldest to newest)
+                        .slice((page - 1) * commentsPerPage, page * commentsPerPage) // Show only comments for the current page
+                        .map((comment, index) => {
+                            const isOwner = comment.UserId === currentUser?.uid;
+
+                            return (
+                                <Card key={index} sx={{ display: 'flex', alignItems: 'flex-start', padding: 2, marginBottom: 2, backgroundColor: '#f8f9fa' }}>
+                                    {comment.avatarUrl ? (
+                                        <Avatar src={comment.avatarUrl} sx={{ marginRight: 2 }} />
+                                    ) : (
+                                        <Avatar sx={{ marginRight: 2 }}>{comment.firstName?.[0]}</Avatar>
                                     )}
-                                </Box>
-                            )}
-                        </Box>
-                    </Card>
-                );
-            })}
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#2d4059' }}>
+                                            {comment.firstName} {comment.lastName}
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ color: '#6c757d', marginBottom: 1 }}>
+                                            {new Date(comment.createdAt).toLocaleString()}
+                                        </Typography>
+                                        {editCommentId === comment.commentId ? (
+                                            <TextField
+                                                value={editCommentText}
+                                                onChange={(e) => setEditCommentText(e.target.value)}
+                                                fullWidth
+                                                multiline
+                                                rows={2}
+                                                sx={{ marginBottom: 2 }}
+                                            />
+                                        ) : (
+                                            <Typography variant="body2" sx={{ marginBottom: 1, color: '#2d4059' }}>
+                                                {comment.content}
+                                            </Typography>
+                                        )}
+                                        {isOwner && (
+                                            <Box>
+                                                <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
+                                                    <Edit />
+                                                </IconButton>
+                                                <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
+                                                    <Delete />
+                                                </IconButton>
+                                                {editCommentId === comment.commentId && (
+                                                    <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
+                                                        Save
+                                                    </Button>
+                                                )}
+                                            </Box>
+                                        )}
+                                    </Box>
+                                </Card>
+                            );
+                        })}
 
-            {/* Add "View All Comments" button after the comments */}
-            {commentCount > 3 && (
-                <Button component={Link} to={`/posts/${postId}`} variant="outlined" sx={{ marginTop: 2 }}>
-                    View All Comments
-                </Button>
-            )}
+                    {/* Pagination Controls */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                        <Button disabled={page === 1} onClick={handlePrevPage}>
+                            Previous
+                        </Button>
+                        <Typography>Page {page} of {totalPages}</Typography>
+                        <Button disabled={page === totalPages} onClick={handleNextPage}>
+                            Next
+                        </Button>
+                    </Box>
+                </AccordionDetails>
+            </Accordion>
 
             <Box sx={{ mt: 4 }}>
                 <TextField
@@ -224,4 +245,4 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
     );
 };
 
-export default CommentSection;
+export default FullCommentSection;

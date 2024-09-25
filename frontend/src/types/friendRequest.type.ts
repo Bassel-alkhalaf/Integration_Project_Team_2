@@ -1,7 +1,11 @@
-export interface FriendRequest {
-    friendRequestId: string;
-    senderId: string;
-    receiverId: string;
-    createdAt: Date;
-    status: "Pending" | "Accepted" | "Denied" | "Canceled";
-  }
+export type FriendRequestT = {
+	id: string;
+	userId: string;
+	firstName: string;
+	lastName: string;
+	createdAt: string;
+	status: 'Pending' | 'Accepted' | 'Rejected' | 'Canceled';
+};
+
+export type FriendRequestTypeT = 'sent' | 'received';
+export type FriendRequestActionT = 'accept' | 'reject' | 'cancel';

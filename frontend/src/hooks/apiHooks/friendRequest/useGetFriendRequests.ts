@@ -1,16 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { searchCommunities } from '../../../api';
-import { searchQueryKeys } from '../../../consts';
+import { getFriendRequests } from '../../../api';
+import { friendRequestQueryKeys } from '../../../consts';
+import { FriendRequestTypeT } from '../../../types';
 import { useGenericErrHandler } from '../../errorHandler/useGenericErrHandler';
 
-export const useSearchCommunities = (query: string) => {
+export const useGetFriendRequests = (accessToken: string, type: FriendRequestTypeT) => {
 	const errorHandler = useGenericErrHandler();
 
 	return useQuery({
-		queryKey: searchQueryKeys.communities(query),
+		queryKey: friendRequestQueryKeys.type(type),
 		queryFn: () =>
-			searchCommunities(query)
+			getFriendRequests(accessToken, type)
 				.then(res => res)
 				.catch((err: AxiosError) => {
 					console.error(err);

@@ -44,11 +44,13 @@ export function GlobalSearch() {
 	const { isOpen, isMobile, openEl, closeEl } = useToggleOpenEl();
 	const [searchParams, _setSearchParams] = useSearchParams();
 	const q = useMemo(() => searchParams.get('q') ?? '', [searchParams]);
+	const tab = useMemo(() => searchParams.get('tab') ?? '', [searchParams]);
+
 	const [query, setQuery] = useState(q);
 
 	const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		navigate(`/search?q=${query}`);
+		navigate(`/search?q=${query}&tab=${tab || 'posts'}`);
 	};
 
 	useEffect(() => {

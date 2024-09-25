@@ -11,6 +11,7 @@ export const getPostComments = async (postId: string) => {
   return res.data as Comment[];
 };
 
+// Create a new comment
 export const createComment = async (commentData: Comment) => {
   // Get the user's token from Firebase Auth
   const token = await getAuth().currentUser?.getIdToken();
@@ -36,5 +37,21 @@ export const deleteComment = async (commentId: string) => {
     method: 'DELETE',
     endpoint: url,
     accessToken: token,
+  });
+};
+
+
+// Edit an existing comment
+export const editComment = async (commentId: string, content: string) => {
+  const token = await getAuth().currentUser?.getIdToken();
+  if (!token) throw new Error('User is not authenticated');
+
+  const url = `${COMMENT_ENDPOINT}/${commentId}`;
+  
+  await sendRequest({
+    method: 'PUT',
+    endpoint: url,
+    body: { content },  // Pass the updated content of the comment
+    accessToken: token,  // Ensure the token is passed with the request
   });
 };
