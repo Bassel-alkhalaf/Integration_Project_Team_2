@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -14,18 +14,17 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
 } from "@mui/material";
-import { ThumbUp, ThumbDown, Comment, Delete, Edit, ExpandMore, Margin } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, Comment, Delete, Edit, ExpandMore } from "@mui/icons-material";
 import { Post } from "../types/post.type";
 import { useDeletePost } from "../hooks/apiHooks/post/useDeletePost";
-import { useEditPost } from "../hooks/apiHooks/post/useEditPost"; 
+import { useEditPost } from "../hooks/apiHooks/post/useEditPost";
 import { useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore"; // Firestore
 import EditPostDialogue from "./EditPostDialogue";
-import { EditPostData } from "../types/editPost.type";
-import { Link, useNavigate } from "react-router-dom";
 import CommentSection from "./CommentSection";
+import { Link, useNavigate } from "react-router-dom";
 
 interface PostProps {
   post: Post;
@@ -42,10 +41,28 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postImages, setPostImages] = useState(post.images || []);
   const [isCommentsOpen, setCommentsOpen] = useState(false); // State for accordion open/close
-
+  const [commentCount, setCommentCount] = useState(0); // State for comment count
 
   const queryClient = useQueryClient();
   const isOwner = userId === post.authorId; // Check if the user owns the post
+
+  // Fetch the comment count for the post from Firestore
+  useEffect(() => {
+    const fetchCommentCount = async () => {
+      try {
+        const firestore = getFirestore();
+        const commentsCollection = collection(firestore, "comments");
+        const q = query(commentsCollection, where("PostId", "==", post.postId));
+        const querySnapshot = await getDocs(q);
+
+        setCommentCount(querySnapshot.size); // Set the comment count based on Firestore query result
+      } catch (error) {
+        console.error("Error fetching comment count:", error);
+      }
+    };
+
+    fetchCommentCount();
+  }, [post.postId]); // Run this effect when the postId changes
 
   // Handle deletion of a post
   const handleDelete = () => {
@@ -53,7 +70,6 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
       onSuccess: () => {
         setDeleteDialogOpen(false);
         enqueueSnackbar("Post deleted successfully!", { variant: "success" });
-        setDeleteDialogOpen(false); // Close confirmation dialog after deletion
         queryClient.invalidateQueries({ queryKey: ["posts"] });
       },
     });
@@ -164,6 +180,9 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
         {/* Clicking the comments icon will toggle the comments section */}
         <IconButton onClick={toggleComments} aria-label="comments" sx={{ marginLeft: "auto" }}>
           <Comment />
+          <Typography variant="body2" sx={{ marginLeft: 1 }}>
+            {commentCount}
+          </Typography>
         </IconButton>
         {isOwner && (
           <>
@@ -180,20 +199,18 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
       {/* Comments Accordion */}
       <Accordion expanded={isCommentsOpen} sx={{ width: "100%", marginTop: 1 }}>
         <AccordionSummary expandIcon={<ExpandMore />} onClick={toggleComments}>
-          <Typography>Comments ({post.commentCount})</Typography>
+          <Typography>Comments ({commentCount})</Typography>
         </AccordionSummary>
         <AccordionDetails>
           {/* Fetch comments from the database */}
           <CommentSection postId={post.postId} />
          
           {/* If more than 3 comments, show "View All Comments" button */}
-          {post.commentCount > 3 && (
+          {commentCount > 3 && (
             <Button component={Link} to={`/posts/${post.postId}`} variant="outlined">
               View All Comments
             </Button>
-            
           )}
-        
         </AccordionDetails>
       </Accordion>
 
