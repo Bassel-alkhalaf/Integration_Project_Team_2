@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, IconButton, TextField, Button } from '@mui/material';
+import { Box, Typography, IconButton, TextField, Button, Card, Avatar } from '@mui/material';
 import { Comment } from '../types/comment.type'; // Adjust the import paths as needed
 import { useFetchComments } from '../hooks/apiHooks/comment/useFetchComments';
 import { useDeleteComment } from '../hooks/apiHooks/comment/useDeleteComment';
@@ -19,6 +18,7 @@ interface CommentSectionProps {
 interface CommentWithUser extends Comment {
     firstName?: string;
     lastName?: string;
+    avatarUrl?: string; // Optional: Add avatar for professional touch
 }
 
 const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
@@ -64,6 +64,7 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                                 ...comment,
                                 firstName: userData?.FirstName || 'Unknown',
                                 lastName: userData?.LastName || 'User',
+                                avatarUrl: userData?.avatarUrl || '', // Optional: Avatar URL
                             };
                         }
                         return { ...comment, firstName: 'Unknown', lastName: 'User' };
@@ -138,43 +139,58 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     };
 
     return (
-        <Box>
-            <Typography variant="h5">Comments</Typography>
+        <Box sx={{ marginTop: '20px' }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1d3557', marginBottom: '20px' }}>
+                Comments
+            </Typography>
             {commentData.map((comment, index) => {
                 const isOwner = comment.UserId === currentUser?.uid;
 
                 return (
-                    <Box key={index} sx={{ mt: 2 }}>
-                        {editCommentId === comment.commentId ? (
-                            <TextField
-                                value={editCommentText}
-                                onChange={(e) => setEditCommentText(e.target.value)}
-                                fullWidth
-                                multiline
-                                rows={2}
-                            />
+                    <Card key={index} sx={{ display: 'flex', alignItems: 'flex-start', padding: 2, marginBottom: 2, backgroundColor: '#f8f9fa' }}>
+                        {comment.avatarUrl ? (
+                            <Avatar src={comment.avatarUrl} sx={{ marginRight: 2 }} />
                         ) : (
-                            <Typography variant="body2">
-                                {comment.content} (Posted by: {comment.firstName} {comment.lastName} at {new Date(comment.createdAt).toLocaleString()})
+                            <Avatar sx={{ marginRight: 2 }}>{comment.firstName?.[0]}</Avatar>
+                        )}
+                        <Box sx={{ flexGrow: 1 }}>
+                            <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#2d4059' }}>
+                                {comment.firstName} {comment.lastName}
                             </Typography>
-                        )}
-
-                        {isOwner && (
-                            <Box>
-                                <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)}>
-                                    <Edit />
-                                </IconButton>
-                                <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)}>
-                                    <Delete />
-                                </IconButton>
-                                {editCommentId === comment.commentId && (
-                                    <Button color="primary" onClick={handleSaveEditComment}>
-                                        Save
-                                    </Button>
-                                )}
-                            </Box>
-                        )}
-                    </Box>
+                            <Typography variant="body2" sx={{ color: '#6c757d', marginBottom: 1 }}>
+                                {new Date(comment.createdAt).toLocaleString()}
+                            </Typography>
+                            {editCommentId === comment.commentId ? (
+                                <TextField
+                                    value={editCommentText}
+                                    onChange={(e) => setEditCommentText(e.target.value)}
+                                    fullWidth
+                                    multiline
+                                    rows={2}
+                                    sx={{ marginBottom: 2 }}
+                                />
+                            ) : (
+                                <Typography variant="body2" sx={{ marginBottom: 1, color: '#2d4059' }}>
+                                    {comment.content}
+                                </Typography>
+                            )}
+                            {isOwner && (
+                                <Box>
+                                    <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
+                                        <Edit />
+                                    </IconButton>
+                                    <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
+                                        <Delete />
+                                    </IconButton>
+                                    {editCommentId === comment.commentId && (
+                                        <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
+                                            Save
+                                        </Button>
+                                    )}
+                                </Box>
+                            )}
+                        </Box>
+                    </Card>
                 );
             })}
 
@@ -186,8 +202,9 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                     fullWidth
                     multiline
                     rows={4}
+                    sx={{ backgroundColor: '#ffffff', borderRadius: '4px' }}
                 />
-                <Button variant="contained" color="primary" onClick={handleCommentSubmit} sx={{ mt: 2 }}>
+                <Button variant="contained" color="primary" onClick={handleCommentSubmit} sx={{ mt: 2, backgroundColor: '#1d3557' }}>
                     Submit Comment
                 </Button>
             </Box>
