@@ -20,8 +20,8 @@
 //     const { data: comments, refetch } = useFetchComments(postId); // Fetch comments using the hook
 //     const [editCommentText, setEditCommentText] = useState('');
 //     const [editCommentId, setEditCommentId] = useState<string | null>(null); // To store the ID of the comment being edited
-    
-   
+
+
 //     // const [localComments, setLocalComments] = useState<Comment[]>([]); // Use local state for comments
 //     const { mutate: createComment } = useCreateComment(); // Use the hook to create a comment
 //     const { mutate: deleteComment } = useDeleteComment(); // Use the hook to delete a comment
@@ -74,7 +74,7 @@
 //         setEditCommentId(commentId);
 //         setEditCommentText(content);
 //       };
-    
+
 //       const handleSaveEditComment = () => {
 //         if (!editCommentText.trim() || !editCommentId) return;
 //         editComment(
@@ -88,7 +88,7 @@
 //             }
 //         );
 //     };
-    
+
 
 //     const handleDeleteComment = (commentId: string) => {
 //         deleteComment(commentId, {
@@ -105,7 +105,7 @@
 //     };
 
 
-    
+
 
 //     return (
 //         <Box>
@@ -138,9 +138,9 @@
 //             </Box>
 //         </Box>
 //     );
-    
-    
-    
+
+
+
 // };
 
 // export default CommentSection;
@@ -148,17 +148,175 @@
 
 
 
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
+// import { Box, Typography, IconButton, TextField, Button } from '@mui/material';
+// import { Comment } from '../types/comment.type'; // Adjust the import paths as needed
+// import { useFetchComments } from '../hooks/apiHooks/comment/useFetchComments';
+// import { useDeleteComment } from '../hooks/apiHooks/comment/useDeleteComment';
+// import { useCreateComment } from '../hooks/apiHooks/comment/useCreateComment';
+// import { getAuth } from 'firebase/auth';
+// import { useQueryClient } from '@tanstack/react-query';
+// import { commentQueryKeys } from '../consts';
+// import { useEditComment } from '../hooks/apiHooks/comment/useEditComment';
+// import { Edit, Delete } from '@mui/icons-material'; // Import Edit and Delete icons
+
+// interface CommentSectionProps {
+//     postId: string;
+// }
+
+// const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
+//     const queryClient = useQueryClient();
+
+//     const [newCommentText, setNewCommentText] = useState('');
+//     const { data: comments } = useFetchComments(postId); // Fetch comments using the hook
+//     const [editCommentText, setEditCommentText] = useState('');
+//     const [editCommentId, setEditCommentId] = useState<string | null>(null); // To store the ID of the comment being edited
+
+//     const { mutate: createComment } = useCreateComment(); // Use the hook to create a comment
+//     const { mutate: deleteComment } = useDeleteComment(); // Use the hook to delete a comment
+//     const { mutate: editComment } = useEditComment(); // Use the hook to edit a comment
+
+//     const auth = getAuth();
+//     const user = auth.currentUser;
+
+//     const handleCommentSubmit = () => {
+//         if (!newCommentText.trim()) {
+//             alert('Comment cannot be empty');
+//             return;
+//         }
+
+//         if (!user) {
+//             alert('You must be logged in to comment.');
+//             return;
+//         }
+
+//         const newComment: Comment = {
+//             commentId: 'new-id', // This will be replaced by a real ID from the backend
+//             postId: postId!,
+//             authorId: user.uid,
+//             content: newCommentText,
+//             createdAt: new Date(),
+//         };
+
+//         createComment(newComment, {
+//             onSuccess: () => {
+//                 queryClient.invalidateQueries({ queryKey: commentQueryKeys.all(postId) });
+//                 setNewCommentText('');
+//             },
+//             onError: (error) => {
+//                 console.error('Failed to submit comment:', error);
+//                 alert('Failed to submit comment.');
+//             },
+//         });
+//     };
+
+//     const handleEditComment = (commentId: string, content: string) => {
+//         console.log("Editing comment:", commentId);
+//         setEditCommentId(commentId);
+//         setEditCommentText(content);
+//     };
+
+//     const handleSaveEditComment = () => {
+
+//         if (!editCommentText.trim() || !editCommentId) return;
+
+//         editComment({ commentId: editCommentId, content: editCommentText, postId }, {
+//             onSuccess: () => {
+//                 queryClient.invalidateQueries({ queryKey: commentQueryKeys.all(postId) });
+//                 setEditCommentId(null);
+//                 setEditCommentText('');
+//             },
+//         });
+//     };
+
+//     const handleDeleteComment = (commentId: string) => {
+//         deleteComment(commentId, {
+//             onSuccess: () => {
+//                 queryClient.invalidateQueries({ queryKey: commentQueryKeys.all(postId) });
+//             },
+//             onError: (error) => {
+//                 console.error('Failed to delete comment:', error);
+//                 alert('Failed to delete comment.');
+//             },
+//         });
+//     };
+
+//     return (
+//         <Box>
+//             <Typography variant="h5">Comments</Typography>
+//             {comments?.slice(0, 3).map((comment, index) => (
+//                 <Box key={index} sx={{ mt: 2 }}>
+//                     {editCommentId === comment.commentId ? (
+//                         <TextField
+//                             value={editCommentText}
+//                             onChange={(e) => setEditCommentText(e.target.value)}
+//                             fullWidth
+//                             multiline
+//                             rows={2}
+//                         />
+//                     ) : (
+//                         <Typography variant="body2">
+//                             {comment.content} (Posted by: {comment.authorId} at {new Date(comment.createdAt).toLocaleString()})
+//                         </Typography>
+//                     )}
+//                     {comment.authorId === user?.uid && (
+//                         <Box>
+//                             <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)}>
+//                                 <Edit />
+//                             </IconButton>
+//                             <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)}>
+//                                 <Delete />
+//                             </IconButton>
+//                             {editCommentId === comment.commentId && (
+//                                 <Button color="primary" onClick={handleSaveEditComment}>
+//                                     Save
+//                                 </Button>
+//                             )}
+//                         </Box>
+//                     )}
+//                 </Box>
+//             ))}
+
+//             <Box sx={{ mt: 4 }}>
+//                 <TextField
+//                     label="Add a comment"
+//                     value={newCommentText}
+//                     onChange={(e) => setNewCommentText(e.target.value)}
+//                     fullWidth
+//                     multiline
+//                     rows={4}
+//                 />
+//                 <Button variant="contained" color="primary" onClick={handleCommentSubmit} sx={{ mt: 2 }}>
+//                     Submit Comment
+//                 </Button>
+//             </Box>
+//         </Box>
+//     );
+// };
+
+// export default CommentSection;
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, IconButton, TextField, Button } from '@mui/material';
 import { Comment } from '../types/comment.type'; // Adjust the import paths as needed
 import { useFetchComments } from '../hooks/apiHooks/comment/useFetchComments';
 import { useDeleteComment } from '../hooks/apiHooks/comment/useDeleteComment';
 import { useCreateComment } from '../hooks/apiHooks/comment/useCreateComment';
-import { getAuth } from 'firebase/auth';
+import { useEditComment } from '../hooks/apiHooks/comment/useEditComment';
+import { getAuth, User } from 'firebase/auth';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { commentQueryKeys } from '../consts';
-import { useEditComment } from '../hooks/apiHooks/comment/useEditComment';
-import { Edit, Delete } from '@mui/icons-material'; // Import Edit and Delete icons
+import { Edit, Delete } from '@mui/icons-material';
 
 interface CommentSectionProps {
     postId: string;
@@ -166,34 +324,61 @@ interface CommentSectionProps {
 
 const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const queryClient = useQueryClient();
-
     const [newCommentText, setNewCommentText] = useState('');
     const { data: comments } = useFetchComments(postId); // Fetch comments using the hook
     const [editCommentText, setEditCommentText] = useState('');
     const [editCommentId, setEditCommentId] = useState<string | null>(null); // To store the ID of the comment being edited
+    const [currentUser, setCurrentUser] = useState<User | null>(null); // Store the current user
+    const [userIdFromFirestore, setUserIdFromFirestore] = useState<string | null>(null); // Store the Firestore user ID
 
     const { mutate: createComment } = useCreateComment(); // Use the hook to create a comment
     const { mutate: deleteComment } = useDeleteComment(); // Use the hook to delete a comment
     const { mutate: editComment } = useEditComment(); // Use the hook to edit a comment
 
     const auth = getAuth();
-    const user = auth.currentUser;
 
+    // Fetch current authenticated user from Firebase Auth and user data from Firestore
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                setCurrentUser(user);
+
+                // Fetch user details from Firestore using the user's UID
+                const firestore = getFirestore();
+                const userRef = doc(firestore, 'users', user.uid); // Assuming 'users' is your Firestore collection
+                const userDoc = await getDoc(userRef);
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    console.log('Firestore Id:', userData.Id); // Logging Firestore Id
+                    console.log('Firebase Auth user.uid:', user.uid);
+                    setUserIdFromFirestore(userData.Id || user.uid); // Adjusted to use Firestore 'Id' or fallback to Firebase Auth UID
+                }
+            } else {
+                setCurrentUser(null);
+                setUserIdFromFirestore(null); // Reset user data on logout
+            }
+        });
+
+        return () => unsubscribe();
+    }, [auth]);
+
+    // Handle comment submission
     const handleCommentSubmit = () => {
         if (!newCommentText.trim()) {
             alert('Comment cannot be empty');
             return;
         }
 
-        if (!user) {
+        if (!currentUser || !userIdFromFirestore) {
             alert('You must be logged in to comment.');
             return;
         }
 
         const newComment: Comment = {
-            commentId: 'new-id', // This will be replaced by a real ID from the backend
+            commentId: 'new-id', // Placeholder, replaced by backend ID
             postId: postId!,
-            authorId: user.uid,
+            UserId: userIdFromFirestore, // Use Firestore user ID
             content: newCommentText,
             createdAt: new Date(),
         };
@@ -201,7 +386,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         createComment(newComment, {
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: commentQueryKeys.all(postId) });
-                setNewCommentText('');
+                setNewCommentText(''); // Clear input after successful submission
             },
             onError: (error) => {
                 console.error('Failed to submit comment:', error);
@@ -210,14 +395,15 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         });
     };
 
+    // Handle editing a comment
     const handleEditComment = (commentId: string, content: string) => {
         console.log("Editing comment:", commentId);
         setEditCommentId(commentId);
         setEditCommentText(content);
     };
 
+    // Save the edited comment
     const handleSaveEditComment = () => {
-        
         if (!editCommentText.trim() || !editCommentId) return;
 
         editComment({ commentId: editCommentId, content: editCommentText, postId }, {
@@ -229,6 +415,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         });
     };
 
+    // Handle deleting a comment
     const handleDeleteComment = (commentId: string) => {
         deleteComment(commentId, {
             onSuccess: () => {
@@ -244,38 +431,45 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     return (
         <Box>
             <Typography variant="h5">Comments</Typography>
-            {comments?.slice(0, 3).map((comment, index) => (
-                <Box key={index} sx={{ mt: 2 }}>
-                    {editCommentId === comment.commentId ? (
-                        <TextField
-                            value={editCommentText}
-                            onChange={(e) => setEditCommentText(e.target.value)}
-                            fullWidth
-                            multiline
-                            rows={2}
-                        />
-                    ) : (
-                        <Typography variant="body2">
-                            {comment.content} (Posted by: {comment.authorId} at {new Date(comment.createdAt).toLocaleString()})
-                        </Typography>
-                    )}
-                    {comment.authorId === user?.uid && (
-                        <Box>
-                            <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)}>
-                                <Edit />
-                            </IconButton>
-                            <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)}>
-                                <Delete />
-                            </IconButton>
-                            {editCommentId === comment.commentId && (
-                                <Button color="primary" onClick={handleSaveEditComment}>
-                                    Save
-                                </Button>
-                            )}
-                        </Box>
-                    )}
-                </Box>
-            ))}
+            {comments?.slice(0, 3).map((comment, index) => {
+                console.log("Comment UserId:", comment.UserId, "Firestore userId:", userIdFromFirestore);
+
+                const isOwner = comment.UserId === userIdFromFirestore;
+
+                return (
+                    <Box key={index} sx={{ mt: 2 }}>
+                        {editCommentId === comment.commentId ? (
+                            <TextField
+                                value={editCommentText}
+                                onChange={(e) => setEditCommentText(e.target.value)}
+                                fullWidth
+                                multiline
+                                rows={2}
+                            />
+                        ) : (
+                            <Typography variant="body2">
+                                {comment.content} (Posted by: {comment.UserId || 'Unknown'} at {new Date(comment.createdAt).toLocaleString()})
+                            </Typography>
+                        )}
+
+                        {isOwner && (
+                            <Box>
+                                <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)}>
+                                    <Edit />
+                                </IconButton>
+                                <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)}>
+                                    <Delete />
+                                </IconButton>
+                                {editCommentId === comment.commentId && (
+                                    <Button color="primary" onClick={handleSaveEditComment}>
+                                        Save
+                                    </Button>
+                                )}
+                            </Box>
+                        )}
+                    </Box>
+                );
+            })}
 
             <Box sx={{ mt: 4 }}>
                 <TextField

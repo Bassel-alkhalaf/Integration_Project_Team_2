@@ -1,8 +1,9 @@
+// ../types/comment.type.ts
 export interface Comment {
   commentId: string;
   postId: string;
-  authorId: string;
+  UserId: string;
   content: string;
   createdAt: Date;
-  updatedAt?: Date;
+  updatedAt?: Date | null;
 }

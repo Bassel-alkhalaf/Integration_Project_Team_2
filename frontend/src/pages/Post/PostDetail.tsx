@@ -139,6 +139,12 @@
 //     );
 // }
 
+
+
+
+
+
+
 import { useState, useEffect } from 'react';
 import { Container, TextField, Button, Typography, Box, IconButton } from '@mui/material';
 import { createComment, getPostComments } from '../../api/apis/comment.api'; // Adjust the path as needed
@@ -170,6 +176,10 @@ export default function PostDetail() {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user); // Set the user state when logged in
+            if (user) {
+                console.log("PostDetail Firestore userId:", user.uid);
+                console.log("PostDetail Firebase Auth user.uid:", user.uid);
+            }
         });
 
         return () => unsubscribe();
@@ -186,7 +196,7 @@ export default function PostDetail() {
                 setComments(postComments);
                 setCommentsCount(postComments.length);
             } catch (error) {
-                console.error("Failed to fetch post or comments:", error);
+                console.error("PostDetail Fetch Error: Failed to fetch post or comments:", error);
             } finally {
                 setIsLoading(false); 
             }
@@ -212,7 +222,7 @@ export default function PostDetail() {
             const newComment: Comment = {
                 commentId: 'new-id', // This will be replaced by a real ID from the backend
                 postId: postId!,
-                authorId: currentUser.uid, // Current user's UID
+                UserId: currentUser.uid, // Current user's UID
                 content: commentText,
                 createdAt: new Date(),
             };
@@ -222,8 +232,10 @@ export default function PostDetail() {
             setCommentText(''); // Clear the input after submission
             queryClient.invalidateQueries({ queryKey: [commentQueryKeys.all(postId), "posts"] });
 
+            console.log("PostDetail Comment Submitted by:", currentUser.uid);
+
         } catch (error) {
-            console.error("Failed to submit comment:", error);
+            console.error("PostDetail Comment Submission Error:", error);
             alert("Failed to submit comment. Please try again.");
         } finally {
             setIsSubmitting(false);
@@ -232,17 +244,20 @@ export default function PostDetail() {
 
     // Handle deleting a comment
     const handleDeleteComment = (commentId: string) => {
+        console.log(`PostDetail Deleting Comment with commentId: ${commentId}`);
         setComments((prevComments) => prevComments.filter((comment) => comment.commentId !== commentId));
     };
 
     // Handle editing a comment
     const handleEditComment = (commentId: string, content: string) => {
+        console.log(`PostDetail Editing Comment with commentId: ${commentId}`);
         setEditCommentId(commentId);
         setEditCommentText(content);
     };
 
     // Save the edited comment
     const handleSaveEditComment = () => {
+        console.log(`PostDetail Saving Edited Comment with commentId: ${editCommentId}`);
         setComments((prevComments) => 
             prevComments.map((comment) => 
                 comment.commentId === editCommentId ? { ...comment, content: editCommentText } : comment
@@ -271,39 +286,47 @@ export default function PostDetail() {
             {commentsCount > 0 ? (
                 <Box sx={{ mt: 4 }}>
                     <Typography variant="h5">Comments</Typography>
-                    {comments.map((comment) => (
-                        <Box key={comment.commentId} sx={{ mt: 2 }}>
-                            {editCommentId === comment.commentId ? (
-                                <TextField
-                                    value={editCommentText}
-                                    onChange={(e) => setEditCommentText(e.target.value)}
-                                    fullWidth
-                                    multiline
-                                    rows={2}
-                                />
-                            ) : (
-                                <Typography variant="body2">
-                                    {comment.content} (Posted by: {comment.authorId} at {new Date(comment.createdAt).toLocaleString()})
-                                </Typography>
-                            )}
+                    {comments.map((comment) => {
+                        const isOwner = comment.UserId === currentUser?.uid;
+                        if (isOwner) {
+                            // Log debug information
+                            console.log(`PostDetail Render Edit/Delete Buttons for commentId: ${comment.commentId}, authorId: ${comment.UserId}, currentUser.uid: ${currentUser?.uid}`);
+                        }
 
-                            {comment.authorId === currentUser?.uid && ( // Check if the current user is the comment owner
-                                <Box>
-                                    <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)}>
-                                        <Edit />
-                                    </IconButton>
-                                    <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)}>
-                                        <Delete />
-                                    </IconButton>
-                                    {editCommentId === comment.commentId && (
-                                        <Button onClick={handleSaveEditComment} color="primary">
-                                            Save
-                                        </Button>
-                                    )}
-                                </Box>
-                            )}
-                        </Box>
-                    ))}
+                        return (
+                            <Box key={comment.commentId} sx={{ mt: 2 }}>
+                                {editCommentId === comment.commentId ? (
+                                    <TextField
+                                        value={editCommentText}
+                                        onChange={(e) => setEditCommentText(e.target.value)}
+                                        fullWidth
+                                        multiline
+                                        rows={2}
+                                    />
+                                ) : (
+                                    <Typography variant="body2">
+                                        {comment.content} (Posted by: {comment.UserId || 'Unknown'} at {new Date(comment.createdAt).toLocaleString()})
+                                    </Typography>
+                                )}
+
+                                {isOwner && ( // Check if the current user is the comment owner
+                                    <Box>
+                                        <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)}>
+                                            <Edit />
+                                        </IconButton>
+                                        <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)}>
+                                            <Delete />
+                                        </IconButton>
+                                        {editCommentId === comment.commentId && (
+                                            <Button onClick={handleSaveEditComment} color="primary">
+                                                Save
+                                            </Button>
+                                        )}
+                                    </Box>
+                                )}
+                            </Box>
+                        );
+                    })}
                 </Box>
             ) : (
                 <Typography variant="body2" sx={{ mt: 4 }}>No comments yet.</Typography>
