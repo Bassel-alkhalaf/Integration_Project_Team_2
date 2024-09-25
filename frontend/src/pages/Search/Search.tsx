@@ -2,37 +2,11 @@ import { Box, Tab, Tabs } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { a11yProps, TabPanel } from '../../components';
 import { searchQueryKeys } from '../../consts';
+import { revertObjectKeyValue } from '../../utils';
 import { CommunitySearchResultList } from './CommunitySearchResultList';
 import { UserSearchResultList } from './UserSearchResultList';
-
-interface TabPanelProps {
-	children?: React.ReactNode;
-	index: number;
-	value: number;
-}
-
-function CustomTabPanel(props: TabPanelProps) {
-	const { children, value, index, ...other } = props;
-
-	return (
-		<div
-			role='tabpanel'
-			hidden={value !== index}
-			id={`simple-tabpanel-${index}`}
-			aria-labelledby={`simple-tab-${index}`}
-			{...other}>
-			{value === index && <Box sx={{ px: 1, py: 3 }}>{children}</Box>}
-		</div>
-	);
-}
-
-function a11yProps(index: number) {
-	return {
-		id: `simple-tab-${index}`,
-		'aria-controls': `simple-tabpanel-${index}`,
-	};
-}
 
 const tabOptions = {
 	posts: 0,
@@ -40,7 +14,7 @@ const tabOptions = {
 	users: 2,
 };
 
-const reverseTabOptions = Object.fromEntries(Object.entries(tabOptions).map(([key, value]) => [value, key]));
+const reverseTabOptions = revertObjectKeyValue(tabOptions);
 
 export function Search() {
 	const queryClient = useQueryClient();
@@ -68,15 +42,15 @@ export function Search() {
 					<Tab label='Users' {...a11yProps(2)} />
 				</Tabs>
 			</Box>
-			<CustomTabPanel value={currentTabIndex} index={0}>
+			<TabPanel value={currentTabIndex} index={0}>
 				search results of posts
-			</CustomTabPanel>
-			<CustomTabPanel value={currentTabIndex} index={1}>
+			</TabPanel>
+			<TabPanel value={currentTabIndex} index={1}>
 				<CommunitySearchResultList query={query} />
-			</CustomTabPanel>
-			<CustomTabPanel value={currentTabIndex} index={2}>
+			</TabPanel>
+			<TabPanel value={currentTabIndex} index={2}>
 				<UserSearchResultList query={query} />
-			</CustomTabPanel>
+			</TabPanel>
 		</Box>
 	);
 }

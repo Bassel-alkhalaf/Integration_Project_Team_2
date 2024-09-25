@@ -19,3 +19,8 @@ export const communityQueryKeys = {
 export const commentQueryKeys = {
 	all: (postId: string | undefined) => ['comment', postId] as const,
 };
+
+export const friendRequestQueryKeys = {
+	all: ['friendRequest'] as const,
+	type: (type: 'sent' | 'received') => [...friendRequestQueryKeys.all, type] as const,
+};

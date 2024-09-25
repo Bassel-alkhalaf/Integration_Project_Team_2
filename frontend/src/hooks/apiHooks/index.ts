@@ -17,3 +17,6 @@ export * from './post/useFetchPosts';
 export * from './comment/useCreateComment';
 export * from './comment/useDeleteComment';
 export * from './comment/useFetchComments';
+
+export * from './friendRequest/useCreateFriendRequest';
+export * from './friendRequest/useGetFriendRequests';
