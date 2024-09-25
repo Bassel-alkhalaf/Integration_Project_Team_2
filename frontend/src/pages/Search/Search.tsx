@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { searchQueryKeys } from '../../consts';
 import { CommunitySearchResultList } from './CommunitySearchResultList';
+import { UserSearchResultList } from './UserSearchResultList';
 
 interface TabPanelProps {
 	children?: React.ReactNode;
@@ -55,7 +56,7 @@ export function Search() {
 
 	const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
 		const newTab = reverseTabOptions[newValue];
-		setSearchParams({ tab: newTab });
+		setSearchParams({ q: query, tab: newTab });
 	};
 
 	return (
@@ -74,7 +75,7 @@ export function Search() {
 				<CommunitySearchResultList query={query} />
 			</CustomTabPanel>
 			<CustomTabPanel value={currentTabIndex} index={2}>
-				search results of users
+				<UserSearchResultList query={query} />
 			</CustomTabPanel>
 		</Box>
 	);

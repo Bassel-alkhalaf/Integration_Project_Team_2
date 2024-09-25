@@ -8,7 +8,7 @@ export const useSearchCommunities = (query: string) => {
 	const errorHandler = useGenericErrHandler();
 
 	return useQuery({
-		queryKey: searchQueryKeys.communities(),
+		queryKey: searchQueryKeys.communities(query),
 		queryFn: () =>
 			searchCommunities(query)
 				.then(res => res)

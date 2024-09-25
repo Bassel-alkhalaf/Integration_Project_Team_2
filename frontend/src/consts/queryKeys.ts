@@ -1,8 +1,8 @@
 export const searchQueryKeys = {
 	all: ['search'] as const,
-	communities: () => [...searchQueryKeys.all, 'communities'] as const,
-	users: () => [...searchQueryKeys.all, 'users'] as const,
-	posts: () => [...searchQueryKeys.all, 'posts'] as const,
+	communities: (query: string) => [...searchQueryKeys.all, 'communities', query] as const,
+	users: (query: string) => [...searchQueryKeys.all, 'users', query] as const,
+	posts: (query: string) => [...searchQueryKeys.all, 'posts', query] as const,
 };
 
 export const userCommunityQueryKeys = {

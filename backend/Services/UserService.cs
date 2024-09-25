@@ -130,5 +130,21 @@ namespace backend.Services
             DocumentReference docRef = _firestoreDb.Collection("users").Document(id);
             await docRef.DeleteAsync();
         }
+
+        public UserInfoDto ConvertToUserInfoDto(User user)
+        {
+            return new UserInfoDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                DOB = user.DOB,
+                Gender = user.Gender,
+                Bio = user.Bio,
+                ProfileImageUrl = user.ProfileImageUrl,
+                Role = user.Role,
+                CreatedAt = user.CreatedAt
+            };
+        }
     }
 }
