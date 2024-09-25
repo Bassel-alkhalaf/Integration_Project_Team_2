@@ -25,11 +25,8 @@ const AuthContext = createContext<AuthContextProps>({
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<UserInfoT | null>(() => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-  const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem('accessToken'));
+  const [user, setUser] = useState<UserInfoT | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -38,17 +35,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const token = await currentUser.getIdToken();
         const userInfo = await getUserInfo(currentUser.uid);
 
-        const userData = { ...userInfo, email: currentUser.email } as UserInfoT;
-        setUser(userData);
+        setUser({ ...userInfo, email: currentUser.email } as UserInfoT);
+        console.log(token)
         setAccessToken(token);
-
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('accessToken', token);
-      } else {
-        setUser(null);
-        setAccessToken(null);
-        localStorage.clear();
-        queryClient.clear();
       }
     });
 
@@ -60,7 +49,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null); // Clear user after logout
     setAccessToken(null);
     queryClient.clear();
-    localStorage.clear();
   };
 
   return (
