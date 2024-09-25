@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../api/apis/login.api';
 import { enqueueSnackbar } from 'notistack';
 import { getAuth } from 'firebase/auth'; // Import Firebase authentication
+import { getUserInfo } from '../api';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -26,7 +27,13 @@ const Login: React.FC = () => {
 
       const auth = getAuth(); // Initialize Firebase Auth
       const user = auth.currentUser; // Get the current logged-in user
-
+      let userInfoObj = null;
+      if (user?.uid){
+         userInfoObj = await getUserInfo(user.uid);
+      }
+           
+      const userJson = JSON.stringify(userInfoObj)
+      localStorage.setItem("user", userJson);
       if (user) {
         const token = await user.getIdToken(); // Get the Firebase auth token
         console.log('Firebase Token:', token); // Log the token

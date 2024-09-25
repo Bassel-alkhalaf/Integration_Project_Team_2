@@ -1,7 +1,7 @@
 import { sendRequest } from "./request";
 import { Post } from "../../types/post.type";
 import { POST_ENDPOINT } from "../endpoints";
-import { EditPostData } from "../../types/editPost.type";
+
 
 const LIMIT = 5;
 
