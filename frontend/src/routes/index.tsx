@@ -6,6 +6,7 @@ import { Community, EditProfile, Friends, Home, Login, PostDetail, Profile, Regi
 
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
+import Blocking from '../pages/Blocking';
 
 function AppRoutes() {
 	return (
@@ -51,6 +52,13 @@ function AppRoutes() {
 				/>
 
 				<Route
+					path='block'
+					element={
+						<Blocking />
+					}
+				/>
+
+                <Route
 					path='not-found'
 					element={
 						<GenericInfo

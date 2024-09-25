@@ -34,7 +34,7 @@ namespace backend.Controllers
                 }
 
                 await _userBlockService.BlockUserAsync(blockingUserId, blockedUserId);
-                return Ok(new { message = "user_blocked_successfully" });
+                return Ok(new { message = "User blocked successfully!" });
             }
             catch (InvalidOperationException ex)
             {
