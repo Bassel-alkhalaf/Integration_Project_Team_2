@@ -4,6 +4,7 @@ import { getProfileInfo, updateProfileInfo } from '../../api/apis/profile.api';
 import { UserUpdateDTO } from '../../types/user.type';
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
+import dayjs from 'dayjs';
 
 export default function EditProfile() {
   const [userData, setUserData] = useState<UserUpdateDTO>({
@@ -24,12 +25,21 @@ export default function EditProfile() {
       .then((data) => {
         console.log('Fetched Profile Data:', data);  // Debug: Check what data is returned
 
+        // let dob = '';
+        // if (data.dob) {
+        //   // Handle dob as a Date object or date string
+        //   const dobDate = new Date(data.dob);
+        //   // Format to 'yyyy-MM-dd' for the date input
+        //   dob = dobDate.toISOString().split('T')[0];
+        // }
+
         let dob = '';
         if (data.dob) {
-          // Handle dob as a Date object or date string
-          const dobDate = new Date(data.dob);
-          // Format to 'yyyy-MM-dd' for the date input
-          dob = dobDate.toISOString().split('T')[0];
+          const [day, month, year] = data.dob.split('/'); // Split 'DD/MM/YYYY' into day, month, year
+          const dobDate = new Date(`${year}-${month}-${day}`); // Construct 'YYYY-MM-DD' for Date object
+          if (!isNaN(dobDate.getTime())) { // Check if the date is valid
+            dob = dobDate.toISOString().split('T')[0]; // Format to 'YYYY-MM-DD' for the date input
+          }
         }
 
         setUserData({
@@ -93,6 +103,9 @@ export default function EditProfile() {
           value={userData.dob || ''}
           onChange={(e) => setUserData({ ...userData, dob: e.target.value })}
           InputLabelProps={{ shrink: true }}
+          inputProps={{
+            max: new Date().toISOString().split('T')[0], // Set today's date as max value
+          }}
         />
         <TextField
           label="Bio"
