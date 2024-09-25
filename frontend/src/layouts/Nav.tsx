@@ -17,9 +17,10 @@ interface PropsI {
 	mobileOpen: boolean;
 	handleDrawerClose: () => void;
 	handleDrawerTransitionEnd: () => void;
+	sx?: object; 
 }
 
-export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd }: PropsI) {
+export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd, sx, }: PropsI) {
 	const { user } = useAuth();
 
 	const drawer = (
@@ -54,7 +55,7 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 	);
 
 	return (
-		<Box component='nav' sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
+		<Box component='nav' sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 },...sx }}>
 			<Drawer
 				variant='temporary'
 				open={mobileOpen}
