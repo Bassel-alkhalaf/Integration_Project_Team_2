@@ -85,9 +85,9 @@ namespace backend.Services
         }
 
         // Method to fetch a user by their ID from Firestore
-        public async Task<UserInfoDto?> GetUserAsync(string Email)
+        public async Task<UserInfoDto?> GetUserAsync(string id)
         {
-            DocumentReference docRef = _firestoreDb.Collection("users").Document(Email);
+            DocumentReference docRef = _firestoreDb.Collection("users").Document(id);
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
             if (!snapshot.Exists)

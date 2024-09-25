@@ -78,10 +78,10 @@ namespace backend.Controllers
             _searchService = searchService;
         }
 
-        [HttpGet("/")]
-        public async Task<ActionResult<User>> Get(string email)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> Get(string id)
         {
-            var user = await _userService.GetUserAsync(email);
+            var user = await _userService.GetUserAsync(id);
             if (user == null) return NotFound();
             return Ok(user);
         }

@@ -74,7 +74,7 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
       },
     });
   };
-  console.log(post)
+
   // Handle submitting edited post data
   const handleEditSubmit = (data: { title: string; text: string; images?: string[] }) => {
     const updatedPost: Post = {
