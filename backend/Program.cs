@@ -40,6 +40,7 @@ builder.Services.AddScoped<FriendshipService>();
 builder.Services.AddScoped<FriendRequestService>();
 builder.Services.AddScoped<UserService>(); 
 builder.Services.AddScoped<SearchService>();
+builder.Services.AddScoped<ReportService>();
 
 builder.Services.AddScoped<ProfileUpdateService>();
 
