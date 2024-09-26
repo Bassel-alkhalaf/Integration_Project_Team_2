@@ -127,5 +127,34 @@ namespace backend.Services
             return null;
         }
 
+
+        public async Task<List<Post>> GetPostsByDate(System.DateTime selectedDate) // Specify System.DateTime here
+        {
+            CollectionReference postsRef = _firestoreDb.Collection("posts");
+
+            // Set the range for the selected day (start and end of the day)
+            var startOfDay = Timestamp.FromDateTime(selectedDate.Date.ToUniversalTime());
+            var endOfDay = Timestamp.FromDateTime(selectedDate.Date.AddDays(1).ToUniversalTime());
+
+            // Query posts that were created between the start and end of the selected day
+            Query query = postsRef
+                .WhereGreaterThanOrEqualTo("createdAt", startOfDay)
+                .WhereLessThan("createdAt", endOfDay);
+
+            QuerySnapshot snapshot = await query.GetSnapshotAsync();
+            List<Post> posts = new List<Post>();
+
+            foreach (DocumentSnapshot document in snapshot.Documents)
+            {
+                if (document.Exists)
+                {
+                    Post post = document.ConvertTo<Post>();
+                    posts.Add(post);
+                }
+            }
+
+            return posts;
+        }
+
     }
 }

@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, List, ListItem, ListItemText, Snackbar, Alert } from '@mui/material';
+import { Box, Typography, Button, List, ListItem, ListItemText, Snackbar, Alert, TextField } from '@mui/material';
 import { useFetchUsers } from '../../hooks/apiHooks/Admin/useFetchUsers';
 import { useUpdateUserRole } from '../../hooks/apiHooks/Admin/useUpdateUserRole';
+import { useFetchPostsByDate } from '../../hooks/apiHooks/Admin/useFetchPostsByDate';
 import { UserInfoDTO } from '../../types/user.type';
 import { getAuth } from 'firebase/auth'; // Import Firebase auth to get current user
+import dayjs from 'dayjs';
 
 const AdminPanel: React.FC = () => {
-  const { data: users, isLoading, isError } = useFetchUsers();
+  const { data: users, isLoading: usersLoading, isError: usersError } = useFetchUsers();
   const { mutate: updateUserRole } = useUpdateUserRole();
-  
   const [flashMessage, setFlashMessage] = useState<string | null>(null); // State for flash messages
   const [flashSeverity, setFlashSeverity] = useState<'success' | 'error'>('success'); // State for flash message severity
-  
   const auth = getAuth();
   const currentUserUid = auth.currentUser?.uid; // Get the current logged-in user ID
+
+  const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD')); // State for selected date
+  const { data: posts, isLoading: postsLoading, isError: postsError } = useFetchPostsByDate(selectedDate); // Fetch posts by selected date
 
   const handlePromote = (uid: string) => {
     updateUserRole({ uid, role: 'Admin' }, {
@@ -54,11 +57,15 @@ const AdminPanel: React.FC = () => {
     });
   };
 
-  if (isLoading) {
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(event.target.value); // Update the selected date
+  };
+
+  if (usersLoading) {
     return <Typography variant="h6">Loading users...</Typography>;
   }
 
-  if (isError || !users) {
+  if (usersError || !users) {
     return <Typography variant="h6" color="error">Failed to load users</Typography>;
   }
 
@@ -106,6 +113,31 @@ const AdminPanel: React.FC = () => {
           {flashMessage}
         </Alert>
       </Snackbar>
+
+      {/* Date Picker and Post Count */}
+      <Typography variant="h6" gutterBottom style={{ marginTop: '20px' }}>
+        View Posts by Date
+      </Typography>
+      <TextField
+        label="Select Date"
+        type="date"
+        value={selectedDate}
+        onChange={handleDateChange}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        style={{ marginBottom: '20px' }}
+      />
+
+      {postsLoading && <Typography variant="h6">Loading post count...</Typography>}
+      {postsError && <Typography variant="h6" color="error">Failed to load post count</Typography>}
+
+      {/* Display only the number of posts */}
+      {posts && (
+        <Typography variant="h6">
+          {posts.length} posts were created on {selectedDate}.
+        </Typography>
+      )}
     </Box>
   );
 };
