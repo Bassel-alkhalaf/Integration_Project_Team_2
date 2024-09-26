@@ -96,6 +96,8 @@ function AppRoutes() {
           <Route index element={<Home />} />
           <Route path="/friends" element={<Friends />} />
           <Route path="/posts" element={<PostDetail />} />
+          <Route path="/search" element={<Search />} />  {/* Added Search Route */}
+          <Route path="/community/:communityId" element={<Community />} />  {/* Added Community Route */}
         </Route>
 
         {/* Protected Route for Profile (Accessible by User and Admin) */}
