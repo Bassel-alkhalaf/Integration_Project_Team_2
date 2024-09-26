@@ -286,6 +286,7 @@ namespace backend.Controllers
         //     return NoContent();
         // }
 
+
         [HttpDelete("{id}")]
         [FirebaseAuth]
         public async Task<ActionResult> Delete(string id)
