@@ -418,11 +418,24 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                     {comment.content}
                                 </Typography>
                             )}
-                            {(isOwner || userRole === 'Admin') && ( // Allow Admin to delete or edit any comment
+                            {(isOwner ) && ( // Allow Admin to delete or edit any comment
                                 <Box>
                                     <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
                                         <Edit />
                                     </IconButton>
+                                    <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
+                                        <Delete />
+                                    </IconButton>
+                                    {editCommentId === comment.commentId && (
+                                        <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
+                                            Save
+                                        </Button>
+                                    )}
+                                </Box>
+                            )}
+                             {(userRole === 'Admin'&& !isOwner) && ( // Allow Admin to delete or edit any comment
+                                <Box>
+                                    
                                     <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
                                         <Delete />
                                     </IconButton>
