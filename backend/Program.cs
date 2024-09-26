@@ -45,6 +45,7 @@ builder.Services.AddScoped<ProfileUpdateService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<FirebaseAuthService>();
+builder.Services.AddScoped<AdminService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

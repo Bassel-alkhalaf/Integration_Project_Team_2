@@ -14,3 +14,5 @@ export { default as PostDetail } from './Post/PostDetail';
 
 export { default as EditProfile } from './Profile/EditProfile'; 
 
+
+export { default as AdminPanel } from './Admin/AdminPanel'; 

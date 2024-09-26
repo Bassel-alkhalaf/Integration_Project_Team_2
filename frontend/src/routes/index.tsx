@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { GenericInfo } from '../components';
 import { MainLayout } from '../layouts';
 
-import { Community, EditProfile, Friends, Home, Login, PostDetail, Profile, Register, Search } from '../pages';
+import { AdminPanel,Community, EditProfile, Friends, Home, Login, PostDetail, Profile, Register, Search } from '../pages';
 
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
@@ -20,7 +20,11 @@ function AppRoutes() {
 				{/* <Route element={<RoleBasedRoute allowedRoles={[Role.User, Role.Admin]} />}>
 					<Route path="/profile" element={<Profile />} />
 				</Route> */}
-
+				{/* Protected Route for Admins */}
+				{/* <Route element={<RoleBasedRoute allowedRoles={[Role.Admin]} />}>
+					<Route path="/admin" element={<AdminPanel />} />
+				</Route> */}
+				<Route path="/admin" element={<AdminPanel />} />
 				<Route path='/profile' element={<Profile />} />
 
 				<Route path='/posts/:postId' element={<PostDetail />} />
