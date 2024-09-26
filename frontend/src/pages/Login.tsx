@@ -9,7 +9,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../api/apis/login.api';
 import { enqueueSnackbar } from 'notistack';
-import { getAuth } from 'firebase/auth'; // Import Firebase authentication
+import { getAuth } from 'firebase/auth'; // Firebase authentication
+import { getFirestore, doc, getDoc } from 'firebase/firestore'; // Firestore to fetch user role
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -20,25 +21,45 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    console.log('Attempting login with:', { email, password }); // Log the email and password being used
     try {
-      await loginUser(email, password); // Calls the login function from the API
+      // Authenticate user with Firebase
+      await loginUser(email, password);
 
-      const auth = getAuth(); // Initialize Firebase Auth
-      const user = auth.currentUser; // Get the current logged-in user
+      const auth = getAuth();
+      const user = auth.currentUser;
 
       if (user) {
-        const token = await user.getIdToken(); // Get the Firebase auth token
-        console.log('Firebase Token:', token); // Log the token
-      } else {
-        console.error('No user is logged in.');
-      }
+        // Get user ID and Firestore instance
+        const userId = user.uid;
+        const db = getFirestore();
 
-      enqueueSnackbar('Login successful!', { variant: 'success' }); // Display success notification
-      navigate('/'); // Navigate to the homepage after login
+        // Fetch user's document from the 'users' collection
+        const userDocRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const userRole = userData?.Role;
+
+          // Check if the user role is 'Suspended'
+          if (userRole === 'Suspended') {
+            enqueueSnackbar('Your account is suspended. Please contact support.', { variant: 'warning' });
+            await getAuth().signOut(); // Sign the user out
+            return; // Prevent further navigation
+          }
+
+          // Proceed if the user is not suspended
+          enqueueSnackbar('Login successful!', { variant: 'success' });
+          navigate('/'); // Redirect to homepage
+        } else {
+          setError('User not found');
+        }
+      } else {
+        setError('No user is logged in.');
+      }
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message); // If error is an instance of Error, display the message
+        setError(err.message);
         enqueueSnackbar('Login failed!', { variant: 'error' });
       } else {
         setError('An unknown error occurred');
