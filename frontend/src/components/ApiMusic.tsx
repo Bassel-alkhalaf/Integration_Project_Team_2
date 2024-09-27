@@ -1,20 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
+import { getAccessToken } from './../api/apis/spotifyService.api';
 
-export function ApiMusic() {
 
-  const playlistId = '6NIrf8ILqP2hLpgiOC6VzA'; // Spotify playlist ID
+export function PlaylistComponent() {
+  const [playlistData, setPlaylistData] = useState<any>(null);
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    // get token
+    const fetchToken = async () => {
+      try {
+        const accessToken = await getAccessToken();
+        setToken(accessToken); // set token
+      } catch (error) {
+        console.error('Error fetching access token:', error);
+      }
+    };
+
+    fetchToken();
+  }, []); 
+
+  useEffect(() => {
+    const cachedPlaylist = localStorage.getItem('playlistData');
+
+    if (cachedPlaylist) {
+      
+      setPlaylistData(JSON.parse(cachedPlaylist));
+    } else if (token) {
+      
+      fetchWithRetry('https://api.spotify.com/v1/playlists/6NIrf8ILqP2hLpgiOC6VzA', token)
+        .then(data => {
+          setPlaylistData(data);
+          localStorage.setItem('playlistData', JSON.stringify(data));
+        })
+        .catch(error => {
+          console.error('Error fetching playlist data:', error);
+        });
+    }
+  }, [token]); 
 
   return (
-    <Box sx={{ p: 2, bgcolor: 'orange', boxShadow: 2 }}>
-      <Typography variant='h6' align='center'>Top Songs List</Typography>
-      
-
-      {/* insert Spotify list */}
-      <Box sx={{ mt: 3 }}>
+    <Box sx={{ p: 2 }}>
+      {playlistData ? (
         <iframe
           title="Spotify Embed: Recommendation Playlist"
-          src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`}
+          src={`https://open.spotify.com/embed/playlist/6NIrf8ILqP2hLpgiOC6VzA?utm_source=generator&theme=0`}
           width="100%"
           height="100%"
           style={{ minHeight: '360px' }}
@@ -22,7 +53,28 @@ export function ApiMusic() {
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           loading="lazy"
         />
-      </Box>
+      ) : (
+        <p>loading...</p>
+      )}
     </Box>
   );
+}
+
+
+async function fetchWithRetry(url: string, token: string, retries: number = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      if (i === retries - 1) throw error; 
+    }
+  }
 }
