@@ -24,7 +24,7 @@ import { enqueueSnackbar } from "notistack";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore"; // Firestore
 import EditPostDialogue from "./EditPostDialogue";
 import CommentSection from "./CommentSection";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface PostProps {
   post: Post;
