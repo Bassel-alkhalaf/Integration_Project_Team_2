@@ -64,7 +64,7 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 	);
 
 	return (
-		<Box component='nav' sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
+		<Box component='nav' className="nav-page" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
 			<Drawer
 				variant='temporary'
 				open={mobileOpen}

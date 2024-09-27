@@ -639,9 +639,9 @@ export default function PostDetail() {
           </Box>
 
           {/* Comments Accordion */}
-          <Accordion expanded={isCommentsOpen} sx={{ width: "100%", marginTop: 2 }}>
-            <AccordionSummary expandIcon={<ExpandMore />} onClick={toggleComments}>
-              <Typography>Comments ({commentCount})</Typography>
+          <Accordion className="commentsAccordionSytle" expanded={isCommentsOpen} sx={{ width: "100%", marginTop: 2 }}>
+            <AccordionSummary  expandIcon={<ExpandMore />} onClick={toggleComments}>
+              <Typography >Comments ({commentCount})</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <CommentSection postId={post.postId}  />
