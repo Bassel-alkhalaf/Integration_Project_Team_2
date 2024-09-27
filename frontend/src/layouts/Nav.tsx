@@ -13,6 +13,8 @@ import {
 import { Box, Divider, Drawer, List, Toolbar } from '@mui/material';
 import { NavItem, UserCommunityList } from '../components';
 import { useAuth } from '../contexts';
+import React, { useState, useEffect } from 'react';
+import { ApiMusic} from './../components/ApiMusic';
 
 interface PropsI {
 	drawerWidth: number;
@@ -60,6 +62,11 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 			</List>
 
 			{user && <UserCommunityList />}
+
+			{/*add API */}
+      <Box sx={{ width: drawerWidth - 20, height: drawerWidth, margin: 'auto' }}>
+        <ApiMusic />
+      </Box>
 		</>
 	);
 
