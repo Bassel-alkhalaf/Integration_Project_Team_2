@@ -64,7 +64,7 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 			{user && <UserCommunityList />}
 
 			{/*add API */}
-      <Box sx={{ width: drawerWidth - 20, height: drawerWidth, margin: 'auto' }}>
+      <Box sx={{ width: drawerWidth, height: drawerWidth, margin: 'auto' }}>
         <PlaylistComponent />
       </Box>
 		</>

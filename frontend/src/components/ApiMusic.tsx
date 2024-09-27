@@ -2,9 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { Box } from '@mui/material';
 import { getAccessToken } from './../api/apis/spotifyService.api';
 
+interface PlaylistData {
+  id: string;
+  name: string;
+  description: string;
+  tracks: {
+    items: Array<{
+      track: {
+        id: string;
+        name: string;
+        artists: Array<{ name: string }>;
+      };
+    }>;
+  };
+}
 
 export function PlaylistComponent() {
-  const [playlistData, setPlaylistData] = useState<any>(null);
+  const [playlistData, setPlaylistData] = useState<PlaylistData | null >(null);
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
