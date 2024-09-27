@@ -31,7 +31,7 @@ export const Home: React.FC = () => {
             <React.Fragment key={i}>
               {Array.isArray(group.data) && group.data.length > 0 ? (
                 group.data.map((post: Post) => (
-                  <PostItem key={post.postId} post={post} userId={authorId} /> // Pass userId to PostItem
+                  <PostItem key={post.postId} post={post} user={user} /> // Pass userId to PostItem
                 ))
               ) : (
                 <p>No posts in this group.</p>

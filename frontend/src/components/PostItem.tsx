@@ -25,13 +25,14 @@ import { getFirestore, collection, query, where, getDocs } from "firebase/firest
 import EditPostDialogue from "./EditPostDialogue";
 import CommentSection from "./CommentSection";
 import { useNavigate } from "react-router-dom";
+import { UserInfoT } from "../types/user.type";
 
 interface PostProps {
   post: Post;
-  userId: string;
+  user: UserInfoT | null;
 }
 
-const PostItem: React.FC<PostProps> = ({ post, userId }) => {
+const PostItem: React.FC<PostProps> = ({ post, user }) => {
   const navigate = useNavigate();
   const { mutate: deletePost } = useDeletePost();
   const { mutate: editPost } = useEditPost();
@@ -44,8 +45,8 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
   const [commentCount, setCommentCount] = useState(0); // State for comment count
 
   const queryClient = useQueryClient();
-  const isOwner = userId === post.authorId; // Check if the user owns the post
-
+  const isOwner = user !== null ? user.id === post.authorId : false; // Check if the user owns the post
+  const isAdmin = user !== null ? user.role === "Admin": "User";
   // Fetch the comment count for the post from Firestore
   useEffect(() => {
     const fetchCommentCount = async () => {
@@ -184,7 +185,7 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
             {commentCount}
           </Typography>
         </IconButton>
-        {isOwner && (
+        {isOwner && !isAdmin &&(
           <>
             <IconButton onClick={() => setEditDialogOpen(true)} aria-label="edit">
               <Edit />
@@ -193,6 +194,11 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
               <Delete />
             </IconButton>
           </>
+        )}
+        {isOwner && isAdmin &&(
+          <IconButton onClick={() => setDeleteDialogOpen(true)} aria-label="delete">
+              <Delete />
+          </IconButton>
         )}
       </CardActions>
 
