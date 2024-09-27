@@ -45,8 +45,10 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
   const [commentCount, setCommentCount] = useState(0); // State for comment count
 
   const queryClient = useQueryClient();
-  const isOwner = user !== null ? user.id === post.authorId : false; // Check if the user owns the post
-  const isAdmin = user !== null ? user.role === "Admin": "User";
+  
+  const isOwner = user != null ? user.id === post.authorId : false; // Check if the user owns the post
+  const isAdmin = user != null ? user.role === "Admin": false;
+  
   // Fetch the comment count for the post from Firestore
   useEffect(() => {
     const fetchCommentCount = async () => {
@@ -185,7 +187,7 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
             {commentCount}
           </Typography>
         </IconButton>
-        {isOwner && !isAdmin &&(
+        {isOwner && !isAdmin ?(
           <>
             <IconButton onClick={() => setEditDialogOpen(true)} aria-label="edit">
               <Edit />
@@ -194,12 +196,12 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
               <Delete />
             </IconButton>
           </>
-        )}
-        {isOwner && isAdmin &&(
+        ):
+         isAdmin ?(
           <IconButton onClick={() => setDeleteDialogOpen(true)} aria-label="delete">
               <Delete />
           </IconButton>
-        )}
+        ):<></>}
       </CardActions>
 
       {/* Comments Accordion */}
