@@ -82,5 +82,22 @@ namespace backend.Controllers
 
             return Ok(post);
         }
+
+
+   // GET api/posts/by-date
+        [HttpGet("posts/by-date")]
+        public async Task<IActionResult> GetPostsByDate([FromQuery] System.DateTime date)  // Use System.DateTime explicitly
+        {
+            try
+            {
+                var posts = await _postService.GetPostsByDate(date);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error fetching posts: {ex.Message}");
+            }
+        }
+
     }
 }

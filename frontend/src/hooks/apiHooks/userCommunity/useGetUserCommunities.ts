@@ -17,6 +17,5 @@ export const useGetUserCommunities = (accessToken: string, option: 'all' | 'owne
 					errorHandler(err);
 					return null;
 				}),
-		enabled: !!accessToken,
 	});
 };

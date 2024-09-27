@@ -1,6 +1,6 @@
 // src/pages/Home.tsx
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useFetchPosts, useCreatePost } from '../../hooks/apiHooks';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, IconButton, MenuItem, Select, InputLabel, FormControl, Stack } from '@mui/material';
 import PostItem from '../../components/PostItem';
@@ -9,6 +9,7 @@ import { Post } from '../../types/post.type';
 import { UserCommunitySelect } from '../../components/UserCommunitySelect';
 import { useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
+import { useAuth } from '../../contexts';
 
 
 export const Home: React.FC = () => {
@@ -33,11 +34,9 @@ export const Home: React.FC = () => {
     visibility: 'public',
   });
 
-  // Retrieve user info from localStorage
-  const user1: string | null = localStorage.getItem("user");
-  const userObj = user1 !== null ? JSON.parse(user1) : null;
-  const authorId = userObj?._id || ''; // Use fallback if userObj is null
-  const authorName = `${userObj?.firstName || ''} ${userObj?.lastName || ''}`; // Fallback for missing user name
+  const { user } = useAuth();
+  const authorInfo = useMemo(() => { return { authorId: user?.id || '', authorName: `${user?.firstName || ''} ${user?.lastName || ''}`} }, [user]);
+  const {authorId, authorName} =  authorInfo;
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);

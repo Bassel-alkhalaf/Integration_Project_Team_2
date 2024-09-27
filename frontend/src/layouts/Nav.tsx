@@ -7,6 +7,8 @@ import {
 	HomeOutlined as HomeOutlinedIcon,
 	PeopleAlt as PeopleAltIcon,
 	PeopleAltOutlined as PeopleAltOutlinedIcon,
+	AdminPanelSettings as AdminPanelSettingsIcon,
+	AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon,
 } from '@mui/icons-material';
 import { Box, Divider, Drawer, List, Toolbar } from '@mui/material';
 import { NavItem, UserCommunityList } from '../components';
@@ -43,6 +45,14 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 							icon={<AccountCircleOutlinedIcon />}
 							selectedIcon={<AccountCircleIcon />}
 						/>
+						{user.role === 'Admin' && (
+							<NavItem
+								path='/admin'
+								label='Admin Panel'
+								icon={<AdminPanelSettingsOutlinedIcon />}
+								selectedIcon={<AdminPanelSettingsIcon />}
+							/>
+						)}
 					</>
 				)}
 

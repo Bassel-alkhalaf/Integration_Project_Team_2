@@ -50,3 +50,23 @@ export const getPostDetails = async (postId: string) => {
   const res = await sendRequest({ method: 'GET', endpoint: url });
   return res.data;
 };
+
+
+// Fetch posts by date
+// Fetch posts by date
+export const fetchPostsByDate = async (selectedDate: string): Promise<Post[]> => {
+  try {
+    const url = `${POST_ENDPOINT}/by-date?date=${selectedDate}`;
+    const res = await sendRequest({
+      endpoint: url,
+      method: 'GET',
+    });
+    
+    console.log("Fetched posts: ", res.data); // Add this to log the fetched posts
+
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching posts by date: ", error); // Log any errors
+    throw new Error("Failed to fetch posts by date.");
+  }
+};

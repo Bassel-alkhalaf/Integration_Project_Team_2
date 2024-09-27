@@ -90,7 +90,7 @@
 //                 CreatedAt = newComment.CreatedAt.ToDateTime(),
 //             };
 
-           
+
 //             return CreatedAtAction(nameof(GetCommentById), new { id = newComment.Id }, responseDto);
 //         }
 
@@ -158,10 +158,12 @@ namespace backend.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly CommentService _commentService;
+        private readonly FirestoreDb _firestoreDb;
 
-        public CommentsController(CommentService commentService)
+        public CommentsController(CommentService commentService, FirestoreDb firestoreDb)
         {
             _commentService = commentService;
+            _firestoreDb = firestoreDb;
         }
 
         // Get a specific comment by ID
@@ -224,7 +226,7 @@ namespace backend.Controllers
             };
 
             await _commentService.AddCommentAsync(newComment);
-            
+
             // Increment comments count in the post document
             bool isSuccess = await _commentService.IncrementCommentsCountAsync(commentDto.PostId);
 
@@ -269,7 +271,22 @@ namespace backend.Controllers
             return Ok(responseDto);
         }
 
-        // Delete a comment by ID
+        // // Delete a comment by ID
+        // [HttpDelete("{id}")]
+        // [FirebaseAuth]
+        // public async Task<ActionResult> Delete(string id)
+        // {
+        //     var firebaseToken = HttpContext.Items["User"] as FirebaseToken;
+        //     if (firebaseToken == null) return Unauthorized();
+
+        //     var comment = await _commentService.GetCommentAsync(id);
+        //     if (comment == null) return NotFound("Comment not found");
+
+        //     await _commentService.DeleteCommentAsync(id);
+        //     return NoContent();
+        // }
+
+
         [HttpDelete("{id}")]
         [FirebaseAuth]
         public async Task<ActionResult> Delete(string id)
@@ -277,11 +294,33 @@ namespace backend.Controllers
             var firebaseToken = HttpContext.Items["User"] as FirebaseToken;
             if (firebaseToken == null) return Unauthorized();
 
+            // Fetch the comment from the database
             var comment = await _commentService.GetCommentAsync(id);
             if (comment == null) return NotFound("Comment not found");
 
+            // Check if the user is the comment owner or an Admin
+            if (comment.UserId != firebaseToken.Uid)
+            {
+                // Fetch the user's role from Firestore
+                DocumentReference userRef = _firestoreDb.Collection("users").Document(firebaseToken.Uid);
+                DocumentSnapshot userSnapshot = await userRef.GetSnapshotAsync();
+
+                if (!userSnapshot.Exists || !userSnapshot.ContainsField("Role"))
+                {
+                    return Forbid("Access denied.");
+                }
+
+                var role = userSnapshot.GetValue<string>("Role");
+                if (role != "Admin")
+                {
+                    return Forbid("Only admins or the comment owner can delete this comment.");
+                }
+            }
+
+            // Allow the deletion if the user is either the comment owner or an Admin
             await _commentService.DeleteCommentAsync(id);
             return NoContent();
         }
+
     }
 }

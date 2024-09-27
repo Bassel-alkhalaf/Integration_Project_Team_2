@@ -86,7 +86,7 @@ export function Profile() {
   }
 
   // Check if user.dob is a string or Date, then parse accordingly
-  const dob = user?.dob instanceof Date ? user.dob : new Date(user?.dob ?? '');
+  // const dob = user?.dob instanceof Date ? user.dob : new Date(user?.dob ?? '');
 
   // Determine the profile image, either the user-provided one or the default based on gender
   const profileImageUrl = user?.profileImageUrl || getDefaultProfileImage(user?.gender || '');
@@ -139,7 +139,7 @@ export function Profile() {
               variant="body1"
               sx={{ mt: 2, color: '#555' }}
             >
-              Date of Birth: {dob ? dob.toDateString() : 'N/A'}
+              Date of Birth: {user?.dob || 'N/A'}
             </Typography>
             <Typography
               variant="body1"
