@@ -17,8 +17,8 @@ export const Home: React.FC = () => {
   const authorInfo = useMemo(() => { return { authorId: user?.id || '', authorName: `${user?.firstName || ''} ${user?.lastName || ''}`} }, [user]);
   const {authorId, authorName} =  authorInfo;
   const handleOpen = () => setOpen(true);
- const handleClose = () => setOpen(false);
-
+  const handleClose = () => setOpen(false);
+ 
   return (
     <div>
       <div className="post-list">

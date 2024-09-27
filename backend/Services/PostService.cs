@@ -77,11 +77,11 @@ namespace backend.Services
 
         public async Task CreatePost(Post post)
         {
-            post.postId = Guid.NewGuid().ToString();
-            post.createdAt = System.DateTime.UtcNow;
-            post.updatedAt = System.DateTime.UtcNow;
+            post.PostId = Guid.NewGuid().ToString();
+            post.CreatedAt = System.DateTime.UtcNow;
+            post.UpdatedAt = System.DateTime.UtcNow;
 
-            DocumentReference docRef = _firestoreDb.Collection("posts").Document(post.postId);
+            DocumentReference docRef = _firestoreDb.Collection("posts").Document(post.PostId);
             await docRef.SetAsync(post);
         }
 
@@ -155,6 +155,85 @@ namespace backend.Services
 
             return posts;
         }
+        // Add Like
+        public async Task AddLikeAsync(string postId, string userId)
+        {
+            DocumentReference postRef = _firestoreDb.Collection("posts").Document(postId);
+            DocumentSnapshot snapshot = await postRef.GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                Post post = snapshot.ConvertTo<Post>();
+
+                if (!post.Likes.Contains(userId))
+                {
+                    post.Likes.Add(userId);
+                    if (post.Dislikes.Contains(userId)) post.Dislikes.Remove(userId); // Ensure no simultaneous dislike
+                }
+                
+                await postRef.SetAsync(post, SetOptions.MergeAll);
+            }
+        }
+
+        // Remove Like
+        public async Task RemoveLikeAsync(string postId, string userId)
+        {
+            DocumentReference postRef = _firestoreDb.Collection("posts").Document(postId);
+            DocumentSnapshot snapshot = await postRef.GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                Post post = snapshot.ConvertTo<Post>();
+
+                if (post.Likes.Contains(userId))
+                {
+                    post.Likes.Remove(userId);
+                }
+
+                await postRef.SetAsync(post, SetOptions.MergeAll);
+            }
+        }
+
+        // Add Dislike
+        public async Task AddDislikeAsync(string postId, string userId)
+        {
+            DocumentReference postRef = _firestoreDb.Collection("posts").Document(postId);
+            DocumentSnapshot snapshot = await postRef.GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                Post post = snapshot.ConvertTo<Post>();
+
+                if (!post.Dislikes.Contains(userId))
+                {
+                    post.Dislikes.Add(userId);
+                    if (post.Likes.Contains(userId)) post.Likes.Remove(userId); // Ensure no simultaneous like
+                }
+
+                await postRef.SetAsync(post, SetOptions.MergeAll);
+            }
+        }
+
+        // Remove Dislike
+        public async Task RemoveDislikeAsync(string postId, string userId)
+        {
+            DocumentReference postRef = _firestoreDb.Collection("posts").Document(postId);
+            DocumentSnapshot snapshot = await postRef.GetSnapshotAsync();
+
+            if (snapshot.Exists)
+            {
+                Post post = snapshot.ConvertTo<Post>();
+
+                if (post.Dislikes.Contains(userId))
+                {
+                    post.Dislikes.Remove(userId);
+                }
+
+                await postRef.SetAsync(post, SetOptions.MergeAll);
+            }
+        }
+
+      
 
     }
 }
