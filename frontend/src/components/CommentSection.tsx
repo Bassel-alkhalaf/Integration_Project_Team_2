@@ -380,8 +380,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
     };
 
     return (
-        <Box sx={{ marginTop: '20px' }}>
-            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1d3557', marginBottom: '20px' }}>
+        <Box className='CommentSectionpageComments' sx={{ marginTop: '20px' }}>
+            <Typography  variant="h5" sx={{ fontWeight: 'bold', color: '#1d3557', marginBottom: '20px' }}>
                 Comments
             </Typography>
             {commentData
@@ -391,13 +391,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                 const isOwner = comment.UserId === currentUser?.uid;
 
                 return (
-                    <Card key={index} sx={{ display: 'flex', alignItems: 'flex-start', padding: 2, marginBottom: 2, backgroundColor: '#f8f9fa' }}>
+                    <Card  key={index} sx={{ display: 'flex', alignItems: 'flex-start', padding: 2, marginBottom: 2, backgroundColor: '#f8f9fa' }}>
                         {comment.avatarUrl ? (
                             <Avatar src={comment.avatarUrl} sx={{ marginRight: 2 }} />
                         ) : (
                             <Avatar sx={{ marginRight: 2 }}>{comment.firstName?.[0]}</Avatar>
                         )}
-                        <Box sx={{ flexGrow: 1 }}>
+                        <Box className='CommentSectionpageComments'  sx={{ flexGrow: 1 }}>
                             <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#2d4059' }}>
                                 {comment.firstName} {comment.lastName}
                             </Typography>
@@ -419,7 +419,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                 </Typography>
                             )}
                             {(isOwner ) && ( // Allow Admin to delete or edit any comment
-                                <Box>
+                                <Box className='CommentSectionpageComments'>
                                     <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
                                         <Edit />
                                     </IconButton>
@@ -434,7 +434,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                 </Box>
                             )}
                              {(userRole === 'Admin'&& !isOwner) && ( // Allow Admin to delete or edit any comment
-                                <Box>
+                                <Box className='CommentSectionpageComments'>
                                     
                                     <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
                                         <Delete />
