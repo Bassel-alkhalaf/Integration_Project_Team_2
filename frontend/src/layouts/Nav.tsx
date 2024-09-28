@@ -16,6 +16,8 @@ import { useAuth } from '../contexts';
 import React, { useState, useEffect } from 'react';
 import { PlaylistComponent} from './../components/ApiMusic';
 
+const MemoizedPlaylistComponent = React.memo(PlaylistComponent);
+
 interface PropsI {
 	drawerWidth: number;
 	mobileOpen: boolean;
@@ -65,7 +67,7 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 
 			{/*add API */}
       <Box sx={{ width: drawerWidth, height: drawerWidth, margin: 'auto' }}>
-        <PlaylistComponent />
+        <MemoizedPlaylistComponent />
       </Box>
 		</>
 	);
