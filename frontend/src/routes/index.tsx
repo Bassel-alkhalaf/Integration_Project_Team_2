@@ -87,6 +87,8 @@ import { AdminPanel, Community, EditProfile, Friends, Home, Login, PostDetail, P
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
 
+import ReportingTest from '../pages/ReportingTest';
+
 function AppRoutes() {
   return (
     <Routes>
@@ -111,6 +113,9 @@ function AppRoutes() {
 
         {/* Account Suspended Page */}
         <Route path="/account-suspended" element={<AccountSuspended />} />
+
+        {/* report test */}
+        <Route path="/report" element={<ReportingTest />} />
 
         {/* Error Pages */}
         <Route
