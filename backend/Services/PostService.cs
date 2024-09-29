@@ -138,8 +138,8 @@ namespace backend.Services
 
             // Query posts that were created between the start and end of the selected day
             Query query = postsRef
-                .WhereGreaterThanOrEqualTo("createdAt", startOfDay)
-                .WhereLessThan("createdAt", endOfDay);
+                .WhereGreaterThanOrEqualTo("CreatedAt", startOfDay)
+                .WhereLessThan("CreatedAt", endOfDay);
 
             QuerySnapshot snapshot = await query.GetSnapshotAsync();
             List<Post> posts = new List<Post>();
