@@ -1,7 +1,6 @@
 // Services/FriendRequestService.cs
 using Google.Cloud.Firestore;
 using backend.Models;
-using backend.DTOs.Community;
 using backend.DTOs.FriendRequest;
 
 
@@ -11,11 +10,13 @@ namespace backend.Services
     {
         private readonly FirestoreDb _db;
         private readonly UserService _userService;
+        private readonly FriendshipService _friendshipService;
 
-        public FriendRequestService(FirestoreDb config, UserService userService)
+        public FriendRequestService(FirestoreDb config, UserService userService, FriendshipService friendshipService)
         {
             _db = config;
             _userService = userService;
+            _friendshipService = friendshipService;
         }
 
         private async Task<FriendRequestWithUserInfoDto> PopulateUserInfoAsync(DocumentSnapshot documentSnapshot, string field)
@@ -36,6 +37,7 @@ namespace backend.Services
                 LastName = user.LastName,
                 Status = friendRequest.Status,
                 CreatedAt = friendRequest.CreatedAt,
+                Email = user.Email,
             };
         }
 
@@ -174,6 +176,12 @@ namespace backend.Services
         {
             DocumentReference docRef = _db.Collection("friend_requests").Document(id);
             await docRef.SetAsync(friendRequest, SetOptions.MergeAll);
+
+            if (friendRequest.Status.Equals("Accepted"))
+            {
+                _friendshipService.AddFriendAsync(friendRequest.SenderId, friendRequest.ReceiverId);
+                _friendshipService.AddFriendAsync(friendRequest.ReceiverId, friendRequest.SenderId);
+            }
         }
 
         public async Task DeleteFriendRequestAsync(string id)

@@ -16,5 +16,7 @@ namespace backend.DTOs.FriendRequest
 
         public string Status { get; set; }
 
+        public string Email { get; set; }
+
     }
 }
