@@ -144,7 +144,7 @@ export const CreatePostDialog: React.FC<PostCreationFormProps> = ({
               >
                 <MenuItem value="public">Public</MenuItem>
                 <MenuItem value="private">Private</MenuItem>
-                <MenuItem value="private">Only Me</MenuItem>
+                <MenuItem value="only-me">Only Me</MenuItem>
               </Select>
             </FormControl>
 
