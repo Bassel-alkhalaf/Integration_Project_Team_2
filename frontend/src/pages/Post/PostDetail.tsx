@@ -469,7 +469,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { ThumbUp, ThumbDown, Comment, Edit, Delete, ExpandMore } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, Comment, Edit, Delete, ExpandMore} from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { getPostDetails } from "../../api/apis/post.api";
@@ -481,6 +481,7 @@ import { enqueueSnackbar } from "notistack";
 import CommentSection from "../../components/FullCommentSection";
 import EditPostDialogue from "../../components/EditPostDialogue";
 import { Post } from "../../types/post.type";
+import { ReportBtn } from "../../components/common/ReportBtn";
 
 export default function PostDetail() {
   const { postId } = useParams<{ postId: string }>();
@@ -620,6 +621,9 @@ export default function PostDetail() {
                 {post.dislikeCount}
               </Typography>
             </IconButton>
+            
+            <ReportBtn type="post" id={post.postId} />
+
             <IconButton onClick={toggleComments} aria-label="comments" sx={{ marginLeft: "auto" }}>
               <Comment />
               <Typography variant="body2" sx={{ marginLeft: 1 }}>

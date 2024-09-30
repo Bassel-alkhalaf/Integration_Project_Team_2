@@ -150,6 +150,7 @@ import { Box, Typography } from '@mui/material';
 import PostCountByDate from '../../components/Admin/PostCountByDate';
 import UserManagement from '../../components/Admin/UserManagement';
 import TotalUsers from '../../components/Admin/TotalUsers';
+import Reports from '../../components/Admin/Reports';
 
 const AdminPanel: React.FC = () => {
   return (
@@ -166,6 +167,9 @@ const AdminPanel: React.FC = () => {
 
       {/* Post Count By Date Component */}
       <PostCountByDate />
+
+      {/* Report handler */}
+      <Reports />
     </Box>
   );
 };

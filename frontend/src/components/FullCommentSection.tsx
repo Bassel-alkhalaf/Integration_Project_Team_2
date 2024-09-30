@@ -12,6 +12,7 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { commentQueryKeys } from '../consts';
 import { Edit, Delete, ExpandMore } from '@mui/icons-material';
+import { ReportBtn } from './common/ReportBtn';
 
 interface CommentSectionProps {
     postId: string;
@@ -201,11 +202,14 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                                                 rows={2}
                                                 sx={{ marginBottom: 2 }}
                                             />
+
                                         ) : (
                                             <Typography variant="body2" sx={{ marginBottom: 1, color: '#2d4059' }}>
                                                 {comment.content}
                                             </Typography>
+                                            // <ReportBtn type="comment" id={comment.commentId} />
                                         )}
+
                                         {(isOwner) && ( // Allow Admin to delete or edit any comment
                                             <Box className='CommentSectionpageComments'>
                                                 <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
@@ -219,6 +223,7 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                                                         Save
                                                     </Button>
                                                 )}
+                                                <ReportBtn type="comment" id={comment.commentId} />
                                             </Box>
                                         )}
                                         {(userRole === 'Admin' && !isOwner) && ( // Allow Admin to delete or edit any comment
@@ -227,13 +232,17 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                                                 <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
                                                     <Delete />
                                                 </IconButton>
+                                                {/* <ReportBtn type='comment' id={comment.commentId} /> */}
                                                 {editCommentId === comment.commentId && (
                                                     <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
                                                         Save
                                                     </Button>
                                                 )}
+                                                {/* <ReportBtn type="comment" id={comment.commentId} /> */}
                                             </Box>
                                         )}
+
+                                        
                                     </Box>
                                 </Card>
                             );

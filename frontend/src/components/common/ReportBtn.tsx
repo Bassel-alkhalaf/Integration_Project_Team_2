@@ -1,4 +1,4 @@
-import {Button, Box, FormControl, Select, InputLabel, MenuItem, Typography} from '@mui/material';
+import {Button, Box, FormControl, Select, InputLabel, MenuItem, Typography, IconButton} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -8,11 +8,12 @@ import { enqueueSnackbar } from 'notistack';
 import { useState } from "react";
 import { sendRequest } from '../../api';
 import { useAuth } from '../../contexts';
+import { Flag } from "@mui/icons-material";
 
 
 
 type Props = {
-    type: "comment" | "comunity" | "post";
+    type: "comment" | "community" | "post";
     id: string;
 }
 
@@ -66,9 +67,14 @@ export const ReportBtn = ({ type, id }: Props) => {
   
     return (
       <Box>
-        <Button variant="contained" color='error' onClick={handleClickOpen}>
+        {/* <Button variant="contained" color='error' onClick={handleClickOpen}>
           Report {type}
-        </Button>
+        </Button> */}
+
+        <IconButton onClick={handleClickOpen} aria-label="report" color="error">
+              <Flag />
+        </IconButton>
+
         <Dialog
           open={open}
           onClose={handleClose}

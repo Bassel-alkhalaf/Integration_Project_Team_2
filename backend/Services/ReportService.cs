@@ -69,7 +69,7 @@ namespace backend.Services
                     var post = postSnapshot.ConvertTo<Post>();
 
                     // Check if the post belongs to the specified community
-                    return post.communityId == communityId;
+                    return post.CommunityId == communityId;
                 }
             }
 
