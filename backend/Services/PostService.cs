@@ -52,7 +52,7 @@ namespace backend.Services
         public async Task<List<Post>> GetPosts(int limit, int page = 1)
         {
             CollectionReference postsRef = _firestoreDb.Collection("posts");
-            Query query = postsRef.Limit(limit);
+            Query query = postsRef.OrderByDescending("CreatedAt").Limit(limit);
 
             // Calculate the number of posts to skip based on the page number
             int skipCount = (page - 1) * limit;
