@@ -44,5 +44,20 @@ namespace backend.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+
+        [HttpGet("posts")]
+        public async Task<IActionResult> SearchPosts([FromQuery] string? q, [FromQuery] int limit = 5, [FromQuery] int page = 1)
+        {
+            try
+            {
+                var posts = await _searchService.SearchPostsAsync(limit, page, q);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
     }
 }

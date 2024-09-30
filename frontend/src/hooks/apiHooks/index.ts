@@ -8,6 +8,7 @@ export * from './community/useGetCommunity';
 export * from './community/useUpdateCommunity';
 
 export * from './search/useSearchCommunities';
+export * from './search/useSearchPosts';
 export * from './search/useSearchUsers';
 
 export * from './post/useCreatePost';

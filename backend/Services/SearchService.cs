@@ -2,6 +2,7 @@
 using backend.DTOs.Users;
 using backend.Models;
 using Google.Cloud.Firestore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Services
 {
@@ -10,12 +11,14 @@ namespace backend.Services
         private readonly FirestoreDb _firestoreDb;
         private readonly CommunityService _communityService;
         private readonly UserService _userService;
+        private readonly PostService _postService;
 
-        public SearchService (FirestoreDb firestoreDb, CommunityService communityService, UserService userService)
+        public SearchService (FirestoreDb firestoreDb, CommunityService communityService, UserService userService, PostService postService)
         {
             _firestoreDb = firestoreDb;
             _communityService = communityService;
             _userService = userService;
+            _postService = postService;
         }
 
         public async Task<List<CommunityWithUserInfoDto>> SearchCommunitiesAsync(string? query)
@@ -63,6 +66,34 @@ namespace backend.Services
 
                 return matchedUsers;
             }
+        }
+
+        public async Task<List<Post>> SearchPostsAsync(int limit, int page, string? query)
+        {
+            var allPosts = await _postService.GetPosts(limit, page);
+
+            if (string.IsNullOrEmpty(query))
+            {
+                return allPosts;
+            }
+
+            var queryText = query.ToLower();
+            var matchedTitle = new List<Post>();
+            var matchedContent = new List<Post>();
+
+            foreach (var post in allPosts)
+            {
+                if (post.Title.ToLower().Contains(queryText))
+                {
+                    matchedTitle.Add(post);
+                }
+                else if (post.Text.ToLower().Contains(queryText))
+                {
+                    matchedContent.Add(post);
+                }
+            }
+
+            return matchedTitle.Concat(matchedContent).ToList(); ;
         }
     }
 
