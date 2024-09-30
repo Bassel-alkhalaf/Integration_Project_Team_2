@@ -25,12 +25,16 @@ export const friendRequestQueryKeys = {
 	type: (type: 'sent' | 'received') => [...friendRequestQueryKeys.all, type] as const,
 };
 
+export const friendshipQueryKeys = {
+	all: ['friendship'] as const,
+};
+
 export const postQueryKeys = {
-	all: () => ['posts'] as const, 
-	current: (postId: string) => [...postQueryKeys.all(), postId] as const, 
-	liked: (postId: string) => [...postQueryKeys.all(), 'liked', postId] as const, 
-	disliked: (postId: string) => [...postQueryKeys.all(), 'disliked', postId] as const, 
+	all: () => ['posts'] as const,
+	current: (postId: string) => [...postQueryKeys.all(), postId] as const,
+	liked: (postId: string) => [...postQueryKeys.all(), 'liked', postId] as const,
+	disliked: (postId: string) => [...postQueryKeys.all(), 'disliked', postId] as const,
 	comments: (postId: string) => [...postQueryKeys.all(), 'comments', postId] as const,
-	editing: (postId: string) => [...postQueryKeys.all(), 'editing', postId] as const, 
-	deleting: (postId: string) => [...postQueryKeys.all(), 'deleting', postId] as const,  
-  };
+	editing: (postId: string) => [...postQueryKeys.all(), 'editing', postId] as const,
+	deleting: (postId: string) => [...postQueryKeys.all(), 'deleting', postId] as const,
+};

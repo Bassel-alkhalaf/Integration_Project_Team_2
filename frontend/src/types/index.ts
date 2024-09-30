@@ -4,5 +4,6 @@
 export * from './auth.type';
 export * from './community.type';
 export * from './friendRequest.type';
+export * from './friendship.type';
 export * from './user.type';
 export * from './userCommunity.type';

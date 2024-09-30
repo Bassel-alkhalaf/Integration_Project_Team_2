@@ -1,16 +1,6 @@
-import {
-	Avatar,
-	Chip,
-	List,
-	ListItem,
-	ListItemAvatar,
-	ListItemButton,
-	ListItemText,
-	Stack,
-	Typography,
-} from '@mui/material';
+import { Chip, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Stack, Typography } from '@mui/material';
 import dayjs from 'dayjs';
-import { FriendRequestActionBtn } from '../../components';
+import { FriendRequestActionBtn, UserAvatar } from '../../components';
 import { FriendRequestT } from '../../types';
 
 interface PropsI {
@@ -35,15 +25,40 @@ export function FriendRequestList({ friendRequests, type }: PropsI) {
 	return friendRequests.length ? (
 		<List disablePadding>
 			{friendRequests.map((request, index) => {
-				const { id, firstName, lastName, status, createdAt } = request;
+				const {
+					id,
+					user,
+					user: { firstName, lastName, email },
+					status,
+					createdAt,
+				} = request;
 				const requestDateTime = dayjs(createdAt).format('MMM DD, YYYY h:mm A');
 				const secondaryText = type === 'sent' ? `Sent at ${requestDateTime}` : `Received at ${requestDateTime}`;
 
 				return (
-					<ListItem disablePadding key={index}>
-						<ListItemButton disabled={status !== 'Pending'} disableRipple disableTouchRipple>
+					<ListItem
+						disablePadding
+						key={index}
+						secondaryAction={
+							<>
+								{status === 'Pending' && type === 'sent' && (
+									<FriendRequestActionBtn requestId={id} action='cancel' />
+								)}
+								{status === 'Pending' && type === 'received' && (
+									<Stack gap={2} direction='row'>
+										<FriendRequestActionBtn requestId={id} action='accept' />
+										<FriendRequestActionBtn requestId={id} action='reject' />
+									</Stack>
+								)}
+							</>
+						}>
+						<ListItemButton
+							disabled={status !== 'Pending'}
+							disableRipple
+							disableTouchRipple
+							alignItems='flex-start'>
 							<ListItemAvatar>
-								<Avatar alt={`${firstName} ${lastName}`} src={''} />
+								<UserAvatar user={user} />
 							</ListItemAvatar>
 							<ListItemText
 								primary={
@@ -52,18 +67,15 @@ export function FriendRequestList({ friendRequests, type }: PropsI) {
 										<Chip label={status} size='small' color={getColor(status)} />
 									</Stack>
 								}
-								secondary={secondaryText}
+								secondary={
+									<Stack component={'span'} gap={1}>
+										<Typography component='span'>{email}</Typography>
+										<Typography component='span' variant='body2'>
+											{secondaryText}
+										</Typography>
+									</Stack>
+								}
 							/>
-
-							{status === 'Pending' && type === 'sent' && (
-								<FriendRequestActionBtn requestId={id} action='cancel' />
-							)}
-							{status === 'Pending' && type === 'received' && (
-								<Stack gap={2} direction='row'>
-									<FriendRequestActionBtn requestId={id} action='accept' />
-									<FriendRequestActionBtn requestId={id} action='reject' />
-								</Stack>
-							)}
 						</ListItemButton>
 					</ListItem>
 				);
