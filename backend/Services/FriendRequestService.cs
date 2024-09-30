@@ -31,13 +31,10 @@ namespace backend.Services
 
             return new FriendRequestWithUserInfoDto
             {
-                Id = friendRequest.Id,
-                UserId = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
+                Id = friendRequest.Id,        
                 Status = friendRequest.Status,
                 CreatedAt = friendRequest.CreatedAt,
-                Email = user.Email,
+                user = user,
             };
         }
 
@@ -179,8 +176,7 @@ namespace backend.Services
 
             if (friendRequest.Status.Equals("Accepted"))
             {
-                _friendshipService.AddFriendAsync(friendRequest.SenderId, friendRequest.ReceiverId);
-                _friendshipService.AddFriendAsync(friendRequest.ReceiverId, friendRequest.SenderId);
+                await _friendshipService.AddFriendAsync(friendRequest.SenderId, friendRequest.ReceiverId);
             }
         }
 

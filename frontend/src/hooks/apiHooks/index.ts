@@ -20,3 +20,7 @@ export * from './comment/useFetchComments';
 
 export * from './friendRequest/useCreateFriendRequest';
 export * from './friendRequest/useGetFriendRequests';
+
+export * from './friendship/useDeleteFriendship';
+export * from './friendship/useGetFriendships';
+export * from './friendship/useUpdateIsCloseFriend';

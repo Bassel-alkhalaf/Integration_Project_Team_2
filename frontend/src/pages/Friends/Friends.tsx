@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { a11yProps, TabPanel } from '../../components';
 import { useAuth } from '../../contexts';
 import { useGetFriendRequests } from '../../hooks';
+import { FriendList } from './FriendList';
 import { FriendRequestList } from './FriendRequestList';
 
 export function Friends() {
@@ -23,7 +24,9 @@ export function Friends() {
 					<Tab label='Friend requests sent' {...a11yProps(2)} />
 				</Tabs>
 			</Box>
-			<TabPanel value={tabValue} index={0}></TabPanel>
+			<TabPanel value={tabValue} index={0}>
+				<FriendList />
+			</TabPanel>
 			<TabPanel value={tabValue} index={1}>
 				<FriendRequestList friendRequests={requestsReceived || []} type='received' />
 			</TabPanel>

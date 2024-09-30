@@ -1,6 +1,9 @@
-import { Avatar, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
+import { Button, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { AddFriendBtn } from '../../components';
+import { useMemo } from 'react';
+import { AddFriendBtn, UserAvatar } from '../../components';
+import { useAuth } from '../../contexts';
+import { useGetFriendRequests, useGetFriendships } from '../../hooks';
 import { UserInfoT } from '../../types';
 
 interface PropsI {
@@ -8,8 +11,34 @@ interface PropsI {
 }
 
 export function UserSearchResultItem({ user }: PropsI) {
+	const { accessToken } = useAuth();
 	// const navigate = useNavigate();
-	const { id, firstName, lastName, email, profileImageUrl, bio } = user;
+	const { id, firstName, lastName, email, bio } = user;
+
+	const { data: friends } = useGetFriendships(accessToken as string);
+	const isFriend = useMemo(() => friends?.find(f => f.friend.id === id), [friends, id]);
+
+	const { data: requestsReceived } = useGetFriendRequests(accessToken as string, 'received');
+	const isRequestReceived = useMemo(
+		() => requestsReceived?.find(r => r.user.id === id && r.status === 'Pending'),
+		[requestsReceived, id]
+	);
+
+	const { data: requestsSent } = useGetFriendRequests(accessToken as string, 'sent');
+	const isRequestSent = useMemo(
+		() => requestsSent?.find(r => r.user.id === id && r.status === 'Pending'),
+		[requestsSent, id]
+	);
+
+	const actionBtn = useMemo(() => {
+		if (isRequestReceived || isRequestSent) {
+			return <Button disabled>Request Pending</Button>;
+		} else if (isFriend) {
+			return null;
+		} else {
+			return <AddFriendBtn receiverId={id} />;
+		}
+	}, [isFriend, isRequestReceived, isRequestSent]);
 
 	return (
 		<ListItem
@@ -19,10 +48,10 @@ export function UserSearchResultItem({ user }: PropsI) {
 				'&:hover': { bgcolor: grey[100], cursor: 'pointer' },
 			}}
 			alignItems='flex-start'
-			secondaryAction={<AddFriendBtn receiverId={id} />}>
+			secondaryAction={actionBtn}>
 			{/* userAvatar */}
 			<ListItemAvatar>
-				<Avatar alt={`${firstName} ${lastName}`} src={profileImageUrl} />
+				<UserAvatar user={user} />
 			</ListItemAvatar>
 
 			{/* userInfo */}

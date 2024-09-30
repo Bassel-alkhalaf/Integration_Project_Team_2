@@ -1,5 +1,6 @@
 using Google.Cloud.Firestore;
 using backend.Models;
+using backend.DTOs.Friendship;
 
 
 namespace backend.Services
@@ -7,32 +8,60 @@ namespace backend.Services
     public class FriendshipService
     {
         private readonly FirestoreDb _db;
+        private readonly UserService _userService;
 
-        public FriendshipService(FirestoreDb config)
+        public FriendshipService(FirestoreDb config, UserService userService)
         {
             _db = config;
+            _userService = userService;
         }
 
-        public async Task<Friendship?> GetFriendshipAsync(string userId, string friendId)
+        private async Task<FriendshipWithUserInfoDto> PopulateUserInfoAsync(DocumentSnapshot documentSnapshot)
+        {
+            var friendship = documentSnapshot.ConvertTo<Friendship>();
+            var user = await _userService.GetUserAsync(friendship.FriendId);
+
+            if (user == null)
+            {
+                throw new InvalidOperationException("user_not_found");
+            }
+
+            return new FriendshipWithUserInfoDto
+            {
+                Id = friendship.Id,
+                IsCloseFriend = friendship.IsCloseFriend,
+                CreatedAt = friendship.CreatedAt,
+                Friend = user,
+            };
+        }
+
+        public async Task<FriendshipWithUserInfoDto?> GetFriendshipAsync(string userId, string friendId)
         {
             DocumentReference docRef = _db.Collection("friendships").Document($"{userId}_{friendId}");
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
 
             if (snapshot.Exists)
             {
-                return snapshot.ConvertTo<Friendship>();
+                return await PopulateUserInfoAsync(snapshot);
             }
             return null;
         }
 
-        public async Task<List<string>> GetFriendshipsAsync(string userId)
+        public async Task<List<FriendshipWithUserInfoDto>> GetFriendshipsAsync(string userId)
         {
+            var results = new List<FriendshipWithUserInfoDto>();
             var friendshipsRef = _db.Collection("friendships")
                 .WhereEqualTo("UserId", userId);
             var snapshot = await friendshipsRef.GetSnapshotAsync();
 
-            return snapshot.Documents
-                .Select(d => d.GetValue<string>("FriendId"))
+            foreach (var item in snapshot)
+            {
+                var friendship = await PopulateUserInfoAsync(item);
+                results.Add(friendship);
+            }
+
+            return results.OrderByDescending(c => c.IsCloseFriend)
+                .ThenBy(c => c.Friend.FirstName)
                 .ToList();
         }
 

@@ -1,9 +1,9 @@
 import { Alert, Divider, List, Typography } from "@mui/material";
-import { Fragment } from "react";
+import { Fragment, useMemo } from "react";
 import { Loading } from "../../components";
+import { useAuth } from "../../contexts";
 import { useSearchUsers } from "../../hooks";
 import { UserSearchResultItem } from "./UserSearchResultItem";
-import { useAuth } from "../../contexts";
 
 interface PropsI {
 	query: string;
@@ -18,6 +18,12 @@ export function UserSearchResultList({ query }: PropsI) {
     isError,
   } = useSearchUsers(query);
 
+  const resultCount = useMemo(() => {
+    if (!results) return "No result";
+    const count = currentUser ? results?.filter((user) => user.id != currentUser?.id).length : results?.length;
+    return `${count} ${count > 1 ? "results" : "result"}`;
+  }, [results]);
+
   if (isLoading) return <Loading />;
 
   if (isError) return <Alert severity="error">An error occurred.</Alert>;
@@ -27,7 +33,7 @@ export function UserSearchResultList({ query }: PropsI) {
   return (
     <>
       <Typography gutterBottom>
-        {results?.length || 0} {results?.length > 1 ? "results" : "result"} for
+        {resultCount} for
         "{query}":
       </Typography>
 
