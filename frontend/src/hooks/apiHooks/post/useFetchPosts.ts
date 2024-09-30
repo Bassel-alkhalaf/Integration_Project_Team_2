@@ -20,8 +20,7 @@ export const useFetchPosts = () => {
     getNextPageParam: (lastPage) => lastPage.data.nextCursor,
     
   })
-  //   // Flatten the pages array into a single array of posts
-  // const posts: PostItemProps[] = data?.pages.flatMap((page) => page.data) || [];
+
   return{
     data,
     error,

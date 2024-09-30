@@ -29,6 +29,23 @@ namespace backend.Controllers
                 return StatusCode(500, $"Error fetching posts: {ex.Message}");
             }
         }
+        [HttpGet("posts/onlyme")]
+        public async Task<IActionResult> GetOnlyMePosts([FromQuery] string userId)
+        {
+            try
+            {
+                // Call the service method to get posts with visibility "Only Me" by user
+                List<Post> posts = await _postService.GetOnlyMePostsByUser(userId);
+
+                // Return the posts as a JSON response
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
         [HttpPost("posts/create")]
         public async Task<ActionResult> CreatePost([FromBody] Post post)
@@ -84,7 +101,7 @@ namespace backend.Controllers
         }
 
 
-   // GET api/posts/by-date
+        // GET api/posts/by-date
         [HttpGet("posts/by-date")]
         public async Task<IActionResult> GetPostsByDate([FromQuery] System.DateTime date)  // Use System.DateTime explicitly
         {
@@ -99,9 +116,9 @@ namespace backend.Controllers
             }
         }
 
-         // Add Like
+        // Add Like
         [HttpPost("posts/like")]
-        public async Task<IActionResult> AddLike([FromQuery]string postId, [FromQuery]string userId)
+        public async Task<IActionResult> AddLike([FromQuery] string postId, [FromQuery] string userId)
         {
             await _postService.AddLikeAsync(postId, userId);
             return Ok();
@@ -109,7 +126,7 @@ namespace backend.Controllers
 
         // Remove Like
         [HttpDelete("posts/like")]
-        public async Task<IActionResult> RemoveLike([FromQuery]string postId, [FromQuery] string userId)
+        public async Task<IActionResult> RemoveLike([FromQuery] string postId, [FromQuery] string userId)
         {
             await _postService.RemoveLikeAsync(postId, userId);
             return Ok();
@@ -117,7 +134,7 @@ namespace backend.Controllers
 
         // Add Dislike
         [HttpPost("posts/dislike")]
-        public async Task<IActionResult> AddDislike([FromQuery]string postId, [FromQuery] string userId)
+        public async Task<IActionResult> AddDislike([FromQuery] string postId, [FromQuery] string userId)
         {
             await _postService.AddDislikeAsync(postId, userId);
             return Ok();
@@ -125,7 +142,7 @@ namespace backend.Controllers
 
         // Remove Dislike
         [HttpDelete("posts/dislike")]
-        public async Task<IActionResult> RemoveDislike([FromQuery]string postId, [FromQuery] string userId)
+        public async Task<IActionResult> RemoveDislike([FromQuery] string postId, [FromQuery] string userId)
         {
             await _postService.RemoveDislikeAsync(postId, userId);
             return Ok();

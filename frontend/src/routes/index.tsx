@@ -86,6 +86,7 @@ import { MainLayout } from '../layouts';
 import { AdminPanel, Community, EditProfile, Friends, Home, Login, PostDetail, Profile, Register, Search, AccountSuspended } from '../pages'; // Import AccountSuspended
 import { Role } from '../types';
 import { RoleBasedRoute } from './RoleBasedRoute';
+import { MyPosts } from '../pages/Post/myPosts';
 
 function AppRoutes() {
   return (
@@ -95,7 +96,7 @@ function AppRoutes() {
         <Route element={<RoleBasedRoute allowedRoles={[Role.User, Role.Admin]} />}>
           <Route index element={<Home />} />
           <Route path="/friends" element={<Friends />} />
-          {/* <Route path="/posts" element={<PostDetail />} /> */}
+          <Route path="/posts/me" element={<MyPosts />} />
           <Route path='/posts/:postId' element={<PostDetail />} />
           <Route path="/search" element={<Search />} />  {/* Added Search Route */}
           <Route path="/community/:communityId" element={<Community />} />  {/* Added Community Route */}
