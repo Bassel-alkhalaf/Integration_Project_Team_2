@@ -207,32 +207,21 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                                             <Typography variant="body2" sx={{ marginBottom: 1, color: '#2d4059' }}>
                                                 {comment.content}
                                             </Typography>
-                                            // <ReportBtn type="comment" id={comment.commentId} />
                                         )}
 
                                         {(isOwner) && ( // Allow Admin to delete or edit any comment
-                                            <Box className='CommentSectionpageComments'>
+                                            <Box 
+                                                className='CommentSectionpageComments'
+                                                display="flex"
+                                            
+                                            >
                                                 <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
                                                     <Edit />
                                                 </IconButton>
                                                 <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
                                                     <Delete />
                                                 </IconButton>
-                                                {editCommentId === comment.commentId && (
-                                                    <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
-                                                        Save
-                                                    </Button>
-                                                )}
                                                 <ReportBtn type="comment" id={comment.commentId} />
-                                            </Box>
-                                        )}
-                                        {(userRole === 'Admin' && !isOwner) && ( // Allow Admin to delete or edit any comment
-                                            <Box className='CommentSectionpageComments'>
-
-                                                <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
-                                                    <Delete />
-                                                </IconButton>
-                                                {/* <ReportBtn type='comment' id={comment.commentId} /> */}
                                                 {editCommentId === comment.commentId && (
                                                     <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
                                                         Save
@@ -241,7 +230,25 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                                                 {/* <ReportBtn type="comment" id={comment.commentId} /> */}
                                             </Box>
                                         )}
+                                        {(userRole === 'Admin' && !isOwner) && ( // Allow Admin to delete or edit any comment
+                                            <Box 
+                                                className='CommentSectionpageComments'
+                                                display="flex"    
+                                            >
 
+                                                <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
+                                                    <Delete />
+                                                </IconButton>
+                                                <ReportBtn type="comment" id={comment.commentId} />
+                                                {editCommentId === comment.commentId && (
+                                                    <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
+                                                        Save
+                                                    </Button>
+                                                )}
+                                                
+                                            </Box>
+                                        )}
+                                        
                                         
                                     </Box>
                                 </Card>
