@@ -39,6 +39,18 @@ namespace backend.Controllers
             return Ok(reports);
         }
 
+
+        [HttpGet("community/{communityId}")]
+        public async Task<ActionResult<IEnumerable<Report>>> GetAllByCommunity(string communityId)
+        {
+            // Get reports by community using the ReportService
+            var reports = await _reportService.GetReportsByCommunityAsync(communityId);
+
+            // Return the filtered reports
+            return Ok(reports);
+        }
+
+
         // Route: POST /Report
         [HttpPost]
         public async Task<IActionResult> CreateReport([FromBody] Report report)

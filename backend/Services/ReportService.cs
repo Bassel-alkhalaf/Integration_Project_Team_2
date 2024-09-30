@@ -26,6 +26,56 @@ namespace backend.Services
             // return null;
         }
 
+       // Method to get all reports related to a specific community
+        public async Task<List<Report>> GetReportsByCommunityAsync(string communityId)
+        {
+            // Initialize empty list to store the filtered reports
+            List<Report> communityReports = new List<Report>();
+
+            // Fetch all reports from Firestore
+            CollectionReference reportsCollection = _db.Collection("reports");
+            QuerySnapshot allReportsSnapshot = await reportsCollection.GetSnapshotAsync();
+            List<Report> allReports = allReportsSnapshot.Documents.Select(doc => doc.ConvertTo<Report>()).ToList();
+
+            // Filter the reports based on the provided communityId
+            foreach (var report in allReports)
+            {
+                if ((report.ReportType == "community" && report.EntityId == communityId) ||
+                    (report.ReportType == "post" && report.EntityId == communityId) ||
+                    (report.ReportType == "comment" && await IsCommentInCommunity(report.EntityId, communityId)))
+                {
+                    communityReports.Add(report);
+                }
+            }
+
+            return communityReports;
+        }
+
+        // Helper method to check if a comment belongs to a post within the community
+        private async Task<bool> IsCommentInCommunity(string commentId, string communityId)
+        {
+            // Retrieve the comment
+            DocumentReference commentDoc = _db.Collection("comments").Document(commentId);
+            DocumentSnapshot commentSnapshot = await commentDoc.GetSnapshotAsync();
+            if (commentSnapshot.Exists)
+            {
+                var comment = commentSnapshot.ConvertTo<Comment>();
+
+                // Retrieve the post associated with the comment
+                DocumentReference postDoc = _db.Collection("posts").Document(comment.PostId);
+                DocumentSnapshot postSnapshot = await postDoc.GetSnapshotAsync();
+                if (postSnapshot.Exists)
+                {
+                    var post = postSnapshot.ConvertTo<Post>();
+
+                    // Check if the post belongs to the specified community
+                    return post.communityId == communityId;
+                }
+            }
+
+            return false;
+        }
+
         public async Task<List<Report>> GetAllReportsAsync()
         {
             QuerySnapshot snapshot = await _db.Collection("reports").GetSnapshotAsync();
