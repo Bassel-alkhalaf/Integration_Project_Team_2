@@ -151,7 +151,7 @@ const Reports: React.FC = () => {
                             gap=".5rem"
                         >
                             <Button
-                                onClick={() => navigate("/posts/" + r.comment?.postId)}
+                                onClick={() => navigate("/posts/" + r.comment?.comment.postId)}
                                 variant='outlined'
                             >
                                 View Post
