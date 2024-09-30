@@ -78,16 +78,16 @@ export const CreatePostDialog: React.FC<PostCreationFormProps> = ({
   const onSubmit = (data: CreatePostFormData) => {
     const postData: Post = {
       ...data,
-      postId: "", // Generate a unique ID here
+      postId: "", 
       authorId: authorId,
-      communityId:'',
+      communityId,
       authorName: authorName,
-      authorImg: "default-image-url", // Update this with the actual logic
+      authorImg: "default-image-url", 
       createdAt: new Date(),
       updatedAt: undefined,
       commentCount: 0,
-      likeCount: 0,
-      dislikeCount: 0,
+      likes: [],
+      dislikes: [],
     };
     createPost(postData, {
       onSuccess: () => {
@@ -110,11 +110,7 @@ export const CreatePostDialog: React.FC<PostCreationFormProps> = ({
             {/* Community Select */}
             <UserCommunitySelect
               communityId={communityId}
-              setCommunityId={function (
-                value: React.SetStateAction<Post>
-              ): void {
-                setCommunityId;
-              }}
+              setCommunityId={setCommunityId}
             />
             {errors.communityId && <p>{errors.communityId.message}</p>}
 
@@ -148,6 +144,7 @@ export const CreatePostDialog: React.FC<PostCreationFormProps> = ({
               >
                 <MenuItem value="public">Public</MenuItem>
                 <MenuItem value="private">Private</MenuItem>
+                <MenuItem value="private">Only Me</MenuItem>
               </Select>
             </FormControl>
 

@@ -3,22 +3,17 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { useQuery } from '@tanstack/react-query';
 import { userCommunityQueryKeys } from '../consts';
 import { UserCommunityT } from '../types';
-import { Post } from '../types/post.type';
+
 
 interface PropsI {
-	setCommunityId: React.Dispatch<React.SetStateAction<Post>>;
+	setCommunityId: React.Dispatch<React.SetStateAction<string>>;
 	communityId: string;
 }
 export function UserCommunitySelect({ setCommunityId, communityId }: PropsI) {
 	const { data: joinedCommunities } = useQuery<UserCommunityT[]>({ queryKey: userCommunityQueryKeys.all });
 
 	const handleChange = (event: SelectChangeEvent) => {
-		setCommunityId(prev => {
-			return {
-				...prev,
-				communityId: event.target.value as string,
-			};
-		});
+		setCommunityId(event.target.value as string);
 	};
 
 	return (
