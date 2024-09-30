@@ -15,7 +15,7 @@ namespace backend.Controllers
             _postService = postService;
         }
 
-        [HttpGet("/posts")]
+        [HttpGet("posts")]
         public async Task<IActionResult> GetPosts([FromQuery] int limit = 5, [FromQuery] int page = 1)
         {
             try
@@ -97,6 +97,38 @@ namespace backend.Controllers
             {
                 return StatusCode(500, $"Error fetching posts: {ex.Message}");
             }
+        }
+
+         // Add Like
+        [HttpPost("posts/like")]
+        public async Task<IActionResult> AddLike([FromQuery]string postId, [FromQuery]string userId)
+        {
+            await _postService.AddLikeAsync(postId, userId);
+            return Ok();
+        }
+
+        // Remove Like
+        [HttpDelete("posts/like")]
+        public async Task<IActionResult> RemoveLike([FromQuery]string postId, [FromQuery] string userId)
+        {
+            await _postService.RemoveLikeAsync(postId, userId);
+            return Ok();
+        }
+
+        // Add Dislike
+        [HttpPost("posts/dislike")]
+        public async Task<IActionResult> AddDislike([FromQuery]string postId, [FromQuery] string userId)
+        {
+            await _postService.AddDislikeAsync(postId, userId);
+            return Ok();
+        }
+
+        // Remove Dislike
+        [HttpDelete("posts/dislike")]
+        public async Task<IActionResult> RemoveDislike([FromQuery]string postId, [FromQuery] string userId)
+        {
+            await _postService.RemoveDislikeAsync(postId, userId);
+            return Ok();
         }
 
     }

@@ -96,18 +96,7 @@ namespace backend.Services
             }
 
             var user = snapshot.ConvertTo<User>();
-            return new UserInfoDto
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                DOB = user.DOB,
-                Gender = user.Gender,
-                Bio = user.Bio,
-                ProfileImageUrl = user.ProfileImageUrl,
-                Role = user.Role,
-                CreatedAt = user.CreatedAt,
-            };
+            return ConvertToUserInfoDto(user);
         }
 
         // Method to get all users from Firestore
@@ -143,7 +132,8 @@ namespace backend.Services
                 Bio = user.Bio,
                 ProfileImageUrl = user.ProfileImageUrl,
                 Role = user.Role,
-                CreatedAt = user.CreatedAt
+                CreatedAt = user.CreatedAt,
+                Email = user.Email,
             };
         }
     }

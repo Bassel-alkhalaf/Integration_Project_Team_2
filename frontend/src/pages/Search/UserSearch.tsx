@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useSearchUser } from '../../hooks/apiHooks/user/useSearchUser';
+import  { useSearchUsers }  from '../../hooks/apiHooks/search/useSearchUsers'
 import { TextField, List, ListItem, CircularProgress, Alert } from '@mui/material';
 
 export function UserSearch() {
 	const [searchTerm, setSearchTerm] = useState('');
-	const { data: users, isLoading, isError } = useSearchUser(searchTerm);
+	const { data: users, isLoading, isError } = useSearchUsers(searchTerm);
 
 	return (
 		<div>

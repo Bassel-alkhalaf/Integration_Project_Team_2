@@ -1,44 +1,48 @@
-import { Alert, Divider, List, Typography } from "@mui/material";
-import { Fragment } from "react";
-import { Loading } from "../../components";
-import { useSearchUsers } from "../../hooks";
-import { UserSearchResultItem } from "./UserSearchResultItem";
-import { useAuth } from "../../contexts";
+import { Alert, Divider, List, Stack, Typography } from '@mui/material';
+import { Fragment, useMemo } from 'react';
+import { Loading } from '../../components';
+import { useAuth } from '../../contexts';
+import { useSearchUsers } from '../../hooks';
+import { UserSearchResultItem } from './UserSearchResultItem';
 
 interface PropsI {
 	query: string;
 }
 
 export function UserSearchResultList({ query }: PropsI) {
-  const { user: currentUser } = useAuth();
+	const { user: currentUser } = useAuth();
 
-  const {
-    data: results,
-    isLoading,
-    isError,
-  } = useSearchUsers(query);
+	const { data: results, isLoading, isError } = useSearchUsers(query);
 
-  if (isLoading) return <Loading />;
+	const resultCount = useMemo(() => {
+		if (!results) return 'No result';
+		const count = currentUser ? results?.filter(user => user.id != currentUser?.id).length : results?.length;
+		return `${count} ${count > 1 ? 'results' : 'result'}`;
+	}, [results]);
 
-  if (isError) return <Alert severity="error">An error occurred.</Alert>;
+	if (isLoading) return <Loading />;
 
-  if (!results?.length) return <Alert severity="info">No users found.</Alert>;
+	if (isError) return <Alert severity='error'>An error occurred.</Alert>;
 
-  return (
-    <>
-      <Typography gutterBottom>
-        {results?.length || 0} {results?.length > 1 ? "results" : "result"} for
-        "{query}":
-      </Typography>
+	if (!results?.length) return <Alert severity='info'>No users found.</Alert>;
 
-      <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-        {results.map((user, index) => user.id != currentUser?.id && (
-          <Fragment key={user.id}>
-            <UserSearchResultItem user={user} />
-            {index !== results.length - 1 && <Divider />}
-          </Fragment>
-        ))}
-      </List>
-    </>
-  );
+	return (
+		<Stack gap={1}>
+			<Typography gutterBottom>
+				{resultCount} for "{query}":
+			</Typography>
+
+			<List sx={{ width: '100%', bgcolor: 'background.paper' }} disablePadding>
+				{results.map(
+					(user, index) =>
+						user.id != currentUser?.id && (
+							<Fragment key={user.id}>
+								<UserSearchResultItem user={user} />
+								{index !== results.length - 1 && <Divider />}
+							</Fragment>
+						)
+				)}
+			</List>
+		</Stack>
+	);
 }
