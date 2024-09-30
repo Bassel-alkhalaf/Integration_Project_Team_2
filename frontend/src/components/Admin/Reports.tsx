@@ -180,6 +180,7 @@ const Reports: React.FC = () => {
                             <Button 
                                 variant='outlined'
                                 color='error'
+                                onClick={() => resolveReport(r.id)}
                             >Resolve</Button>
                         </Box>
 
