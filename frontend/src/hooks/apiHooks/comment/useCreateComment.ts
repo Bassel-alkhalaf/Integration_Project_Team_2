@@ -29,6 +29,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addDoc, collection, getFirestore } from 'firebase/firestore';
 import { Comment } from '../../../types/comment.type';
 
+
 export const useCreateComment = () => {
   const queryClient = useQueryClient();
 
@@ -49,6 +50,7 @@ export const useCreateComment = () => {
     onSuccess: (_, commentData) => {
       // Invalidate the query for the specific post to fetch updated comments
       queryClient.invalidateQueries({ queryKey: ['comments', commentData.postId] });
+    
     },
     onError: (error) => {
       console.error('Error creating comment:', error);

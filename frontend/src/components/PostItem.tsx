@@ -24,28 +24,47 @@ import { enqueueSnackbar } from "notistack";
 import { getFirestore, collection, query, where, getDocs } from "firebase/firestore"; // Firestore
 import EditPostDialogue from "./EditPostDialogue";
 import CommentSection from "./CommentSection";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { UserInfoT } from "../types/user.type";
+import { useLikePost } from "../hooks/apiHooks/post/useLikePost";
+import { useDislikePost } from "../hooks/apiHooks/post/useDislikePost";
 
 interface PostProps {
   post: Post;
-  userId: string;
+  user: UserInfoT | null;
+
 }
 
-const PostItem: React.FC<PostProps> = ({ post, userId }) => {
+const PostItem: React.FC<PostProps> = ({ post, user }) => {
   const navigate = useNavigate();
-  const { mutate: deletePost } = useDeletePost();
-  const { mutate: editPost } = useEditPost();
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
+  const { mutate: deletePost } = useDeletePost(post.postId);
+  const { mutate: editPost } = useEditPost(post.postId);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postImages, setPostImages] = useState(post.images || []);
   const [isCommentsOpen, setCommentsOpen] = useState(false); // State for accordion open/close
   const [commentCount, setCommentCount] = useState(0); // State for comment count
+  const { likePostMutation, unlikePostMutation } = useLikePost(post.postId);
+  const { dislikePostMutation, undislikePostMutation } = useDislikePost(post.postId);
+
 
   const queryClient = useQueryClient();
-  const isOwner = userId === post.authorId; // Check if the user owns the post
 
+  const userId = user?.id;
+  let hasLiked: boolean = false;
+  let hasDisliked: boolean = false;
+
+
+  if (userId) {
+     hasLiked = post.likes.includes(userId);     
+     hasDisliked = post.dislikes.includes(userId);    
+  } else {
+    console.error("User ID is not defined");
+  }
+
+  const isOwner = user != null ? user.id === post.authorId : false; // Check if the user owns the post
+  const isAdmin = user != null ? user.role === "Admin": false;
+  
   // Fetch the comment count for the post from Firestore
   useEffect(() => {
     const fetchCommentCount = async () => {
@@ -95,14 +114,22 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
 
   // Toggle like status
   const toggleLike = () => {
-    setLiked((prev) => !prev);
-    if (disliked) setDisliked(false);
+    const userId = user?.id; 
+    if (hasLiked) {  
+      unlikePostMutation.mutate(userId!);
+    } else {
+      likePostMutation.mutate(userId!);
+    }
   };
 
   // Toggle dislike status
   const toggleDislike = () => {
-    setDisliked((prev) => !prev);
-    if (liked) setLiked(false);
+    const userId = user?.id;
+    if (hasDisliked) {
+      undislikePostMutation.mutate(userId!);
+    } else {
+      dislikePostMutation.mutate(userId!);
+    }
   };
 
   // Toggle comments section visibility
@@ -165,16 +192,16 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
       </CardContent>
 
       <CardActions>
-        <IconButton onClick={toggleLike} aria-label="like" sx={{ color: liked ? "blue" : "inherit" }}>
+        <IconButton onClick={toggleLike} aria-label="like" sx={{ color: hasLiked ? "blue" : "inherit" }}>
           <ThumbUp />
           <Typography variant="body2" sx={{ marginLeft: 1 }}>
-            {post.likeCount}
+            {post.likes.length}
           </Typography>
         </IconButton>
-        <IconButton onClick={toggleDislike} aria-label="dislike" sx={{ color: disliked ? "red" : "inherit" }}>
+        <IconButton onClick={toggleDislike} aria-label="dislike" sx={{ color: hasDisliked ? "red" : "inherit" }}>
           <ThumbDown />
           <Typography variant="body2" sx={{ marginLeft: 1 }}>
-            {post.dislikeCount}
+            {post.dislikes.length}
           </Typography>
         </IconButton>
         {/* Clicking the comments icon will toggle the comments section */}
@@ -184,7 +211,7 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
             {commentCount}
           </Typography>
         </IconButton>
-        {isOwner && (
+        {isOwner && !isAdmin ?(
           <>
             <IconButton onClick={() => setEditDialogOpen(true)} aria-label="edit">
               <Edit />
@@ -193,7 +220,12 @@ const PostItem: React.FC<PostProps> = ({ post, userId }) => {
               <Delete />
             </IconButton>
           </>
-        )}
+        ):
+         isAdmin ?(
+          <IconButton onClick={() => setDeleteDialogOpen(true)} aria-label="delete">
+              <Delete />
+          </IconButton>
+        ):<></>}
       </CardActions>
 
       {/* Comments Accordion */}

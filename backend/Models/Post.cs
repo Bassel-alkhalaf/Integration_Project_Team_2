@@ -1,52 +1,67 @@
 ﻿using Google.Cloud.Firestore;
+using System;
+using System.Collections.Generic;
 
 namespace backend.Models
 {
-    // Id, UserId(author), Visibility("Public", "Friends", "CloseFriends"), Content, ImageUrls, CreatedAt, UpdatedAt
-
     [FirestoreData]
     public class Post
     {
         [FirestoreDocumentId]
-        public string postId { get; set; }
+        public string PostId { get; set; }
         
         [FirestoreProperty]
-        public string authorId { get; set; }
+        public string AuthorId { get; set; }
 
         [FirestoreProperty]
-        public string communityId { get; set; }
+        public string CommunityId { get; set; }
 
         [FirestoreProperty]
-        public string title { get; set; }
+        public string Title { get; set; }
 
         [FirestoreProperty]
-        public string text { get; set; }
+        public string Text { get; set; }
 
         [FirestoreProperty]
-        public List<string> images { get; set; }
+        public List<string> Images { get; set; }
 
         [FirestoreProperty]
-        public string authorName { get; set; }
+        public string AuthorName { get; set; }
 
         [FirestoreProperty]
-        public string authorImg { get; set; }
+        public string AuthorImg { get; set; }
+
+        // Ensure CreatedAt is always in UTC
+        private DateTime _createdAt;
+        [FirestoreProperty]
+        public DateTime CreatedAt
+        {
+            get => _createdAt;
+            set => _createdAt = value.Kind == DateTimeKind.Utc ? value : value.ToUniversalTime();
+        }
+
+        // Ensure UpdatedAt is nullable and in UTC
+        private DateTime? _updatedAt;
+        [FirestoreProperty]
+        public DateTime? UpdatedAt
+        {
+            get => _updatedAt;
+            set => _updatedAt = value.HasValue 
+                ? (value.Value.Kind == DateTimeKind.Utc ? value : value.Value.ToUniversalTime()) 
+                : (DateTime?)null;
+        }
 
         [FirestoreProperty]
-        public DateTime createdAt { get; set; }
+        public int CommentCount { get; set; }
 
         [FirestoreProperty]
-        public DateTime? updatedAt { get; set; }
+        public string Visibility { get; set; }  // "public", "private", or "friends"
+        
+        // Array of user IDs who liked or disliked the post
+        [FirestoreProperty]
+        public List<string> Likes { get; set; } = new List<string>();
 
         [FirestoreProperty]
-        public int commentCount { get; set; }
-
-        [FirestoreProperty]
-        public int likeCount { get; set; }
-
-        [FirestoreProperty]
-        public int dislikeCount { get; set; }
-
-        [FirestoreProperty]
-        public string visibility { get; set; }  // "public", "private", or "friends"
+        public List<string> Dislikes { get; set; } = new List<string>();
     }
 }

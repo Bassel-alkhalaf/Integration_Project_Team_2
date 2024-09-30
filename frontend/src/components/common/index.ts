@@ -1,4 +1,6 @@
 export * from './AddFriendBtn';
+export * from './CloseFriendBtn';
+export * from './DeleteFriendBtn';
 export * from './FriendRequestActionBtn';
 export * from './GenericInfo';
 export * from './JoinCommunityBtn';

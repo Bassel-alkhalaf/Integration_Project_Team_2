@@ -5,3 +5,4 @@ export const USER_ENDPOINT = 'User';
 export const POST_ENDPOINT = 'posts';
 export const FRIEND_REQUEST_ENDPOINT = 'FriendRequest';
 export const COMMENT_ENDPOINT = 'api/Comments';
+export const FRIENDSHIP_ENDPOINT = 'api/Friendship';

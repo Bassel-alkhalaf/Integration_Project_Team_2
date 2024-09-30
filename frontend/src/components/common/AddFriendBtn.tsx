@@ -1,6 +1,7 @@
 import { LoadingButton } from '@mui/lab';
 import { useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
+import { friendRequestQueryKeys } from '../../consts';
 import { useAuth } from '../../contexts';
 import { useCreateFriendRequest } from '../../hooks';
 
@@ -16,7 +17,7 @@ export function AddFriendBtn({ receiverId }: AddFriendsProps) {
 	const handleBtnClick = () => {
 		sendFriendRequest(receiverId, {
 			onSuccess: () => {
-				queryClient.invalidateQueries({ queryKey: ['friendRequests'] });
+				queryClient.invalidateQueries({ queryKey: friendRequestQueryKeys.type('sent') });
 				enqueueSnackbar('Friend request sent successfully', { variant: 'success' });
 			},
 			onError: () => enqueueSnackbar('Failed to send friend request', { variant: 'error' }),
