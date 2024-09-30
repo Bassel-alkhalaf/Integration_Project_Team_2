@@ -6,13 +6,28 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { enqueueSnackbar } from 'notistack';
 
+export interface Comment {
+    id: string;                
+    postId: string;           
+    userId: string;           
+    content: string;          
+    createdAt: string;     
+    updatedAt?: string;    
+}
+
+interface CommentWithEmail {
+    comment: Comment;
+    userEmail: string;
+}
+
 interface Report {
     createdAt: string; 
     entityId: string;
     id: string
     reason: string;
     reportType: string;
-    reporterId: string
+    reporterId: string;
+    comment?: CommentWithEmail;
 }
 
 const Reports: React.FC = () => {
@@ -33,6 +48,7 @@ const Reports: React.FC = () => {
             const data = await response.data;
     
             setReports(data);
+            console.log(data)
         } catch {
             enqueueSnackbar('Failed to fetch reports', { variant: 'error' });
         }
@@ -65,8 +81,14 @@ const Reports: React.FC = () => {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    function formatTimestamp(timestamp: string) {
+        return timestamp.split('T')[0];
+    }
+    
+
     useEffect(() => {
-        fetchReports()
+        fetchReports();
+        
     }, [])
   
   return (
@@ -83,23 +105,32 @@ const Reports: React.FC = () => {
             {reports && reports.length < 1 && <Typography>No Reports Found</Typography>}
 
             {reports && reports.length >= 1 && reports.map( r => (
-                <Box key={r.id}>
+                <Box 
+                    key={r.id}
+                    sx={{ borderBottom: 1 , borderColor: 'primary.main'}}
+                    py="1rem"
+                >
                     <Typography
                         fontWeight="bold"
                     >{capitalize(r.reason)}</Typography>
-                    <Typography
-                    >{capitalize(r.reportType)} Report</Typography>
+
+                    <Typography>{capitalize(r.reportType)} Report</Typography>
+
+                    {r.reportType === "comment" &&  <Typography>Comment: {r.comment?.comment.content}</Typography>}
+                    {r.reportType === "comment" &&  <Typography>Commenter: {r.comment?.userEmail}</Typography>}
+
                     <Typography
                         mb="1rem"
-                    >Report Date: {r.createdAt}</Typography>
-                    {(r.reportType === "post" || r.reportType === "comment") && 
+                    >Report Date: {formatTimestamp(r.createdAt)}</Typography>
+
+                    
+                    { r.reportType === "post" && 
                         <Box
                             display="flex"
                             gap=".5rem"
                         >
                             <Button
                                 onClick={() => navigate("/posts/" + r.entityId)}
-                                // onClick={() => navigate("/posts/b53cdc2f-ef6e-4c73-82d8-a2754642253f")}
                                 variant='outlined'
                             >
                                 View {r.reportType}
@@ -113,7 +144,28 @@ const Reports: React.FC = () => {
                         </Box>
 
                     }
-                    {r.reportType === "community" && 
+
+                    {r.reportType === "comment" && 
+                        <Box
+                            display="flex"
+                            gap=".5rem"
+                        >
+                            <Button
+                                onClick={() => navigate("/posts/" + r.comment?.postId)}
+                                variant='outlined'
+                            >
+                                View Post
+                            </Button>
+
+                            <Button 
+                                variant='outlined'
+                                color='error'
+                                onClick={() => resolveReport(r.id)}
+                            >Resolve</Button>
+                        </Box>
+                    }
+
+                    { r.reportType === "community" && 
                         <Box
                             display="flex"
                             gap=".5rem"

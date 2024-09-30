@@ -76,6 +76,45 @@ namespace backend.Services
             return false;
         }
 
+        // public async Task<List<Report>> GetAllReportsAsync()
+        // {
+        //     QuerySnapshot snapshot = await _db.Collection("reports").GetSnapshotAsync();
+        //     var reports = new List<Report>();
+
+        //     foreach (DocumentSnapshot document in snapshot.Documents)
+        //     {
+        //         reports.Add(document.ConvertTo<Report>());
+        //     }
+
+        //     return reports;
+        // }
+
+        // public async Task<List<Report>> GetAllReportsAsync()
+        // {
+        //     QuerySnapshot snapshot = await _db.Collection("reports").GetSnapshotAsync();
+        //     var reports = new List<Report>();
+
+        //     foreach (DocumentSnapshot document in snapshot.Documents)
+        //     {
+        //         var report = document.ConvertTo<Report>();
+
+        //         // Check if the report is for a comment
+        //         if (report.ReportType == "comment")
+        //         {
+        //             // Fetch comment details based on EntityId
+        //             var comment = await GetCommentByIdAsync(report.EntityId);
+        //             if (comment != null)
+        //             {
+        //                 // Attach the comment details to the report
+        //                 report.Comment = comment;
+        //             }
+        //         }
+
+        //         reports.Add(report);
+        //     }
+
+        //     return reports;
+        // }
         public async Task<List<Report>> GetAllReportsAsync()
         {
             QuerySnapshot snapshot = await _db.Collection("reports").GetSnapshotAsync();
@@ -83,11 +122,56 @@ namespace backend.Services
 
             foreach (DocumentSnapshot document in snapshot.Documents)
             {
-                reports.Add(document.ConvertTo<Report>());
+                var report = document.ConvertTo<Report>();
+
+                // Check if the report is for a comment
+                if (report.ReportType == "comment")
+                {
+                    // Fetch comment details based on EntityId
+                    var comment = await GetCommentByIdAsync(report.EntityId);
+                    if (comment != null)
+                    {
+                        // Fetch user email for the comment's UserId
+                        var userEmail = await GetUserEmailByIdAsync(comment.UserId);
+
+                        // Create a CommentWithEmail object
+                        report.Comment = new CommentWithEmail
+                        {
+                            Comment = comment,
+                            UserEmail = userEmail
+                        };
+                    }
+                }
+
+                reports.Add(report);
             }
 
             return reports;
         }
+
+
+        public async Task<Comment?> GetCommentByIdAsync(string commentId)
+        {
+            DocumentSnapshot snapshot = await _db.Collection("comments").Document(commentId).GetSnapshotAsync();
+            if (snapshot.Exists)
+            {
+                return snapshot.ConvertTo<Comment>();
+            }
+            return null;
+        }
+
+        public async Task<string?> GetUserEmailByIdAsync(string userId)
+        {
+            DocumentSnapshot snapshot = await _db.Collection("users").Document(userId).GetSnapshotAsync();
+            if (snapshot.Exists)
+            {
+                var user = snapshot.ConvertTo<User>(); // Assuming you have a User model
+                return user.Email;
+            }
+            return null;
+        }
+
+
         public async Task AddReportAsync(string reporterId, Report report)
         {
             // Automatically set the CreatedAt property

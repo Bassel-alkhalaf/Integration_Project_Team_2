@@ -1,4 +1,5 @@
 using Google.Cloud.Firestore;
+using backend.Models;
 
 [FirestoreData]
 public class Report
@@ -20,4 +21,6 @@ public class Report
 
     [FirestoreProperty]
     public string Reason { get; set; }
+
+    public CommentWithEmail? Comment { get; set; } 
 }
