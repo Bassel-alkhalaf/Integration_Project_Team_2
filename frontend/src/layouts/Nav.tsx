@@ -13,6 +13,10 @@ import {
 import { Box, Divider, Drawer, List, Toolbar } from '@mui/material';
 import { NavItem, UserCommunityList } from '../components';
 import { useAuth } from '../contexts';
+import React, { useState, useEffect } from 'react';
+import { PlaylistComponent} from './../components/ApiMusic';
+
+const MemoizedPlaylistComponent = React.memo(PlaylistComponent);
 
 interface PropsI {
 	drawerWidth: number;
@@ -60,6 +64,11 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 			</List>
 
 			{user && <UserCommunityList />}
+
+			{/*add API */}
+      <Box sx={{ width: drawerWidth, height: drawerWidth, margin: 'auto' }}>
+        <MemoizedPlaylistComponent />
+      </Box>
 		</>
 	);
 
