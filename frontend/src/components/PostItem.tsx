@@ -1,4 +1,4 @@
-import { Comment, Delete, Edit, ExpandMore, ThumbDown, ThumbUp } from '@mui/icons-material';
+import { Comment, Delete, Edit, ExpandMore, Group, Lock, Public, ThumbDown, ThumbUp } from '@mui/icons-material';
 import {
 	Accordion,
 	AccordionDetails,
@@ -8,6 +8,7 @@ import {
 	Card,
 	CardActions,
 	CardContent,
+	Chip,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -18,7 +19,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore'; // Firestore
 import { enqueueSnackbar } from 'notistack';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDeletePost } from '../hooks/apiHooks/post/useDeletePost';
 import { useDislikePost } from '../hooks/apiHooks/post/useDislikePost';
@@ -148,8 +149,25 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 	};
 
 	return (
-		<Card sx={{ marginBottom: 2, padding: 2 }}>
+		<Card sx={{ marginBottom: 2, padding: 2, position: 'relative' }}>
 			<CardContent>
+				<Chip
+					sx={{ position: 'absolute', top: 16, right: 16 }} // Position the chip
+					icon={
+						post.visibility === 'public' ? <Public /> : post.visibility === 'private' ? <Group /> : <Lock />
+					}
+					label={
+						post.visibility === 'public' ? 'Public' : post.visibility === 'private' ? 'Friends' : 'Only Me'
+					}
+					color={
+						post.visibility === 'public'
+							? 'primary'
+							: post.visibility === 'private'
+							? 'secondary'
+							: 'default'
+					}
+					variant='outlined'
+				/>
 				<div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
 					<Avatar src={post.authorImg} alt={post.authorName} sx={{ marginRight: 2 }} />
 					<Typography variant='h6'>{post.authorName}</Typography>

@@ -12,8 +12,12 @@ import {
   InputLabel,
   FormControl,
   Stack,
+  
 } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
+import {Public,
+  Lock,
+  Group,}from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -142,9 +146,9 @@ export const CreatePostDialog: React.FC<PostCreationFormProps> = ({
                 {...register("visibility")}
                 label="Visibility"
               >
-                <MenuItem value="public">Public</MenuItem>
-                <MenuItem value="private">Private</MenuItem>
-                <MenuItem value="only-me">Only Me</MenuItem>
+                <MenuItem value="public"><Public />&nbsp; Public</MenuItem>
+                <MenuItem value="private"><Group />&nbsp; Friends</MenuItem>
+                <MenuItem value="only-me"><Lock />&nbsp; Only Me</MenuItem>
               </Select>
             </FormControl>
 

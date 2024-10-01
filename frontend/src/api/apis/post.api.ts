@@ -29,7 +29,18 @@ export const fetchOnlyMePosts= async (
   console.log("Fetched posts: ", res.data, userId);
   return res;
 };
-
+//fetch private posts from friends
+export const fetchPrivatePosts= async (
+  userId: string,
+): Promise<AxiosResponse<Post[]>>  => {
+  const url = `${POST_ENDPOINT}/private?userId=${userId}`;
+  const res = await sendRequest({
+    endpoint: url,
+    method: "GET",
+  });
+  console.log("Fetched posts: ", res.data, userId);
+  return res;
+};
 // Create a new post
 export const createPostRequest = async (postData: Post) => {
   return sendRequest({

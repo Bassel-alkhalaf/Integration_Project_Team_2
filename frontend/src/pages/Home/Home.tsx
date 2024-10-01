@@ -1,75 +1,57 @@
-import React, { useMemo, useState } from 'react';
-import { useFetchPosts } from '../../hooks/apiHooks';
 import { Button } from '@mui/material';
-import PostItem from '../../components/PostItem';
-import { Post } from '../../types/post.type';
-
-import { useAuth } from '../../contexts';
+import React, { useMemo, useState } from 'react';
 import { CreatePostDialog } from '../../components/CreatePostDialogue';
+import PostItem from '../../components/PostItem';
+import { useAuth } from '../../contexts';
 
 import { useBlockContext } from '../../contexts/useBlockContext';
-
+import { useFetchPrivatePosts } from '../../hooks/apiHooks/post/useFetchPrivateposts';
+import { Post } from '../../types/post.type';
 
 export const Home: React.FC = () => {
-  
-  const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useFetchPosts();
-  const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(false);
 
-  const { user } = useAuth();
-  const authorInfo = useMemo(() => { return { authorId: user?.id || '', authorName: `${user?.firstName || ''} ${user?.lastName || ''}`} }, [user]);
-  const {authorId, authorName} =  authorInfo;
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+	const { user } = useAuth();
+	const authorInfo = useMemo(() => {
+		return { authorId: user?.id || '', authorName: `${user?.firstName || ''} ${user?.lastName || ''}` };
+	}, [user]);
+	const { authorId, authorName } = authorInfo;
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
 
-  const { blockedUserIds } = useBlockContext();
- 
-  return (
-    <div>
-      <div className="post-list">
-        {(!data || !data.pages || data.pages.length === 0) ? (
-          <div style={{ textAlign: 'center', margin: '20px' }}>
-            <p>No posts available. Be the first to create a post!</p>
-          </div>
-        ) : (
-          data.pages.map((group, i) => (
-            <React.Fragment key={i}>
-              {Array.isArray(group.data) && group.data.length > 0 ? (
-                group.data.map((post: Post) => {
-                    if (blockedUserIds.includes(post.authorId as string)) {
-                        return null; 
-                    }
-                    return (
-                        <PostItem key={post.postId} post={post} user={user} />
-                    );
-                })
-              ) : (
-                <p>No posts in this group.</p>
-              )}
-            </React.Fragment>
-          ))
-        )}
-      </div>
+	const { blockedUserIds } = useBlockContext();
+	const res = useFetchPrivatePosts(user?.id!);
+	return (
+		<div>
+			<div className='post-list'>
+				{!res || res.data?.data.length == 0 ? (
+					<div style={{ textAlign: 'center', margin: '20px' }}>
+						<p>No posts available. Be the first to create a post!</p>
+					</div>
+				) : (
+					res.data?.data.map((post: Post) => {
+						if (blockedUserIds.includes(post.authorId as string)) {
+							return null;
+						}
+						return <PostItem key={post.postId} post={post} user={user} />;
+					})
+				)}
+			</div>
 
-      {/* Load More Posts */}
-      {hasNextPage && data && data.pages && data.pages.length > 0 && (
-        <div className="actions">
-          <Button variant="outlined" color="secondary" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-            {isFetchingNextPage ? 'Loading...' : 'Load More'}
-          </Button>
-        </div>
-      )}
+			{/* Create Post Button */}
+			<div className='actions'>
+				<Button variant='contained' color='primary' onClick={handleOpen}>
+					Create a Post
+				</Button>
+			</div>
 
-      {/* Create Post Button */}
-      <div className="actions">
-        <Button variant="contained" color="primary" onClick={handleOpen}>
-          Create a Post
-        </Button>
-      </div>
-
-      {/* Create Post Dialog */}
-      <CreatePostDialog
-        authorName={authorName} // Replace with dynamic data
-        authorId={authorId} open={open} onClose={handleClose}/>
-    </div>
-  );
+			{/* Create Post Dialog */}
+			<CreatePostDialog
+				authorName={authorName} // Replace with dynamic data
+				authorId={authorId}
+				open={open}
+				onClose={handleClose}
+			/>
+		</div>
+	);
 };
