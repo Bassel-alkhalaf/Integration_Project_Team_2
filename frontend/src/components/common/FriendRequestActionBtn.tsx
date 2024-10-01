@@ -37,7 +37,7 @@ export function FriendRequestActionBtn({ requestId, action }: PropsI) {
 		});
 
 	return (
-		<LoadingButton loading={isPending} onClick={handleBtnClick} size='small' color={options.color}>
+		<LoadingButton loading={isPending} onClick={handleBtnClick} variant='contained' color={options.color}>
 			{action}
 		</LoadingButton>
 	);

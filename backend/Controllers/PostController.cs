@@ -46,6 +46,24 @@ namespace backend.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [HttpGet("posts/private")]
+        public async Task<IActionResult> GetPrivatePostsFromFriends([FromQuery] string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("User ID is required.");
+            }
+
+            try
+            {
+                List<Post> posts = await _postService.GetFriendsAndUserPosts(userId);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
 
         [HttpPost("posts/create")]
         public async Task<ActionResult> CreatePost([FromBody] Post post)
