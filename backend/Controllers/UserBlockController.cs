@@ -65,10 +65,6 @@ namespace backend.Controllers
         {
             string userId = _firebaseAuthService.GetUserId();
             var blocks = await _userBlockService.GetBlocksByUserIdAsync(userId);
-            if (blocks == null || blocks.Count == 0)
-            {
-                return NotFound(new { message = "no_blocks_found" });
-            }
             return Ok(blocks);
         }
 

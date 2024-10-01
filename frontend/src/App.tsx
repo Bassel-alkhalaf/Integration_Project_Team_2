@@ -36,6 +36,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { SnackbarProvider } from 'notistack';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts';
+import { BlockProvider } from './contexts/useBlockContext';
 import { ThemeProvider } from './components/Theme/ThemeContext'; // Import ThemeContext
 import Routes from './routes';
 
@@ -45,18 +46,20 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ThemeProvider> {/* Wrap the app with ThemeProvider */}
-          <BrowserRouter>
-            <SnackbarProvider
-              autoHideDuration={1500}
-              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-              disableWindowBlurListener
-            >
-              <Routes />
-            </SnackbarProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
-          </BrowserRouter>
-        </ThemeProvider>
+        <BlockProvider>
+            <ThemeProvider> {/* Wrap the app with ThemeProvider */}
+            <BrowserRouter>
+                <SnackbarProvider
+                autoHideDuration={1500}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                disableWindowBlurListener
+                >
+                <Routes />
+                </SnackbarProvider>
+                <ReactQueryDevtools initialIsOpen={false} />
+            </BrowserRouter>
+            </ThemeProvider>
+        </BlockProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
