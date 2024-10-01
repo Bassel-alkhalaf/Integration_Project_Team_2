@@ -55,6 +55,7 @@ namespace backend.Services
 
                 var matchedUsers = allUsers
                     .Where(user =>
+                        user.Email.Equals(queryText, StringComparison.OrdinalIgnoreCase) ||
                         user.FirstName.Contains(queryText, StringComparison.OrdinalIgnoreCase) || 
                         user.LastName.Contains(queryText, StringComparison.OrdinalIgnoreCase))
                     .Select(user => _userService.ConvertToUserInfoDto(user))

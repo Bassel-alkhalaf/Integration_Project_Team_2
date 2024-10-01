@@ -10,6 +10,7 @@ import {
 	ListItemButton,
 	ListItemIcon,
 	ListItemText,
+	Typography,
 } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import React from 'react';
@@ -63,14 +64,15 @@ export function UserCommunityList() {
 
 		if (isError) return <Alert severity='error'>An error occurred.</Alert>;
 
-		if (data?.length === 0)
+		const itemsToRender = isCreator ? data?.filter(community => community.isCreator) : data;
+
+		if (itemsToRender?.length === 0)
 			return (
-				<ListItem sx={{ display: 'flex', justifyContent: 'center', pb: 2 }}>
-					<CircularProgress size={25} />
+				<ListItem sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+					<Typography color='textSecondary'>No communities.</Typography>
 				</ListItem>
 			);
 
-		let itemsToRender = isCreator ? data?.filter(community => community.isCreator) : data;
 		return itemsToRender?.map((community, index) => <UserCommunityItem key={index} community={community} />);
 	};
 

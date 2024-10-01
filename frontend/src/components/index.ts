@@ -9,3 +9,5 @@ export * from './NavItem';
 export * from './UserAvatar';
 export * from './UserAvatarMenu';
 export * from './UserCommunityList';
+export * from './Admin';
+export * from './Theme';

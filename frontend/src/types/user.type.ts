@@ -1,15 +1,16 @@
 // src/types/user.type.ts
 export enum Role {
-	Guest = 'guest',
-	User = 'user',
-	Admin = 'admin',
+	Guest = 'Guest',
+	User = 'User',
+	Admin = 'Admin',
+	Suspended = 'Suspended',
 }
 
 export type UserInfoDTO = {
 	id: string;
 	firstName: string;
 	lastName: string;
-	dob: Date;
+	dob: string;
 	gender: string;
 	bio: string;
 	profileImageUrl: string;

@@ -41,11 +41,13 @@ builder.Services.AddScoped<FriendRequestService>();
 builder.Services.AddScoped<UserService>(); 
 builder.Services.AddScoped<SearchService>();
 builder.Services.AddScoped<UserBlockService>();
+builder.Services.AddScoped<ReportService>();
 
 builder.Services.AddScoped<ProfileUpdateService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<FirebaseAuthService>();
+builder.Services.AddScoped<AdminService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

@@ -12,6 +12,7 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { commentQueryKeys } from '../consts';
 import { Edit, Delete, ExpandMore } from '@mui/icons-material';
+import { ReportBtn } from './common/ReportBtn';
 
 interface CommentSectionProps {
     postId: string;
@@ -30,6 +31,7 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const [editCommentText, setEditCommentText] = useState('');
     const [editCommentId, setEditCommentId] = useState<string | null>(null); // To store the ID of the comment being edited
     const [currentUser, setCurrentUser] = useState<User | null>(null); // Store the current user
+    const [userRole, setUserRole] = useState<string | null>(null); // Store the role of the current user
     const [commentData, setCommentData] = useState<CommentWithUser[]>([]); // Store comments with user data
 
     const { mutate: createComment } = useCreateComment(); // Use the hook to create a comment
@@ -48,8 +50,19 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
         const unsubscribe = auth.onAuthStateChanged(async (user) => {
             if (user) {
                 setCurrentUser(user);
+
+                // Fetch the role from Firestore
+                const firestore = getFirestore();
+                const userRef = doc(firestore, 'users', user.uid); // Assuming 'users' collection exists in Firestore
+                const userDoc = await getDoc(userRef);
+
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    setUserRole(userData?.Role || 'User'); // Set the role from Firestore (default to 'User')
+                }
             } else {
                 setCurrentUser(null);
+                setUserRole(null); // Reset role on logout
             }
         });
 
@@ -151,9 +164,9 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
     return (
         <Box sx={{ marginTop: '20px' }}>
-            <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1d3557', marginBottom: '20px' }}>
+            {/* <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1d3557', marginBottom: '20px' }}>
                 Comments
-            </Typography>
+            </Typography> */}
 
             <Accordion>
                 <AccordionSummary expandIcon={<ExpandMore />}>
@@ -161,7 +174,7 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                 </AccordionSummary>
                 <AccordionDetails>
                     {commentData
-                        ?.sort((a, b) =>   new Date(b.createdAt).getTime()-new Date(a.createdAt).getTime()) // Sort by creation date (oldest to newest)
+                        ?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) // Sort by creation date (oldest to newest)
                         .slice((page - 1) * commentsPerPage, page * commentsPerPage) // Show only comments for the current page
                         .map((comment, index) => {
                             const isOwner = comment.UserId === currentUser?.uid;
@@ -173,7 +186,7 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                                     ) : (
                                         <Avatar sx={{ marginRight: 2 }}>{comment.firstName?.[0]}</Avatar>
                                     )}
-                                    <Box sx={{ flexGrow: 1 }}>
+                                    <Box className='CommentSectionpageComments' sx={{ flexGrow: 1 }}>
                                         <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#2d4059' }}>
                                             {comment.firstName} {comment.lastName}
                                         </Typography>
@@ -189,26 +202,54 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                                                 rows={2}
                                                 sx={{ marginBottom: 2 }}
                                             />
+
                                         ) : (
                                             <Typography variant="body2" sx={{ marginBottom: 1, color: '#2d4059' }}>
                                                 {comment.content}
                                             </Typography>
                                         )}
-                                        {isOwner && (
-                                            <Box>
+
+                                        {(isOwner) && ( // Allow Admin to delete or edit any comment
+                                            <Box 
+                                                className='CommentSectionpageComments'
+                                                display="flex"
+                                            
+                                            >
                                                 <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
                                                     <Edit />
                                                 </IconButton>
                                                 <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
                                                     <Delete />
                                                 </IconButton>
+                                                <ReportBtn type="comment" id={comment.commentId} />
                                                 {editCommentId === comment.commentId && (
                                                     <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
                                                         Save
                                                     </Button>
                                                 )}
+                                                {/* <ReportBtn type="comment" id={comment.commentId} /> */}
                                             </Box>
                                         )}
+                                        {(userRole === 'Admin' && !isOwner) && ( // Allow Admin to delete or edit any comment
+                                            <Box 
+                                                className='CommentSectionpageComments'
+                                                display="flex"    
+                                            >
+
+                                                <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
+                                                    <Delete />
+                                                </IconButton>
+                                                <ReportBtn type="comment" id={comment.commentId} />
+                                                {editCommentId === comment.commentId && (
+                                                    <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
+                                                        Save
+                                                    </Button>
+                                                )}
+                                                
+                                            </Box>
+                                        )}
+                                        
+                                        
                                     </Box>
                                 </Card>
                             );

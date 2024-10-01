@@ -15,7 +15,7 @@ namespace backend.Controllers
             _postService = postService;
         }
 
-        [HttpGet("/posts")]
+        [HttpGet("posts")]
         public async Task<IActionResult> GetPosts([FromQuery] int limit = 5, [FromQuery] int page = 1)
         {
             try
@@ -27,6 +27,23 @@ namespace backend.Controllers
             {
                 // Handle error
                 return StatusCode(500, $"Error fetching posts: {ex.Message}");
+            }
+        }
+        [HttpGet("posts/onlyme")]
+        public async Task<IActionResult> GetOnlyMePosts([FromQuery] string userId)
+        {
+            try
+            {
+                // Call the service method to get posts with visibility "Only Me" by user
+                List<Post> posts = await _postService.GetOnlyMePostsByUser(userId);
+
+                // Return the posts as a JSON response
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
 
@@ -82,5 +99,54 @@ namespace backend.Controllers
 
             return Ok(post);
         }
+
+
+        // GET api/posts/by-date
+        [HttpGet("posts/by-date")]
+        public async Task<IActionResult> GetPostsByDate([FromQuery] System.DateTime date)  // Use System.DateTime explicitly
+        {
+            try
+            {
+                var posts = await _postService.GetPostsByDate(date);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error fetching posts: {ex.Message}");
+            }
+        }
+
+        // Add Like
+        [HttpPost("posts/like")]
+        public async Task<IActionResult> AddLike([FromQuery] string postId, [FromQuery] string userId)
+        {
+            await _postService.AddLikeAsync(postId, userId);
+            return Ok();
+        }
+
+        // Remove Like
+        [HttpDelete("posts/like")]
+        public async Task<IActionResult> RemoveLike([FromQuery] string postId, [FromQuery] string userId)
+        {
+            await _postService.RemoveLikeAsync(postId, userId);
+            return Ok();
+        }
+
+        // Add Dislike
+        [HttpPost("posts/dislike")]
+        public async Task<IActionResult> AddDislike([FromQuery] string postId, [FromQuery] string userId)
+        {
+            await _postService.AddDislikeAsync(postId, userId);
+            return Ok();
+        }
+
+        // Remove Dislike
+        [HttpDelete("posts/dislike")]
+        public async Task<IActionResult> RemoveDislike([FromQuery] string postId, [FromQuery] string userId)
+        {
+            await _postService.RemoveDislikeAsync(postId, userId);
+            return Ok();
+        }
+
     }
 }
