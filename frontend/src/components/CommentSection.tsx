@@ -239,6 +239,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { commentQueryKeys } from '../consts';
 import { Edit, Delete } from '@mui/icons-material';
 import { Link } from 'react-router-dom'; // Import Link for navigation
+import { ReportBtn } from './common/ReportBtn';
 
 interface CommentSectionProps {
     postId: string;
@@ -422,6 +423,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                 <Box className='CommentSectionpageComments'>
                                     <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
                                         <Edit />
+
                                     </IconButton>
                                     <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
                                         <Delete />
@@ -433,12 +435,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                     )}
                                 </Box>
                             )}
-                             {(userRole === 'Admin'&& !isOwner) && ( // Allow Admin to delete or edit any comment
+                            {(userRole === 'Admin'&& !isOwner) && ( // Allow Admin to delete or edit any comment
                                 <Box className='CommentSectionpageComments'>
-                                    
-                                    <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
-                                        <Delete />
-                                    </IconButton>
+                                    <Box
+                                        display="flex"
+                                    >
+                                        <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
+                                            <Delete />
+                                        </IconButton>
+                                        <ReportBtn type='comment' id={comment.commentId}/>
+                                    </Box>
+
                                     {editCommentId === comment.commentId && (
                                         <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
                                             Save
@@ -446,6 +453,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                     )}
                                 </Box>
                             )}
+
+                            
                         </Box>
                     </Card>
                 );

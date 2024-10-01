@@ -469,7 +469,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { ThumbUp, ThumbDown, Comment, Edit, Delete, ExpandMore } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, Comment, Edit, Delete, ExpandMore} from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { getPostDetails } from "../../api/apis/post.api";
@@ -481,6 +481,18 @@ import { enqueueSnackbar } from "notistack";
 import CommentSection from "../../components/FullCommentSection";
 import EditPostDialogue from "../../components/EditPostDialogue";
 import { Post } from "../../types/post.type";
+import { useLikePost } from "../../hooks/apiHooks/post/useLikePost";
+import { useDislikePost } from "../../hooks/apiHooks/post/useDislikePost";
+import { useAuth } from "../../contexts";
+
+
+
+
+
+
+
+
+import { ReportBtn } from "../../components/common/ReportBtn";
 
 export default function PostDetail() {
   const { postId } = useParams<{ postId: string }>();
@@ -489,18 +501,31 @@ export default function PostDetail() {
   const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
   const [isCommentsOpen, setCommentsOpen] = useState(false);
   const [postImages, setPostImages] = useState<string[]>([]); // Track the images in the post
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const auth = getAuth();
-  const { mutate: deletePost } = useDeletePost();
-  const { mutate: editPost } = useEditPost();
+  const { mutate: deletePost } = useDeletePost(postId!);
+  const { mutate: editPost } = useEditPost(postId!);
   const isOwner = currentUser?.uid === post?.authorId;
+  const { likePostMutation, unlikePostMutation } = useLikePost(postId!);
+  const { dislikePostMutation, undislikePostMutation } = useDislikePost(postId!);
 
+  const queryClient = useQueryClient();
+  const {user} = useAuth();
+  const userId = user?.id;
+  let hasLiked: boolean = false;
+  let hasDisliked: boolean = false;
+
+  if (userId) {
+    if (post !== null ){
+      hasLiked = post.likes.includes(userId);     
+      hasDisliked = post.dislikes.includes(userId);  
+    }    
+ } else {
+   console.error("User ID is not defined");
+ }
   // Track auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => setCurrentUser(user));
@@ -568,9 +593,26 @@ export default function PostDetail() {
     setPostImages(updatedImages);
   };
 
-  // Toggle like and dislike
-  const toggleLike = () => setLiked((prev) => !prev);
-  const toggleDislike = () => setDisliked((prev) => !prev);
+  // Toggle like status
+  const toggleLike = () => {
+    const userId = user?.id; 
+    if (hasLiked) {  
+      unlikePostMutation.mutate(userId!);
+    } else {
+      likePostMutation.mutate(userId!);
+    }
+  };
+
+  // Toggle dislike status
+  const toggleDislike = () => {
+    const userId = user?.id;
+    if (hasDisliked) {
+      undislikePostMutation.mutate(userId!);
+    } else {
+      dislikePostMutation.mutate(userId!);
+    }
+  };
+
 
   // Toggle comments visibility
   const toggleComments = () => setCommentsOpen((prev) => !prev);
@@ -608,18 +650,21 @@ export default function PostDetail() {
           </Typography>
 
           <Box mt={2} display="flex" alignItems="center">
-            <IconButton onClick={toggleLike} aria-label="like" sx={{ color: liked ? "blue" : "inherit" }}>
+            <IconButton onClick={toggleLike} aria-label="like" sx={{ color: hasLiked ? "blue" : "inherit" }}>
               <ThumbUp />
               <Typography variant="body2" sx={{ marginLeft: 1 }}>
-                {post.likeCount}
+                {post.likes.length}
               </Typography>
             </IconButton>
-            <IconButton onClick={toggleDislike} aria-label="dislike" sx={{ color: disliked ? "red" : "inherit" }}>
+            <IconButton onClick={toggleDislike} aria-label="dislike" sx={{ color: hasDisliked ? "red" : "inherit" }}>
               <ThumbDown />
               <Typography variant="body2" sx={{ marginLeft: 1 }}>
-                {post.dislikeCount}
+                {post.dislikes.length}
               </Typography>
             </IconButton>
+            
+            <ReportBtn type="post" id={post.postId} />
+
             <IconButton onClick={toggleComments} aria-label="comments" sx={{ marginLeft: "auto" }}>
               <Comment />
               <Typography variant="body2" sx={{ marginLeft: 1 }}>

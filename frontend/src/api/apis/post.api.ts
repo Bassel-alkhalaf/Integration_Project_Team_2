@@ -1,6 +1,7 @@
 import { sendRequest } from "./request";
 import { Post } from "../../types/post.type";
 import { POST_ENDPOINT } from "../endpoints";
+import { AxiosResponse } from "axios";
 
 
 const LIMIT = 5;
@@ -13,6 +14,19 @@ export const fetchPosts = async ({ pageParam = 1 }: { pageParam?: number }) => {
     method: "GET",
   });
 
+  return res;
+};
+
+//Fetch the posts that are visible by author only
+export const fetchOnlyMePosts= async (
+  userId: string,
+): Promise<AxiosResponse<Post[]>>  => {
+  const url = `${POST_ENDPOINT}/onlyme?userId=${userId}`;
+  const res = await sendRequest({
+    endpoint: url,
+    method: "GET",
+  });
+  console.log("Fetched posts: ", res.data, userId);
   return res;
 };
 
@@ -61,8 +75,6 @@ export const fetchPostsByDate = async (
       endpoint: url,
       method: "GET",
     });
-
-    console.log("Fetched posts: ", res.data); // Add this to log the fetched posts
 
     return res.data;
   } catch (error) {

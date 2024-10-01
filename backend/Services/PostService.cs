@@ -66,12 +66,41 @@ namespace backend.Services
                 if (document.Exists)
                 {
                     Post post = document.ConvertTo<Post>();
-                    posts.Add(post);
+                    if (post.Visibility != "only-me")
+                    {
+                        posts.Add(post);
+                    }
+                    
                 }
             }
 
             // Skip the required number of posts for pagination
             return posts.Skip(skipCount).Take(limit).ToList();
+        }
+        public async Task<List<Post>> GetOnlyMePostsByUser(string userId)
+        {
+            CollectionReference postsRef = _firestoreDb.Collection("posts");
+
+            // Query to fetch posts with visibility "Only Me" and filter by authorId
+            Query query = postsRef
+                .WhereEqualTo("Visibility", "only-me")
+                .WhereEqualTo("AuthorId", userId);
+
+
+            QuerySnapshot snapshot = await query.GetSnapshotAsync();
+            List<Post> posts = new List<Post>();
+
+            foreach (DocumentSnapshot document in snapshot.Documents)
+            {
+                if (document.Exists)
+                {
+                    Post post = document.ConvertTo<Post>();
+                    posts.Add(post);
+                }
+            }
+
+            // Skip the required number of posts for pagination
+            return [.. posts];
         }
 
 
@@ -170,7 +199,7 @@ namespace backend.Services
                     post.Likes.Add(userId);
                     if (post.Dislikes.Contains(userId)) post.Dislikes.Remove(userId); // Ensure no simultaneous dislike
                 }
-                
+
                 await postRef.SetAsync(post, SetOptions.MergeAll);
             }
         }
@@ -233,7 +262,7 @@ namespace backend.Services
             }
         }
 
-      
+
 
     }
 }

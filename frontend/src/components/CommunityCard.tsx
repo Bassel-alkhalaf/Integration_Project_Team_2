@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, Stack, Typography } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useToggleOpenEl, useUserCommunityRelationship } from '../hooks';
 import { CommunityT } from '../types';
 import { JoinCommunityBtn, LeaveCommunityBtn, UserCommunityStarBtn } from './common';
 import { CommunityInputFormDialog } from './CommunityInputFormDialog';
+import { ReportBtn } from './common/ReportBtn';
 
 interface PropsI {
 	community: CommunityT;
@@ -57,9 +58,23 @@ export function CommunityCard({ community }: PropsI) {
 						/>
 					</>
 				) : isJoined ? (
-					<LeaveCommunityBtn community={community} />
+                    <Box
+                        display="flex"
+                        gap=".5rem"
+                    >
+                        <LeaveCommunityBtn community={community} />
+                        <ReportBtn type='community' id={id}/>
+                    </Box>
+
 				) : (
-					<JoinCommunityBtn community={community} isJoined={!!isJoined} />
+					
+                    <Box
+                        display="flex"
+                        gap=".5rem"
+                    >
+                        <JoinCommunityBtn community={community} isJoined={!!isJoined} />
+                        <ReportBtn type='community' id={id}/>
+                    </Box>                   
 				)}
 			</CardActions>
 		</Card>

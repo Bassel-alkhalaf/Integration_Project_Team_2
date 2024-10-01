@@ -70,12 +70,10 @@ namespace backend.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;
-        private readonly SearchService _searchService;
 
-        public UserController(UserService userService, SearchService searchService)
+        public UserController(UserService userService)
         {
             _userService = userService;
-            _searchService = searchService;
         }
 
         [HttpGet("{id}")]
