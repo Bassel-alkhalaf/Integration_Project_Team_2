@@ -9,6 +9,7 @@ import { useState } from "react";
 import { sendRequest } from '../../api';
 import { useAuth } from '../../contexts';
 import { Flag } from "@mui/icons-material";
+import { REPORT_ENDPOINT } from '../../api/endpoints';
 
 
 
@@ -49,7 +50,7 @@ export const ReportBtn = ({ type, id }: Props) => {
             }
 
             await sendRequest({
-                endpoint: "api/report",
+                endpoint: REPORT_ENDPOINT,
                 method: "POST",
                 accessToken: accessToken as string,
                 body: report

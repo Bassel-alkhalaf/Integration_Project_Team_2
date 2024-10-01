@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { enqueueSnackbar } from 'notistack';
+import { REPORT_ENDPOINT } from '../../api/endpoints';
 
 export interface Comment {
     id: string;                
@@ -40,7 +41,7 @@ const Reports: React.FC = () => {
     async function fetchReports() {
         try {
             const response = await sendRequest({
-                endpoint: "api/report/all",
+                endpoint: `${REPORT_ENDPOINT}/all`,
                 method: "GET",
                 accessToken: accessToken as string
             }); 
@@ -58,7 +59,7 @@ const Reports: React.FC = () => {
     async function resolveReport(id:string) {
         try {
             await sendRequest({
-                endpoint: "api/report/" + id,
+                endpoint: `${REPORT_ENDPOINT}/${id}`,
                 method: "DELETE",
                 accessToken: accessToken as string
             });

@@ -8,7 +8,7 @@ using backend.Middlewares;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [FirebaseAuth]
 
     public class ReportController : ControllerBase
