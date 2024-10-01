@@ -7,6 +7,8 @@ import { Post } from '../../types/post.type';
 import { useAuth } from '../../contexts';
 import { CreatePostDialog } from '../../components/CreatePostDialogue';
 
+import { useBlockContext } from '../../contexts/useBlockContext';
+
 
 export const Home: React.FC = () => {
   
@@ -18,6 +20,8 @@ export const Home: React.FC = () => {
   const {authorId, authorName} =  authorInfo;
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const { blockedUserIds } = useBlockContext();
  
   return (
     <div>
@@ -30,9 +34,16 @@ export const Home: React.FC = () => {
           data.pages.map((group, i) => (
             <React.Fragment key={i}>
               {Array.isArray(group.data) && group.data.length > 0 ? (
-                group.data.map((post: Post) => (
-                  <PostItem key={post.postId} post={post} user={user} /> // Pass userId to PostItem
-                ))
+                group.data.map((post: Post) => {
+                    // Check if the post's author is blocked
+                    if (blockedUserIds.includes(post.authorId as string)) {
+                    return null; // Render nothing for blocked users
+                    }
+                    
+                    return (
+                    <PostItem key={post.postId} post={post} user={user} />
+                    );
+                })
               ) : (
                 <p>No posts in this group.</p>
               )}
