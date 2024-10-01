@@ -469,7 +469,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { ThumbUp, ThumbDown, Comment, Edit, Delete, ExpandMore } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, Comment, Edit, Delete, ExpandMore} from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { getPostDetails } from "../../api/apis/post.api";
@@ -486,6 +486,13 @@ import { useDislikePost } from "../../hooks/apiHooks/post/useDislikePost";
 import { useAuth } from "../../contexts";
 
 
+
+
+
+
+
+
+import { ReportBtn } from "../../components/common/ReportBtn";
 
 export default function PostDetail() {
   const { postId } = useParams<{ postId: string }>();
@@ -655,6 +662,9 @@ export default function PostDetail() {
                 {post.dislikes.length}
               </Typography>
             </IconButton>
+            
+            <ReportBtn type="post" id={post.postId} />
+
             <IconButton onClick={toggleComments} aria-label="comments" sx={{ marginLeft: "auto" }}>
               <Comment />
               <Typography variant="body2" sx={{ marginLeft: 1 }}>

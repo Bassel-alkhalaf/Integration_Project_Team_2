@@ -89,6 +89,8 @@ import { RoleBasedRoute } from './RoleBasedRoute';
 import { MyPosts } from '../pages/Post/MyPosts';
 import { AllPosts } from '../pages/Post/AllPosts';
 
+import ReportingTest from '../pages/ReportingTest';
+
 function AppRoutes() {
   return (
     <Routes>
@@ -117,6 +119,9 @@ function AppRoutes() {
 
         {/* Account Suspended Page */}
         <Route path="/account-suspended" element={<AccountSuspended />} />
+
+        {/* report test */}
+        <Route path="/report" element={<ReportingTest />} />
 
         {/* Error Pages */}
         <Route
