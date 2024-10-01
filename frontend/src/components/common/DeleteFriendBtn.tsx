@@ -15,7 +15,9 @@ export function DeleteFriendBtn({ friendId }: PropsI) {
 
 	const { mutate: deleteFriendship, isPending } = useDeleteFriendship(accessToken as string);
 
-	const handleBtnClick = () => {
+	const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.stopPropagation();
+
 		if (confirm('Are you sure to delete this friend?')) {
 			deleteFriendship(friendId, {
 				onSuccess: () => {
@@ -30,7 +32,7 @@ export function DeleteFriendBtn({ friendId }: PropsI) {
 	};
 
 	return (
-		<LoadingButton loading={isPending} onClick={handleBtnClick} size='small' color='error'>
+		<LoadingButton loading={isPending} onClick={handleBtnClick} variant='contained' color='error'>
 			Delete Friend
 		</LoadingButton>
 	);
