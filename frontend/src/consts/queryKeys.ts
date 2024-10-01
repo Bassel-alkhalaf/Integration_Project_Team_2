@@ -38,3 +38,8 @@ export const postQueryKeys = {
 	editing: (postId: string) => [...postQueryKeys.all(), 'editing', postId] as const,
 	deleting: (postId: string) => [...postQueryKeys.all(), 'deleting', postId] as const,
 };
+
+export const userQueryKeys = {
+	current: ['user', 'current'] as const,
+	user: (userId: string) => ['user', userId] as const,
+};

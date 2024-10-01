@@ -24,3 +24,5 @@ export * from './friendRequest/useGetFriendRequests';
 export * from './friendship/useDeleteFriendship';
 export * from './friendship/useGetFriendships';
 export * from './friendship/useUpdateIsCloseFriend';
+
+export * from './user/useGetUserInfo';

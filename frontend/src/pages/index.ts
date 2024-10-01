@@ -4,7 +4,8 @@
 export * from './Community/Community';
 export * from './Home/Home';
 export * from './Search/Search';
-export * from './Friends/Friends'
+export * from './Friends/Friends';
+export * from './Profile/ProfilePage';
 
 export { default as Login } from './Login'; 
 export { default as Register } from './Register'; 

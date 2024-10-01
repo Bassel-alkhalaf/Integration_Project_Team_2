@@ -1,8 +1,8 @@
 import { Avatar, SxProps, Theme } from '@mui/material';
-import { UserInfoT } from '../types';
+import { UserInfoDTO } from '../types';
 
 interface Props {
-	user: UserInfoT;
+	user: UserInfoDTO;
 	sx?: SxProps<Theme>;
 }
 
