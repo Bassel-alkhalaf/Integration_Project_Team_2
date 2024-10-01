@@ -14,14 +14,31 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Chip,
 } from "@mui/material";
-import { ThumbUp, ThumbDown, Comment, Delete, Edit, ExpandMore } from "@mui/icons-material";
+import {
+  ThumbUp,
+  ThumbDown,
+  Comment,
+  Delete,
+  Edit,
+  ExpandMore,
+  Public,
+  Lock,
+  Group,
+} from "@mui/icons-material";
 import { Post } from "../types/post.type";
 import { useDeletePost } from "../hooks/apiHooks/post/useDeletePost";
 import { useEditPost } from "../hooks/apiHooks/post/useEditPost";
 import { useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore"; // Firestore
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore"; // Firestore
 import EditPostDialogue from "./EditPostDialogue";
 import CommentSection from "./CommentSection";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +49,6 @@ import { useDislikePost } from "../hooks/apiHooks/post/useDislikePost";
 interface PostProps {
   post: Post;
   user: UserInfoT | null;
-
 }
 
 const PostItem: React.FC<PostProps> = ({ post, user }) => {
@@ -45,8 +61,9 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
   const [isCommentsOpen, setCommentsOpen] = useState(false); // State for accordion open/close
   const [commentCount, setCommentCount] = useState(0); // State for comment count
   const { likePostMutation, unlikePostMutation } = useLikePost(post.postId);
-  const { dislikePostMutation, undislikePostMutation } = useDislikePost(post.postId);
-
+  const { dislikePostMutation, undislikePostMutation } = useDislikePost(
+    post.postId
+  );
 
   const queryClient = useQueryClient();
 
@@ -54,17 +71,16 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
   let hasLiked: boolean = false;
   let hasDisliked: boolean = false;
 
-
   if (userId) {
-     hasLiked = post.likes.includes(userId);     
-     hasDisliked = post.dislikes.includes(userId);    
+    hasLiked = post.likes.includes(userId);
+    hasDisliked = post.dislikes.includes(userId);
   } else {
     console.error("User ID is not defined");
   }
 
   const isOwner = user != null ? user.id === post.authorId : false; // Check if the user owns the post
-  const isAdmin = user != null ? user.role === "Admin": false;
-  
+  const isAdmin = user != null ? user.role === "Admin" : false;
+
   // Fetch the comment count for the post from Firestore
   useEffect(() => {
     const fetchCommentCount = async () => {
@@ -95,7 +111,11 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
   };
 
   // Handle submitting edited post data
-  const handleEditSubmit = (data: { title: string; text: string; images?: string[] }) => {
+  const handleEditSubmit = (data: {
+    title: string;
+    text: string;
+    images?: string[];
+  }) => {
     const updatedPost: Post = {
       ...post, // Spread existing post object to retain unchanged fields
       title: data.title,
@@ -114,8 +134,8 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 
   // Toggle like status
   const toggleLike = () => {
-    const userId = user?.id; 
-    if (hasLiked) {  
+    const userId = user?.id;
+    if (hasLiked) {
       unlikePostMutation.mutate(userId!);
     } else {
       likePostMutation.mutate(userId!);
@@ -151,10 +171,41 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
   };
 
   return (
-    <Card sx={{ marginBottom: 2, padding: 2 }}>
+    <Card sx={{ marginBottom: 2, padding: 2, position: "relative" }}>
       <CardContent>
+        <Chip
+          sx={{ position: "absolute", top: 16, right: 16 }} // Position the chip
+          icon={
+            post.visibility === "public" ? (
+              <Public />
+            ) : post.visibility === "private" ? (
+              <Group />
+            ) : (
+              <Lock />
+            )
+          }
+          label={
+            post.visibility === "public"
+              ? "Public"
+              : post.visibility === "private"
+              ? "Friends"
+              : "Only Me"
+          }
+          color={
+            post.visibility === "public"
+              ? "primary"
+              : post.visibility === "private"
+              ? "secondary"
+              : "default"
+          }
+          variant="outlined"
+        />
         <div style={{ display: "flex", alignItems: "center", marginBottom: 8 }}>
-          <Avatar src={post.authorImg} alt={post.authorName} sx={{ marginRight: 2 }} />
+          <Avatar
+            src={post.authorImg}
+            alt={post.authorName}
+            sx={{ marginRight: 2 }}
+          />
           <Typography variant="h6">{post.authorName}</Typography>
         </div>
         {/* Clicking on the title or text navigates to PostDetail */}
@@ -177,7 +228,12 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
         {postImages?.length > 0 && (
           <div style={{ marginTop: 10 }}>
             {postImages.map((imgUrl: string, index: number) => (
-              <img key={index} src={imgUrl} alt={`Post image ${index}`} style={{ maxWidth: "100%" }} />
+              <img
+                key={index}
+                src={imgUrl}
+                alt={`Post image ${index}`}
+                style={{ maxWidth: "100%" }}
+              />
             ))}
           </div>
         )}
@@ -192,40 +248,62 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
       </CardContent>
 
       <CardActions>
-        <IconButton onClick={toggleLike} aria-label="like" sx={{ color: hasLiked ? "blue" : "inherit" }}>
+        <IconButton
+          onClick={toggleLike}
+          aria-label="like"
+          sx={{ color: hasLiked ? "blue" : "inherit" }}
+        >
           <ThumbUp />
           <Typography variant="body2" sx={{ marginLeft: 1 }}>
             {post.likes.length}
           </Typography>
         </IconButton>
-        <IconButton onClick={toggleDislike} aria-label="dislike" sx={{ color: hasDisliked ? "red" : "inherit" }}>
+        <IconButton
+          onClick={toggleDislike}
+          aria-label="dislike"
+          sx={{ color: hasDisliked ? "red" : "inherit" }}
+        >
           <ThumbDown />
           <Typography variant="body2" sx={{ marginLeft: 1 }}>
             {post.dislikes.length}
           </Typography>
         </IconButton>
         {/* Clicking the comments icon will toggle the comments section */}
-        <IconButton onClick={toggleComments} aria-label="comments" sx={{ marginLeft: "auto" }}>
+        <IconButton
+          onClick={toggleComments}
+          aria-label="comments"
+          sx={{ marginLeft: "auto" }}
+        >
           <Comment />
           <Typography variant="body2" sx={{ marginLeft: 1 }}>
             {commentCount}
           </Typography>
         </IconButton>
-        {isOwner && !isAdmin ?(
+        {isOwner && !isAdmin ? (
           <>
-            <IconButton onClick={() => setEditDialogOpen(true)} aria-label="edit">
+            <IconButton
+              onClick={() => setEditDialogOpen(true)}
+              aria-label="edit"
+            >
               <Edit />
             </IconButton>
-            <IconButton onClick={() => setDeleteDialogOpen(true)} aria-label="delete">
+            <IconButton
+              onClick={() => setDeleteDialogOpen(true)}
+              aria-label="delete"
+            >
               <Delete />
             </IconButton>
           </>
-        ):
-         isAdmin ?(
-          <IconButton onClick={() => setDeleteDialogOpen(true)} aria-label="delete">
-              <Delete />
+        ) : isAdmin ? (
+          <IconButton
+            onClick={() => setDeleteDialogOpen(true)}
+            aria-label="delete"
+          >
+            <Delete />
           </IconButton>
-        ):<></>}
+        ) : (
+          <></>
+        )}
       </CardActions>
 
       {/* Comments Accordion */}
@@ -236,7 +314,7 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
         <AccordionDetails>
           {/* Fetch comments from the database */}
           <CommentSection postId={post.postId} commentCount={commentCount} />
-         
+
           {/* If more than 3 comments, show "View All Comments" button
           {commentCount > 3 && (
             <Button component={Link} to={`/posts/${post.postId}`} variant="outlined">
@@ -258,7 +336,10 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
       />
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={isDeleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <Typography>Are you sure you want to delete this post?</Typography>
