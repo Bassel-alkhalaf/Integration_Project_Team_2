@@ -1,8 +1,10 @@
 import {
-    Button
+    IconButton
 } from "@mui/material";
+import { RemoveCircleOutline} from "@mui/icons-material";
 
 import { useAuth } from "../../contexts";
+import { useBlockContext } from "../../contexts/useBlockContext";
 
 import { enqueueSnackbar } from 'notistack';
 
@@ -14,6 +16,8 @@ interface btnProps {
 
 const BlockUserBtn = ({blockedUserId}: btnProps ) => {
 
+    const { blockUser } = useBlockContext();
+
     const { accessToken } = useAuth();
 
     async function handleBlock() {
@@ -24,6 +28,8 @@ const BlockUserBtn = ({blockedUserId}: btnProps ) => {
                 accessToken: accessToken as string
             });
 
+            blockUser(blockedUserId)
+
             enqueueSnackbar(response.data.message, { variant: 'success' });
 
         } catch (error) {
@@ -33,11 +39,9 @@ const BlockUserBtn = ({blockedUserId}: btnProps ) => {
     }
 
     return (  
-        <Button 
-            variant="outlined" 
-            color="error"
-            onClick={handleBlock}
-        >Block User</Button>
+        <IconButton color="error" onClick={handleBlock}>
+            <RemoveCircleOutline />
+        </IconButton>
     );
 }
  
