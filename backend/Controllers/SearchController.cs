@@ -45,11 +45,11 @@ namespace backend.Controllers
         }
 
         [HttpGet("posts")]
-        public async Task<IActionResult> SearchPosts([FromQuery] string? q, [FromQuery] int limit = 5, [FromQuery] int page = 1)
+        public async Task<IActionResult> SearchPosts([FromQuery] string? userId, [FromQuery] string? q, [FromQuery] int limit = 5, [FromQuery] int page = 1)
         {
             try
             {
-                var posts = await _searchService.SearchPostsAsync(limit, page, q);
+                var posts = await _searchService.SearchPostsAsync(limit, page, q, userId);
                 return Ok(posts);
             }
             catch (Exception ex)

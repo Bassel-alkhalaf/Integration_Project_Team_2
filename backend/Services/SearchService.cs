@@ -2,7 +2,6 @@
 using backend.DTOs.Users;
 using backend.Models;
 using Google.Cloud.Firestore;
-using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Services
 {
@@ -68,20 +67,33 @@ namespace backend.Services
             }
         }
 
-        public async Task<List<Post>> SearchPostsAsync(int limit, int page, string? query)
+        public async Task<List<Post>> SearchPostsAsync(int limit, int page, string? query, string? userId)
         {
-            var allPosts = await _postService.GetPosts(limit, page);
+            var publicPosts = await _postService.GetPosts(limit, page);
+
+            List<Post> friendsPosts = null;
+            if (userId != null || userId != string.Empty) 
+            { 
+                friendsPosts = await _postService.GetFriendsAndUserPosts(userId); 
+            }
+
+            var results = publicPosts
+                .Concat(friendsPosts)
+                .GroupBy(post => post.PostId) 
+                .Select(group => group.First())
+                .OrderByDescending(r => r.CreatedAt)
+                .ToList();
 
             if (string.IsNullOrEmpty(query))
             {
-                return allPosts;
+                return results;
             }
 
             var queryText = query.ToLower();
             var matchedTitle = new List<Post>();
             var matchedContent = new List<Post>();
 
-            foreach (var post in allPosts)
+            foreach (var post in results)
             {
                 if (post.Title.ToLower().Contains(queryText))
                 {
