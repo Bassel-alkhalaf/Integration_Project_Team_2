@@ -35,13 +35,11 @@ export const Home: React.FC = () => {
             <React.Fragment key={i}>
               {Array.isArray(group.data) && group.data.length > 0 ? (
                 group.data.map((post: Post) => {
-                    // Check if the post's author is blocked
                     if (blockedUserIds.includes(post.authorId as string)) {
-                    return null; // Render nothing for blocked users
+                        return null; 
                     }
-                    
                     return (
-                    <PostItem key={post.postId} post={post} user={user} />
+                        <PostItem key={post.postId} post={post} user={user} />
                     );
                 })
               ) : (

@@ -240,6 +240,7 @@ import { commentQueryKeys } from '../consts';
 import { Edit, Delete } from '@mui/icons-material';
 import { Link } from 'react-router-dom'; // Import Link for navigation
 import { ReportBtn } from './common/ReportBtn';
+import { useBlockContext } from '../contexts/useBlockContext';
 
 interface CommentSectionProps {
     postId: string;
@@ -267,6 +268,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
     const { mutate: editComment } = useEditComment(); // Use the hook to edit a comment
 
     const auth = getAuth();
+
+    const { blockedUserIds } = useBlockContext();
 
     // Fetch current authenticated user from Firebase Auth and user role from Firestore
     useEffect(() => {
@@ -389,6 +392,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                 ?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) // Sort by creation date, oldest to newest
                 .slice(0, 3) // Limit to first 3 comments
                 .map((comment, index) => {
+
+                
+                if (blockedUserIds.includes(comment.UserId)) {
+                    return null;
+                }
+
                 const isOwner = comment.UserId === currentUser?.uid;
 
                 return (
