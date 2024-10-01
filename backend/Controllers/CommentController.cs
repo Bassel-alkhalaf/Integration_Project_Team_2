@@ -9,7 +9,7 @@
 // namespace backend.Controllers
 // {
 //     [ApiController]
-//     [Route("api/[controller]")]
+//     [Route("[controller]")]
 //     public class CommentsController : ControllerBase
 //     {
 //         private readonly CommentService _commentService;
@@ -154,13 +154,13 @@ using FirebaseAdmin.Auth;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class CommentsController : ControllerBase
+    [Route("[controller]")]
+    public class CommentController : ControllerBase
     {
         private readonly CommentService _commentService;
         private readonly FirestoreDb _firestoreDb;
 
-        public CommentsController(CommentService commentService, FirestoreDb firestoreDb)
+        public CommentController(CommentService commentService, FirestoreDb firestoreDb)
         {
             _commentService = commentService;
             _firestoreDb = firestoreDb;

@@ -10,12 +10,14 @@ namespace backend.Services
         private readonly FirestoreDb _firestoreDb;
         private readonly CommunityService _communityService;
         private readonly UserService _userService;
+        private readonly PostService _postService;
 
-        public SearchService (FirestoreDb firestoreDb, CommunityService communityService, UserService userService)
+        public SearchService (FirestoreDb firestoreDb, CommunityService communityService, UserService userService, PostService postService)
         {
             _firestoreDb = firestoreDb;
             _communityService = communityService;
             _userService = userService;
+            _postService = postService;
         }
 
         public async Task<List<CommunityWithUserInfoDto>> SearchCommunitiesAsync(string? query)
@@ -63,6 +65,47 @@ namespace backend.Services
 
                 return matchedUsers;
             }
+        }
+
+        public async Task<List<Post>> SearchPostsAsync(int limit, int page, string? query, string? userId)
+        {
+            var publicPosts = await _postService.GetPosts(limit, page);
+
+            List<Post> friendsPosts = null;
+            if (userId != null || userId != string.Empty) 
+            { 
+                friendsPosts = await _postService.GetFriendsAndUserPosts(userId); 
+            }
+
+            var results = publicPosts
+                .Concat(friendsPosts)
+                .GroupBy(post => post.PostId) 
+                .Select(group => group.First())
+                .OrderByDescending(r => r.CreatedAt)
+                .ToList();
+
+            if (string.IsNullOrEmpty(query))
+            {
+                return results;
+            }
+
+            var queryText = query.ToLower();
+            var matchedTitle = new List<Post>();
+            var matchedContent = new List<Post>();
+
+            foreach (var post in results)
+            {
+                if (post.Title.ToLower().Contains(queryText))
+                {
+                    matchedTitle.Add(post);
+                }
+                else if (post.Text.ToLower().Contains(queryText))
+                {
+                    matchedContent.Add(post);
+                }
+            }
+
+            return matchedTitle.Concat(matchedContent).ToList(); ;
         }
     }
 

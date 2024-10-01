@@ -6,6 +6,7 @@ import { a11yProps, TabPanel } from '../../components';
 import { searchQueryKeys } from '../../consts';
 import { revertObjectKeyValue } from '../../utils';
 import { CommunitySearchResultList } from './CommunitySearchResultList';
+import { PostSearchResultList } from './PostSearchResultList';
 import { UserSearchResultList } from './UserSearchResultList';
 
 const tabOptions = {
@@ -43,7 +44,7 @@ export function Search() {
 				</Tabs>
 			</Box>
 			<TabPanel value={currentTabIndex} index={0}>
-				search results of posts
+				<PostSearchResultList query={query} />
 			</TabPanel>
 			<TabPanel value={currentTabIndex} index={1}>
 				<CommunitySearchResultList query={query} />

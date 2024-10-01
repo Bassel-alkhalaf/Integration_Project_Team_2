@@ -21,7 +21,7 @@ export const fetchPosts = async ({ pageParam = 1 }: { pageParam?: number }) => {
 export const fetchOnlyMePosts= async (
   userId: string,
 ): Promise<AxiosResponse<Post[]>>  => {
-  const url = `${POST_ENDPOINT}/onlyme?userId=${userId}`;
+  const url = `${POST_ENDPOINT}/only-me?userId=${userId}`;
   const res = await sendRequest({
     endpoint: url,
     method: "GET",

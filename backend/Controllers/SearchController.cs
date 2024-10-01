@@ -1,5 +1,4 @@
-﻿using backend.Middlewares;
-using backend.Services;
+﻿using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -37,6 +36,21 @@ namespace backend.Controllers
             {
                 var users = await _searchService.SearchUsersAsync(q);
                 return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("posts")]
+        public async Task<IActionResult> SearchPosts([FromQuery] string? userId, [FromQuery] string? q, [FromQuery] int limit = 5, [FromQuery] int page = 1)
+        {
+            try
+            {
+                var posts = await _searchService.SearchPostsAsync(limit, page, q, userId);
+                return Ok(posts);
             }
             catch (Exception ex)
             {
