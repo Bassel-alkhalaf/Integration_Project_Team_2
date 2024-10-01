@@ -15,11 +15,14 @@ import {
 	Typography,
 } from '@mui/material';
 import { EmailAuthProvider, getAuth, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FriendshipActionBtn } from '../../components';
 import { useAuth } from '../../contexts';
 import { UserInfoDTO } from '../../types';
+import BlockUserBtn from '../../components/common/BlockUserBtn';
+import { useBlockContext } from '../../contexts/useBlockContext';
+import UnBlockUserBtn from '../../components/common/UnBlockUserBtn';
 
 // Helper function to get the default profile image based on gender
 const getDefaultProfileImage = (gender: string) => {
@@ -51,6 +54,23 @@ export function Profile({ user }: PropsI) {
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [error, setError] = useState('');
 	const navigate = useNavigate(); // Initialize navigate
+
+    const { blockedUserIds } = useBlockContext();
+    const [ isBlocked, setIsBlocked ] = useState(false);
+
+    useEffect(() => {
+        if (blockedUserIds.includes(user.id)) {
+            setIsBlocked(true);
+        }
+    }, [blockedUserIds, user.id])
+
+    function handleBlock() {
+        if (isBlocked) {
+            setIsBlocked(false);
+        } else {
+            setIsBlocked(true);
+        }
+    }
 
 	// useEffect(() => {
 	// 	const auth = getAuth();
@@ -119,7 +139,11 @@ export function Profile({ user }: PropsI) {
 	};
 
 	const profileActions = !isCurrentUser ? (
-		<FriendshipActionBtn userId={user.id} />
+        <>
+            <FriendshipActionBtn userId={user.id} />
+            { isBlocked ? <UnBlockUserBtn action={handleBlock} blockedUserId={user.id} /> : <BlockUserBtn action={handleBlock} blockedUserId={user.id} />}
+        </>
+
 	) : (
 		<Stack direction='row' gap={2}>
 			<Button variant='contained' onClick={handleEditProfile} fullWidth>

@@ -12,9 +12,10 @@ import { sendRequest } from "../../api";
 
 interface btnProps {
     blockedUserId: string;
+    action: () => void;
 }
 
-const UnBlockUserBtn = ({blockedUserId}: btnProps) => {
+const UnBlockUserBtn = ({blockedUserId, action}: btnProps) => {
     const { accessToken } = useAuth();
 
     const { unBlockUser } = useBlockContext();
@@ -28,6 +29,8 @@ const UnBlockUserBtn = ({blockedUserId}: btnProps) => {
             });
 
             unBlockUser(blockedUserId)
+
+            action();
 
             enqueueSnackbar(response.data.message, { variant: 'success' });
 
