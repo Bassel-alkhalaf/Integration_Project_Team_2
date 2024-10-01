@@ -116,6 +116,48 @@ namespace backend.Controllers
             }
         }
 
+        // Create a new class to represent the post count data
+        public class PostCount
+        {
+            public string Date { get; set; }
+            public int Count { get; set; }
+        }
+
+        // GET api/posts/counts/last-5-days
+        [HttpGet("counts/last-5-days")]
+        public async Task<ActionResult<int>> GetPostCountsLastFiveDays()
+        {
+            var postCount = await _postService.GetPostCountsLastFiveDaysAsync(); // 调用服务层的方法
+            return Ok(postCount); // 返回帖子数量
+        }
+        //[HttpGet("posts/counts/last-5-days")]
+        //public async Task<IActionResult> GetPostCountsLastFiveDays()
+        //{
+        //    try
+        //    {
+        //        var today = DateTime.UtcNow.Date; // Get today's date
+        //        var dates = Enumerable.Range(0, 5).Select(i => today.AddDays(-i)).ToList(); // Generate the last 5 days
+
+        //        var postCounts = new List<PostCount>(); // Create a list to hold the counts
+
+        //        foreach (var date in dates)
+        //        {
+        //            var posts = await _postService.GetPostsByDate(date); // Fetch posts for each date
+        //            postCounts.Add(new PostCount
+        //            {
+        //                Date = date.ToString("yyyy-MM-dd"),
+        //                Count = posts.Count // Count the number of posts
+        //            });
+        //        }
+
+        //        return Ok(postCounts);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Error fetching post counts: {ex.Message}");
+        //    }
+        //}
+
         // Add Like
         [HttpPost("posts/like")]
         public async Task<IActionResult> AddLike([FromQuery] string postId, [FromQuery] string userId)

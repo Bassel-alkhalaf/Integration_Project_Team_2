@@ -2,6 +2,7 @@ import { sendRequest } from "./request";
 import { Post } from "../../types/post.type";
 import { POST_ENDPOINT } from "../endpoints";
 import { AxiosResponse } from "axios";
+import { PostCount } from "../../types/post.type";
 
 
 const LIMIT = 5;
@@ -82,6 +83,23 @@ export const fetchPostsByDate = async (
     throw new Error("Failed to fetch posts by date.");
   }
 };
+
+// Fetch post counts for the last five days
+export const fetchPostCountsLastFiveDays = async (): Promise<PostCount[]> => {
+  try {
+    const url = `${POST_ENDPOINT}/counts/last-5-days`; // Replace with the actual endpoint
+    const res = await sendRequest({
+      endpoint: url,
+      method: "GET",
+    });
+
+    return res.data; // Assuming the response data is an array of PostCount objects
+  } catch (error) {
+    console.error("Error fetching post counts for last five days: ", error); // Log any errors
+    throw new Error("Failed to fetch post counts for last five days.");
+  }
+};
+
 // Like a post
 export const likePost = async (postId: string, userId: string) => {
   return sendRequest({

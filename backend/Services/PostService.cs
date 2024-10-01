@@ -184,6 +184,21 @@ namespace backend.Services
 
             return posts;
         }
+
+        public async Task<int> GetPostCountsLastFiveDaysAsync()
+        {
+            var today = DateTime.UtcNow.Date; // 获取今天的日期（不包含时间部分）
+            var fiveDaysAgo = today.AddDays(-5); // 获取五天前的日期
+
+            var query = _firestoreDb.Collection("Posts")
+                .WhereGreaterThan("CreatedAt", fiveDaysAgo) // 获取五天内创建的帖子
+                .Select("Id"); // 只选择帖子的 ID 以减少传输的数据量
+
+            var snapshot = await query.GetSnapshotAsync();
+
+            return snapshot.Documents.Count; // 返回符合条件的帖子数量
+        }
+
         // Add Like
         public async Task AddLikeAsync(string postId, string userId)
         {
