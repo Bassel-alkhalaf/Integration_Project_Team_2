@@ -5,6 +5,8 @@ import { useAuth } from './useAuth';
 interface BlockContextType {
   blockedUserIds: string[];
   fetchBlockedUsers: () => void;
+  blockUser: (id:string) => void;
+  unBlockUser: (id:string) => void;
 }
 
 interface Block {
@@ -37,7 +39,7 @@ export const BlockProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         method: "GET",
         accessToken: accessToken as string
       })
-      
+
       const data:Block[] = await response.data;
 
       const blockedIds = data.map( b => b.blockedUserId);
@@ -50,13 +52,21 @@ export const BlockProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
   };
 
+  const blockUser = ( id:string ) => {
+    setBlockedUserIds([...blockedUserIds, id])
+  }
+
+  const unBlockUser = ( id:string) => {
+    setBlockedUserIds(blockedUserIds.filter( (uid:string) => uid != id))
+  }
+
   // Fetch blocked users once when the app starts
   useEffect(() => {
     fetchBlockedUsers();
   }, []);
 
   return (
-    <BlockContext.Provider value={{ blockedUserIds, fetchBlockedUsers }}>
+    <BlockContext.Provider value={{ blockedUserIds, fetchBlockedUsers, blockUser, unBlockUser  }}>
       {children}
     </BlockContext.Provider>
   );
