@@ -1,10 +1,10 @@
-import { UserInfoT } from './user.type';
+import { UserInfoDTO } from './user.type';
 
 export type FriendRequestT = {
 	id: string;
 	createdAt: string;
 	status: 'Pending' | 'Accepted' | 'Rejected' | 'Canceled';
-	user: UserInfoT;
+	user: UserInfoDTO;
 };
 
 export type FriendRequestTypeT = 'sent' | 'received';
