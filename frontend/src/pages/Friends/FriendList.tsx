@@ -1,4 +1,4 @@
-import { Alert, Divider, List, Typography } from '@mui/material';
+import { Alert, Divider, List, Stack, Typography } from '@mui/material';
 import { Fragment } from 'react/jsx-runtime';
 import { Loading } from '../../components';
 import { useAuth } from '../../contexts';
@@ -21,12 +21,12 @@ export function FriendList() {
 		);
 
 	return (
-		<>
+		<Stack gap={2}>
 			<Typography gutterBottom>
 				{friendships?.length || 0} {friendships?.length > 1 ? 'friends' : 'friend'}:
 			</Typography>
 
-			<List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+			<List sx={{ width: '100%', bgcolor: 'background.paper' }} disablePadding>
 				{friendships?.map((friendship, index) => (
 					<Fragment key={index}>
 						<FriendItem friendship={friendship} />
@@ -34,6 +34,6 @@ export function FriendList() {
 					</Fragment>
 				))}
 			</List>
-		</>
+		</Stack>
 	);
 }

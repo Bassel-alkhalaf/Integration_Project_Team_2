@@ -14,7 +14,7 @@ export const MyPosts: React.FC = () => {
   return (
     <div>
       <div className="post-list">
-        {res.data?.data.length == 0 ? (
+        {!res || res.data?.data.length == 0 ? (
           <div style={{ textAlign: "center", margin: "20px" }}>
             <p>No posts available. Be the first to create a post!</p>
           </div>
