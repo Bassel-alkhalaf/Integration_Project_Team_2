@@ -66,7 +66,11 @@ namespace backend.Services
                 if (document.Exists)
                 {
                     Post post = document.ConvertTo<Post>();
-                    posts.Add(post);
+                    if (post.Visibility != "only-me")
+                    {
+                        posts.Add(post);
+                    }
+                    
                 }
             }
 
@@ -82,7 +86,7 @@ namespace backend.Services
                 .WhereEqualTo("Visibility", "only-me")
                 .WhereEqualTo("AuthorId", userId);
 
-           
+
             QuerySnapshot snapshot = await query.GetSnapshotAsync();
             List<Post> posts = new List<Post>();
 

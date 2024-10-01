@@ -56,7 +56,7 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 					</>
 				)}
 
-				<NavItem path='/posts' label='All Posts' icon={<FeedOutlinedIcon />} selectedIcon={<FeedIcon />} />
+				<NavItem path='/posts/all' label='All Posts' icon={<FeedOutlinedIcon />} selectedIcon={<FeedIcon />} />
 			</List>
 
 			{user && <UserCommunityList />}
