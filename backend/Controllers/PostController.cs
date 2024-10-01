@@ -130,35 +130,20 @@ namespace backend.Controllers
         {
             try
             {
-                // 获取最近5天的帖子数量，返回一个字典
+                // 
                 var postCountsDict = await _postService.GetPostCountsLastFiveDaysAsync();
 
-                // 返回字典格式的结果
+                // 
                 return Ok(postCountsDict);
             }
             catch (Exception ex)
             {
-                // 记录异常并返回500状态码
-                // LogError(ex); // 您可以添加日志记录功能
+                // 
                 return StatusCode(500, "An error occurred while fetching post counts.");
             }
         }
 
-        //public async Task<ActionResult<List<PostCount>>> GetPostCountsLastFiveDays()
-        //{
-        //    // 获取最近5天的帖子数量，返回一个字典
-        //    var postCountsDict = await _postService.GetPostCountsLastFiveDaysAsync();
-
-        //    // 将字典转换为 PostCount 对象的列表
-        //    var postCounts = postCountsDict.Select(entry => new PostCount
-        //    {
-        //        Date = entry.Key,
-        //        Count = entry.Value
-        //    }).ToList();
-
-        //    // 返回结果
-        //    return Ok(postCounts);
-        //}
+       
 
 
         // Add Like
