@@ -185,19 +185,46 @@ namespace backend.Services
             return posts;
         }
 
-        public async Task<int> GetPostCountsLastFiveDaysAsync()
+        public async Task<Dictionary<string, int>> GetPostCountsLastFiveDaysAsync()
         {
-            var today = DateTime.UtcNow.Date; // 
-            var fiveDaysAgo = today.AddDays(-5); // 
+            var today = System.DateTime.UtcNow.Date;
+            var fiveDaysAgo = today.AddDays(-5);
 
+            // 
             var query = _firestoreDb.Collection("Posts")
-                .WhereGreaterThan("CreatedAt", fiveDaysAgo) // 
-                .Select("Id"); // 
+                .WhereGreaterThanOrEqualTo("CreatedAt", fiveDaysAgo)  
+                .WhereLessThanOrEqualTo("CreatedAt", today);          
 
             var snapshot = await query.GetSnapshotAsync();
 
-            return snapshot.Documents.Count; // 
+            // 
+            var postCounts = new Dictionary<string, int>();
+
+            // 
+            for (var date = fiveDaysAgo; date <= today; date = date.AddDays(1))
+            {
+                postCounts[date.ToString("yyyy-MM-dd")] = 0; 
+            }
+
+            // 
+            foreach (var document in snapshot.Documents)
+            {
+                if (document.Exists && document.ContainsField("CreatedAt"))
+                {
+                    var createdAt = document.GetValue<System.DateTime>("CreatedAt").Date; 
+
+                    // 
+                    var dateKey = createdAt.ToString("yyyy-MM-dd");
+                    if (postCounts.ContainsKey(dateKey))
+                    {
+                        postCounts[dateKey]++;
+                    }
+                }
+            }
+
+            return postCounts; 
         }
+
 
         // Add Like
         public async Task AddLikeAsync(string postId, string userId)

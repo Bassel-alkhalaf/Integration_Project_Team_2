@@ -85,7 +85,7 @@ export const fetchPostsByDate = async (
 };
 
 // Fetch post counts for the last five days
-export const fetchPostCountsLastFiveDays = async (): Promise<PostCount[]> => {
+export const fetchPostCountsLastFiveDays = async (): Promise<Record<string, number>> => {
   try {
     const url = `${POST_ENDPOINT}/counts/last-5-days`; // Replace with the actual endpoint
     const res = await sendRequest({

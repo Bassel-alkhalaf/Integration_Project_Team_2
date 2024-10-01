@@ -1,11 +1,18 @@
-import { useQuery } from '@tanstack/react-query';
-import { fetchPostCountsLastFiveDays } from '../../../api/apis/post.api';
-import { PostCount } from '../../../types/post.type';
+import { useQuery } from "@tanstack/react-query";
+import { fetchPostCountsLastFiveDays } from "../../../api/apis/post.api";
+import { PostCount } from "../../../types/post.type";
 
 // Hook
 export const useFetchPostCountsLastFiveDays = () => {
-  return useQuery<PostCount[], Error>({
-    queryKey: ['postCountsLastFiveDays'],
-    queryFn: fetchPostCountsLastFiveDays, 
+  return useQuery<Record<string, number>, Error>({
+    queryKey: ["postCountsLastFiveDays"],
+    queryFn: fetchPostCountsLastFiveDays,
+    select: (data: Record<string, number>) => {
+      // Transform the dictionary to an array of PostCount
+      return Object.entries(data).map(([date, count]) => ({
+        date,
+        count,
+      })) as PostCount[];
+    },
   });
 };

@@ -117,46 +117,49 @@ namespace backend.Controllers
         }
 
         // Create a new class to represent the post count data
-        public class PostCount
-        {
-            public string Date { get; set; }
-            public int Count { get; set; }
-        }
+        //public class PostCount
+        //{
+        //    public string Date { get; set; }
+        //    public int Count { get; set; }
+        //}
+
 
         // GET api/posts/counts/last-5-days
         [HttpGet("counts/last-5-days")]
-        public async Task<ActionResult<int>> GetPostCountsLastFiveDays()
+        public async Task<ActionResult<Dictionary<string, int>>> GetPostCountsLastFiveDays()
         {
-            var postCount = await _postService.GetPostCountsLastFiveDaysAsync(); // 调用服务层的方法
-            return Ok(postCount); // 返回帖子数量
+            try
+            {
+                // 获取最近5天的帖子数量，返回一个字典
+                var postCountsDict = await _postService.GetPostCountsLastFiveDaysAsync();
+
+                // 返回字典格式的结果
+                return Ok(postCountsDict);
+            }
+            catch (Exception ex)
+            {
+                // 记录异常并返回500状态码
+                // LogError(ex); // 您可以添加日志记录功能
+                return StatusCode(500, "An error occurred while fetching post counts.");
+            }
         }
-        //[HttpGet("posts/counts/last-5-days")]
-        //public async Task<IActionResult> GetPostCountsLastFiveDays()
+
+        //public async Task<ActionResult<List<PostCount>>> GetPostCountsLastFiveDays()
         //{
-        //    try
+        //    // 获取最近5天的帖子数量，返回一个字典
+        //    var postCountsDict = await _postService.GetPostCountsLastFiveDaysAsync();
+
+        //    // 将字典转换为 PostCount 对象的列表
+        //    var postCounts = postCountsDict.Select(entry => new PostCount
         //    {
-        //        var today = DateTime.UtcNow.Date; // Get today's date
-        //        var dates = Enumerable.Range(0, 5).Select(i => today.AddDays(-i)).ToList(); // Generate the last 5 days
+        //        Date = entry.Key,
+        //        Count = entry.Value
+        //    }).ToList();
 
-        //        var postCounts = new List<PostCount>(); // Create a list to hold the counts
-
-        //        foreach (var date in dates)
-        //        {
-        //            var posts = await _postService.GetPostsByDate(date); // Fetch posts for each date
-        //            postCounts.Add(new PostCount
-        //            {
-        //                Date = date.ToString("yyyy-MM-dd"),
-        //                Count = posts.Count // Count the number of posts
-        //            });
-        //        }
-
-        //        return Ok(postCounts);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Error fetching post counts: {ex.Message}");
-        //    }
+        //    // 返回结果
+        //    return Ok(postCounts);
         //}
+
 
         // Add Like
         [HttpPost("posts/like")]
