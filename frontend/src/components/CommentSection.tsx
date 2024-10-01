@@ -383,20 +383,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
         });
     };
 
+    const filteredComments = commentData.filter( c => !blockedUserIds.includes(c.UserId))
+
     return (
         <Box className='CommentSectionpageComments' sx={{ marginTop: '20px' }}>
             <Typography  variant="h5" sx={{ fontWeight: 'bold', color: '#1d3557', marginBottom: '20px' }}>
                 Comments
             </Typography>
-            {commentData
+            {filteredComments
                 ?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) // Sort by creation date, oldest to newest
                 .slice(0, 3) // Limit to first 3 comments
                 .map((comment, index) => {
-
-                
-                if (blockedUserIds.includes(comment.UserId)) {
-                    return null;
-                }
 
                 const isOwner = comment.UserId === currentUser?.uid;
 
