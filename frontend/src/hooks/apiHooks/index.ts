@@ -14,6 +14,7 @@ export * from './search/useSearchUsers';
 export * from './post/useCreatePost';
 export * from './post/useEditPost';
 export * from './post/useFetchPosts';
+export * from './post/useFetchPostsByCommunity';
 export * from './post/useFetchPostsByUser';
 
 export * from './comment/useCreateComment';
