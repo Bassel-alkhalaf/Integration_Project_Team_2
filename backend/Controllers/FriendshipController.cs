@@ -9,7 +9,7 @@ using backend.DTOs.Friendship;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [FirebaseAuth]
     public class FriendshipController : ControllerBase
     {

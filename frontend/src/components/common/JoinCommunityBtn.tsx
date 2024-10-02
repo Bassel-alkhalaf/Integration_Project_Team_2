@@ -1,5 +1,5 @@
-import { LoadingButton } from '@mui/lab';
-import { Button } from '@mui/material';
+import { AddCircle } from '@mui/icons-material';
+import { Chip } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
 import { userCommunityQueryKeys } from '../../consts';
@@ -29,7 +29,7 @@ export function JoinCommunityBtn({ community, isJoined }: PropsI) {
 		});
 	};
 
-	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.stopPropagation();
 
 		joinCommunity(communityId, {
@@ -45,13 +45,13 @@ export function JoinCommunityBtn({ community, isJoined }: PropsI) {
 		});
 	};
 
-	return isJoined ? (
-		<Button size='small' disabled>
-			Joined
-		</Button>
-	) : (
-		<LoadingButton loading={isPending} size='small' onClick={handleClick}>
-			Join
-		</LoadingButton>
+	return (
+		<Chip
+			icon={isJoined ? undefined : <AddCircle />}
+			label={isJoined ? 'Joined' : isPending ? 'Joining...' : 'Join'}
+			disabled={isPending || isJoined}
+			onClick={handleClick}
+			color='primary'
+		/>
 	);
 }

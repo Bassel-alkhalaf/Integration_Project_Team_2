@@ -239,6 +239,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { commentQueryKeys } from '../consts';
 import { Edit, Delete } from '@mui/icons-material';
 import { Link } from 'react-router-dom'; // Import Link for navigation
+import { ReportBtn } from './common/ReportBtn';
+import { useBlockContext } from '../contexts/useBlockContext';
 
 interface CommentSectionProps {
     postId: string;
@@ -266,6 +268,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
     const { mutate: editComment } = useEditComment(); // Use the hook to edit a comment
 
     const auth = getAuth();
+
+    const { blockedUserIds } = useBlockContext();
 
     // Fetch current authenticated user from Firebase Auth and user role from Firestore
     useEffect(() => {
@@ -379,15 +383,18 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
         });
     };
 
+    const filteredComments = commentData.filter( c => !blockedUserIds.includes(c.UserId))
+
     return (
         <Box className='CommentSectionpageComments' sx={{ marginTop: '20px' }}>
             <Typography  variant="h5" sx={{ fontWeight: 'bold', color: '#1d3557', marginBottom: '20px' }}>
                 Comments
             </Typography>
-            {commentData
+            {filteredComments
                 ?.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) // Sort by creation date, oldest to newest
                 .slice(0, 3) // Limit to first 3 comments
                 .map((comment, index) => {
+
                 const isOwner = comment.UserId === currentUser?.uid;
 
                 return (
@@ -422,6 +429,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                 <Box className='CommentSectionpageComments'>
                                     <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
                                         <Edit />
+
                                     </IconButton>
                                     <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
                                         <Delete />
@@ -433,12 +441,17 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                     )}
                                 </Box>
                             )}
-                             {(userRole === 'Admin'&& !isOwner) && ( // Allow Admin to delete or edit any comment
+                            {(userRole === 'Admin'&& !isOwner) && ( // Allow Admin to delete or edit any comment
                                 <Box className='CommentSectionpageComments'>
-                                    
-                                    <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
-                                        <Delete />
-                                    </IconButton>
+                                    <Box
+                                        display="flex"
+                                    >
+                                        <IconButton color="secondary" onClick={() => handleDeleteComment(comment.commentId)} sx={{ color: '#e63946' }}>
+                                            <Delete />
+                                        </IconButton>
+                                        <ReportBtn type='comment' id={comment.commentId}/>
+                                    </Box>
+
                                     {editCommentId === comment.commentId && (
                                         <Button color="primary" onClick={handleSaveEditComment} sx={{ marginTop: 1 }}>
                                             Save
@@ -446,6 +459,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                     )}
                                 </Box>
                             )}
+
+                            
                         </Box>
                     </Card>
                 );

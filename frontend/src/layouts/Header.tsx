@@ -66,8 +66,8 @@
 
 
 
-import { Menu as MenuIcon } from '@mui/icons-material';
-import { AppBar, Box, Button, IconButton, Toolbar, Typography, useMediaQuery, useTheme, Switch } from '@mui/material';
+import { DarkModeTwoTone, LightModeTwoTone, Menu as MenuIcon } from '@mui/icons-material';
+import { AppBar, Box, Button, IconButton, Toolbar, Typography, useMediaQuery, useTheme, Checkbox, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { GlobalSearch, UserAvatarMenu } from '../components';
 import { useAuth } from '../contexts';
@@ -116,12 +116,13 @@ export function Header({ handleDrawerToggle }: PropsI) {
         </Box>
 
         {/* Theme Toggle */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body1" sx={{ mr: 1 }}>
-            {darkMode ? 'Dark Mode' : 'Light Mode'}
-          </Typography>
-          <Switch checked={darkMode} onChange={toggleTheme} />
-        </Box>
+        <Tooltip title={ darkMode ? 'Light Mode' : 'Dark Mode' } sx={{ mx: 2 }} >
+          <Checkbox
+            icon={<DarkModeTwoTone sx={{ color: 'white' }} />}
+            checkedIcon={<LightModeTwoTone />}
+            checked={darkMode}
+            onChange={toggleTheme} />
+        </Tooltip>
 
         {user ? (
           <UserAvatarMenu />

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace backend.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AdminController : ControllerBase
     {
         private readonly AdminService _adminService;

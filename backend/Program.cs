@@ -40,6 +40,8 @@ builder.Services.AddScoped<FriendshipService>();
 builder.Services.AddScoped<FriendRequestService>();
 builder.Services.AddScoped<UserService>(); 
 builder.Services.AddScoped<SearchService>();
+builder.Services.AddScoped<UserBlockService>();
+builder.Services.AddScoped<ReportService>();
 
 builder.Services.AddScoped<ProfileUpdateService>();
 
@@ -87,3 +89,5 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
+
+

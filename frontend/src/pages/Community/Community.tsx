@@ -1,19 +1,37 @@
-import { Stack } from '@mui/material';
+import { Grid2 as Grid, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { CommunityCard, Loading } from '../../components';
-import { useGetCommunity } from '../../hooks';
+import PostItem from '../../components/PostItem';
+import { useAuth } from '../../contexts';
+import { useFetchPostsByCommunity, useGetCommunity } from '../../hooks';
 import { CommunityT } from '../../types';
 
 export function Community() {
-	const { communityId } = useParams();
+	const { communityId } = useParams<{ communityId: string }>();
+	const { user: currentUser } = useAuth();
+	const { data: posts, isLoading: isPostLoading } = useFetchPostsByCommunity(communityId as string);
 
 	const { data, isLoading } = useGetCommunity(communityId as string);
 
-	if (isLoading) return <Loading />;
+	if (isLoading || isPostLoading) return <Loading />;
 
 	return (
-		<Stack gap={2}>
-			<CommunityCard community={data as CommunityT} />
-		</Stack>
+		<Grid container spacing={2}>
+			<Grid
+				size={{ xs: 12, lg: 4, xl: 3 }}
+				order={{ xs: 1, lg: 2 }}
+				sx={{ position: { lg: 'sticky' }, top: { lg: '20px' }, alignSelf: { lg: 'flex-start' } }}>
+				<CommunityCard community={data as CommunityT} />
+			</Grid>
+			<Grid size={{ xs: 12, lg: 8, xl: 9 }} order={{ xs: 2, lg: 1 }}>
+				{posts && posts.length > 0 ? (
+					posts.map((post, index) => <PostItem key={index} post={post} user={currentUser} />)
+				) : (
+					<Typography variant='body1' textAlign='center' color='text.secondary'>
+						No posts yet.
+					</Typography>
+				)}
+			</Grid>
+		</Grid>
 	);
 }

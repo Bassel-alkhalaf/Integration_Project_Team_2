@@ -5,6 +5,8 @@ import { UserUpdateDTO } from '../../types/user.type';
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import dayjs from 'dayjs';
+import { useQueryClient } from '@tanstack/react-query';
+import { userQueryKeys } from '../../consts';
 
 export default function EditProfile() {
   const [userData, setUserData] = useState<UserUpdateDTO>({
@@ -18,6 +20,7 @@ export default function EditProfile() {
 
   const auth = getAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Fetch profile information when the component is loaded
   useEffect(() => {
@@ -75,6 +78,7 @@ export default function EditProfile() {
 
       console.log('Updating Profile Data:', updatedData);  // Debug: Log data being saved
       await updateProfileInfo(updatedData);  // Call the API method to update profile
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.current })
       alert('Profile updated successfully!');
       navigate('/profile');  // Redirect to profile page on success
     } catch (error) {

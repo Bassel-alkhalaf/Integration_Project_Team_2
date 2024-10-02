@@ -2,6 +2,7 @@ import { Chip, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, Sta
 import dayjs from 'dayjs';
 import { FriendRequestActionBtn, UserAvatar } from '../../components';
 import { FriendRequestT } from '../../types';
+import { useBlockContext } from '../../contexts/useBlockContext';
 
 interface PropsI {
 	friendRequests: FriendRequestT[];
@@ -9,6 +10,10 @@ interface PropsI {
 }
 
 export function FriendRequestList({ friendRequests, type }: PropsI) {
+    const { blockedUserIds } = useBlockContext();
+
+    const filteredRequests: FriendRequestT[]  = friendRequests.filter( (r:FriendRequestT) => !blockedUserIds.includes(r.user.id));
+
 	const getColor = (status: FriendRequestT['status']) => {
 		switch (status) {
 			case 'Accepted':
@@ -22,9 +27,10 @@ export function FriendRequestList({ friendRequests, type }: PropsI) {
 		}
 	};
 
-	return friendRequests.length ? (
+	return filteredRequests.length ? (
 		<List disablePadding>
-			{friendRequests.map((request, index) => {
+			{filteredRequests.map((request, index) => {
+                // console.log(request)
 				const {
 					id,
 					user,
