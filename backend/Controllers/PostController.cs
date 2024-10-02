@@ -157,6 +157,36 @@ namespace backend.Controllers
             }
         }
 
+        // Create a new class to represent the post count data
+        //public class PostCount
+        //{
+        //    public string Date { get; set; }
+        //    public int Count { get; set; }
+        //}
+
+
+        // GET api/posts/counts/last-5-days
+        [HttpGet("counts/last-5-days")]
+        public async Task<ActionResult<Dictionary<string, int>>> GetPostCountsLastFiveDays()
+        {
+            try
+            {
+                // 
+                var postCountsDict = await _postService.GetPostCountsLastFiveDaysAsync();
+
+                // 
+                return Ok(postCountsDict);
+            }
+            catch (Exception ex)
+            {
+                // 
+                return StatusCode(500, "An error occurred while fetching post counts.");
+            }
+        }
+
+       
+
+
         // Add Like
         [HttpPost("like")]
         public async Task<IActionResult> AddLike([FromQuery] string postId, [FromQuery] string userId)

@@ -27,7 +27,7 @@ export const fetchPostsByUser = async (userId: string, currentUserId?: string) =
 		endpoint: url,
 		method: 'GET',
 	});
-	
+
 	return res.data as Post[];
 };
 
@@ -116,6 +116,30 @@ export const fetchPostsByDate = async (selectedDate: string): Promise<Post[]> =>
 		throw new Error('Failed to fetch posts by date.');
 	}
 };
+
+// Fetch post counts for the last five days
+// export const fetchPostCountsLastFiveDays = async (): Promise<Record<string, number>> => {
+//   const response = await fetch('/posts/counts/last-5-days');
+//   if (!response.ok) {
+//     throw new Error('Network response was not ok');
+//   }
+//   return response.json();
+// };
+export const fetchPostCountsLastFiveDays = async (): Promise<Record<string, number>> => {
+	try {
+		const url = `${POST_ENDPOINT}/counts/last-5-days`; // Replace with the actual endpoint
+		const res = await sendRequest({
+			endpoint: url,
+			method: 'GET',
+		});
+
+		return res.data; // Assuming the response data is an array of PostCount objects
+	} catch (error) {
+		console.error('Error fetching post counts for last five days: ', error); // Log any errors
+		throw new Error('Failed to fetch post counts for last five days.');
+	}
+};
+
 // Like a post
 export const likePost = async (postId: string, userId: string) => {
 	return sendRequest({

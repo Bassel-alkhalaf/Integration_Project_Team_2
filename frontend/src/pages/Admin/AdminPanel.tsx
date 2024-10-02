@@ -151,6 +151,7 @@ import PostCountByDate from '../../components/Admin/PostCountByDate';
 import UserManagement from '../../components/Admin/UserManagement';
 import TotalUsers from '../../components/Admin/TotalUsers';
 import Reports from '../../components/Admin/Reports';
+import PostCountLastFiveDays from '../../components/Admin/PostCountLastFiveDays';
 
 const AdminPanel: React.FC = () => {
   return (
@@ -167,6 +168,9 @@ const AdminPanel: React.FC = () => {
 
       {/* Post Count By Date Component */}
       <PostCountByDate />
+
+      {/* Post Statistic */}
+      <PostCountLastFiveDays />
 
       {/* Report handler */}
       <Reports />
