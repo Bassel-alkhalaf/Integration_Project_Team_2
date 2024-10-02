@@ -115,7 +115,7 @@ namespace backend.Services
             }
 
             // Skip the required number of posts for pagination
-            return posts.Skip(skipCount).Take(limit).ToList();
+            return posts.OrderByDescending(p => p.CreatedAt).Skip(skipCount).Take(limit).ToList();
         }
         public async Task<List<Post>> GetOnlyMePostsByUser(string userId)
         {
@@ -140,7 +140,7 @@ namespace backend.Services
             }
 
             // Skip the required number of posts for pagination
-            return [.. posts];
+            return posts.OrderByDescending(p => p.CreatedAt).ToList();
         }
 
         public async Task<List<Post>> GetFriendsAndUserPosts(string userId)
@@ -185,7 +185,7 @@ namespace backend.Services
                 }
             }
 
-            return combinedPosts;
+            return combinedPosts.OrderByDescending(p => p.CreatedAt).ToList();
         }
 
 
@@ -269,7 +269,7 @@ namespace backend.Services
                 }
             }
 
-            return posts;
+            return posts.OrderByDescending(p => p.CreatedAt).ToList();
         }
         // Add Like
         public async Task AddLikeAsync(string postId, string userId)
