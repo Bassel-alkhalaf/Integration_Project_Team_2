@@ -30,7 +30,7 @@ export const useBlockContext = () => {
 export const BlockProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [blockedUserIds, setBlockedUserIds] = useState<string[]>([]);
 
-  const { accessToken } = useAuth();
+  const { accessToken, user } = useAuth();
 
   const fetchBlockedUsers = async () => {
     try {
@@ -42,7 +42,9 @@ export const BlockProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
       const data:Block[] = await response.data;
 
-      const blockedIds = data.map( b => b.blockedUserId);
+      const blockedIds = data
+        .filter(block => block.blockingUserId === user?.id || block.blockedUserId === user?.id) // Filter blocks where the user is involved
+        .map(block => block.blockingUserId === user?.id ? block.blockedUserId : block.blockingUserId); // Return the other user's ID
 
       setBlockedUserIds(blockedIds);
 

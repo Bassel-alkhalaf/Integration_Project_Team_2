@@ -66,15 +66,27 @@ namespace backend.Services
         // Method to get all blocks involving a user (either as blocker or blocked)
         public async Task<List<UserBlock>> GetBlocksByUserIdAsync(string userId)
         {
-            // Query for records where the user is the one being blocked
-            Query blockedQuery = _firestoreDb.Collection("blocks")
+            // Query for records where the user is the one doing the blocking
+            Query blockingQuery = _firestoreDb.Collection("blocks")
                 .WhereEqualTo("BlockingUserId", userId);
 
-            // Get results for the query
+            // Query for records where the user is the one being blocked
+            Query blockedQuery = _firestoreDb.Collection("blocks")
+                .WhereEqualTo("BlockedUserId", userId);
+
+            // Execute both queries asynchronously
+            QuerySnapshot blockingSnapshot = await blockingQuery.GetSnapshotAsync();
             QuerySnapshot blockedSnapshot = await blockedQuery.GetSnapshotAsync();
 
             var blocks = new List<UserBlock>();
 
+            // Add blocks where the user is doing the blocking
+            foreach (DocumentSnapshot docSnapshot in blockingSnapshot.Documents)
+            {
+                blocks.Add(docSnapshot.ConvertTo<UserBlock>());
+            }
+
+            // Add blocks where the user is being blocked
             foreach (DocumentSnapshot docSnapshot in blockedSnapshot.Documents)
             {
                 blocks.Add(docSnapshot.ConvertTo<UserBlock>());
@@ -82,6 +94,5 @@ namespace backend.Services
 
             return blocks;
         }
-
     }
 }
