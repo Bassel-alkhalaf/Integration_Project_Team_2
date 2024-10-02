@@ -1,54 +1,26 @@
-import { Button, ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
+import { ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { useMemo } from 'react';
-import { AddFriendBtn, UserAvatar } from '../../components';
-import { useAuth } from '../../contexts';
-import { useGetFriendRequests, useGetFriendships } from '../../hooks';
-import { UserInfoT } from '../../types';
+import { useNavigate } from 'react-router-dom';
+import { FriendshipActionBtn, UserAvatar } from '../../components';
+import { UserInfoDTO } from '../../types';
 
 interface PropsI {
-	user: UserInfoT;
+	user: UserInfoDTO;
 }
 
 export function UserSearchResultItem({ user }: PropsI) {
-	const { accessToken } = useAuth();
-	// const navigate = useNavigate();
+	const navigate = useNavigate();
 	const { id, firstName, lastName, email, bio } = user;
-
-	const { data: friends } = useGetFriendships(accessToken as string);
-	const isFriend = useMemo(() => friends?.find(f => f.friend.id === id), [friends, id]);
-
-	const { data: requestsReceived } = useGetFriendRequests(accessToken as string, 'received');
-	const isRequestReceived = useMemo(
-		() => requestsReceived?.find(r => r.user.id === id && r.status === 'Pending'),
-		[requestsReceived, id]
-	);
-
-	const { data: requestsSent } = useGetFriendRequests(accessToken as string, 'sent');
-	const isRequestSent = useMemo(
-		() => requestsSent?.find(r => r.user.id === id && r.status === 'Pending'),
-		[requestsSent, id]
-	);
-
-	const actionBtn = useMemo(() => {
-		if (isRequestReceived || isRequestSent) {
-			return <Button disabled>Request Pending</Button>;
-		} else if (isFriend) {
-			return null;
-		} else {
-			return <AddFriendBtn receiverId={id} />;
-		}
-	}, [isFriend, isRequestReceived, isRequestSent]);
 
 	return (
 		<ListItem
-			// onClick={() => navigate(`/user/${id}`)}
+			onClick={() => navigate(`/profile/${id}`)}
 			sx={{
 				transition: '0.5s',
 				'&:hover': { bgcolor: grey[100], cursor: 'pointer' },
 			}}
 			alignItems='flex-start'
-			secondaryAction={actionBtn}>
+			secondaryAction={<FriendshipActionBtn userId={id} />}>
 			{/* userAvatar */}
 			<ListItemAvatar>
 				<UserAvatar user={user} />

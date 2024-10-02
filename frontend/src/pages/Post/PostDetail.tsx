@@ -25,14 +25,14 @@
 //             if (!postId) return;
 //             try {
 //                 const postData = await getPostDetails(postId);
-//                 setPost(postData); 
+//                 setPost(postData);
 //                 const postComments = await getPostComments(postId);
 //                 setComments(postComments);
 //                 setCommentsCount(postComments.length)
 //             } catch (error) {
 //                 console.error("Failed to fetch post or comments:", error);
 //             } finally {
-//                 setIsLoading(false); 
+//                 setIsLoading(false);
 //             }
 //         }
 //         fetchPostDetails();
@@ -55,7 +55,7 @@
 //                 alert("You must be logged in to comment.");
 //                 return;
 //             }
-           
+
 //             const newComment: Comment = {
 //                 commentId: 'new-id', // This will be replaced by a real ID from the backend
 //                 postId: postId!,
@@ -65,13 +65,12 @@
 //             };
 //             await createComment(newComment), {
 //                 onSuccess: () => {
-                  
+
 //                   queryClient.invalidateQueries({ queryKey: [commentQueryKeys.all(postId), "posts"]});
-                  
+
 //                 },
-            
+
 //               };
-          
 
 //             // Update comments state with the newly created comment
 //             setComments((prevComments) => [...prevComments, newComment]);
@@ -139,12 +138,6 @@
 //     );
 // }
 
-
-
-
-
-
-
 // import { useState, useEffect } from 'react';
 // import { Container, TextField, Button, Typography, Box, IconButton } from '@mui/material';
 // import { createComment, getPostComments } from '../../api/apis/comment.api'; // Adjust the path as needed
@@ -191,14 +184,14 @@
 //             if (!postId) return;
 //             try {
 //                 const postData = await getPostDetails(postId);
-//                 setPost(postData); 
+//                 setPost(postData);
 //                 const postComments = await getPostComments(postId);
 //                 setComments(postComments);
 //                 setCommentsCount(postComments.length);
 //             } catch (error) {
 //                 console.error("PostDetail Fetch Error: Failed to fetch post or comments:", error);
 //             } finally {
-//                 setIsLoading(false); 
+//                 setIsLoading(false);
 //             }
 //         }
 //         fetchPostDetails();
@@ -258,8 +251,8 @@
 //     // Save the edited comment
 //     const handleSaveEditComment = () => {
 //         console.log(`PostDetail Saving Edited Comment with commentId: ${editCommentId}`);
-//         setComments((prevComments) => 
-//             prevComments.map((comment) => 
+//         setComments((prevComments) =>
+//             prevComments.map((comment) =>
 //                 comment.commentId === editCommentId ? { ...comment, content: editCommentText } : comment
 //             )
 //         );
@@ -356,9 +349,6 @@
 //     );
 // }
 
-
-
-
 // import { useState, useEffect } from 'react';
 // import { Container, Typography, Box, IconButton } from '@mui/material';
 // import { createComment } from '../../api/apis/comment.api'; // Adjust the path as needed
@@ -451,8 +441,6 @@
 //     );
 // }
 
-
-
 import React, { useState, useEffect } from "react";
 import {
   Container,
@@ -468,14 +456,31 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Chip,
 } from "@mui/material";
-import { ThumbUp, ThumbDown, Comment, Edit, Delete, ExpandMore} from "@mui/icons-material";
+import {
+  ThumbUp,
+  ThumbDown,
+  Comment,
+  Edit,
+  Delete,
+  ExpandMore,
+  Public,
+  Lock,
+  Group,
+} from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { getPostDetails } from "../../api/apis/post.api";
 import { useDeletePost } from "../../hooks/apiHooks/post/useDeletePost";
 import { useEditPost } from "../../hooks/apiHooks/post/useEditPost";
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { enqueueSnackbar } from "notistack";
 import CommentSection from "../../components/FullCommentSection";
@@ -484,13 +489,6 @@ import { Post } from "../../types/post.type";
 import { useLikePost } from "../../hooks/apiHooks/post/useLikePost";
 import { useDislikePost } from "../../hooks/apiHooks/post/useDislikePost";
 import { useAuth } from "../../contexts";
-
-
-
-
-
-
-
 
 import { ReportBtn } from "../../components/common/ReportBtn";
 
@@ -510,25 +508,29 @@ export default function PostDetail() {
   const { mutate: editPost } = useEditPost(postId!);
   const isOwner = currentUser?.uid === post?.authorId;
   const { likePostMutation, unlikePostMutation } = useLikePost(postId!);
-  const { dislikePostMutation, undislikePostMutation } = useDislikePost(postId!);
+  const { dislikePostMutation, undislikePostMutation } = useDislikePost(
+    postId!
+  );
 
   const queryClient = useQueryClient();
-  const {user} = useAuth();
+  const { user } = useAuth();
   const userId = user?.id;
   let hasLiked: boolean = false;
   let hasDisliked: boolean = false;
 
   if (userId) {
-    if (post !== null ){
-      hasLiked = post.likes.includes(userId);     
-      hasDisliked = post.dislikes.includes(userId);  
-    }    
- } else {
-   console.error("User ID is not defined");
- }
+    if (post !== null) {
+      hasLiked = post.likes.includes(userId);
+      hasDisliked = post.dislikes.includes(userId);
+    }
+  } else {
+    console.error("User ID is not defined");
+  }
   // Track auth state
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => setCurrentUser(user));
+    const unsubscribe = onAuthStateChanged(auth, (user) =>
+      setCurrentUser(user)
+    );
     return () => unsubscribe();
   }, [auth]);
 
@@ -568,7 +570,11 @@ export default function PostDetail() {
   };
 
   // Handle editing of a post
-  const handleEditSubmit = (data: { title: string; text: string; images?: string[] }) => {
+  const handleEditSubmit = (data: {
+    title: string;
+    text: string;
+    images?: string[];
+  }) => {
     if (!post) return;
     const updatedPost: Post = {
       ...post,
@@ -595,8 +601,8 @@ export default function PostDetail() {
 
   // Toggle like status
   const toggleLike = () => {
-    const userId = user?.id; 
-    if (hasLiked) {  
+    const userId = user?.id;
+    if (hasLiked) {
       unlikePostMutation.mutate(userId!);
     } else {
       likePostMutation.mutate(userId!);
@@ -613,7 +619,6 @@ export default function PostDetail() {
     }
   };
 
-
   // Toggle comments visibility
   const toggleComments = () => setCommentsOpen((prev) => !prev);
 
@@ -622,18 +627,62 @@ export default function PostDetail() {
   return (
     <Container>
       {post ? (
-        <Box sx={{ backgroundColor: "#f9f9f9", padding: 2, borderRadius: 2 }}>
+        <Box
+          sx={{
+            backgroundColor: "#f9f9f9",
+            padding: 2,
+            borderRadius: 2,
+            position: "relative",
+          }}
+        >
+          <Chip
+            sx={{ position: "absolute", top: 16, right: 16 }} // Position the chip
+            icon={
+              post.visibility === "public" ? (
+                <Public />
+              ) : post.visibility === "private" ? (
+                <Group />
+              ) : (
+                <Lock />
+              )
+            }
+            label={
+              post.visibility === "public"
+                ? "Public"
+                : post.visibility === "private"
+                ? "Friends"
+                : "Only Me"
+            }
+            color={
+              post.visibility === "public"
+                ? "primary"
+                : post.visibility === "private"
+                ? "secondary"
+                : "default"
+            }
+            variant="outlined"
+          />
           <Box display="flex" alignItems="center" mb={2}>
-            <Avatar src={post.authorImg} alt={post.authorName} sx={{ marginRight: 2, width: 50, height: 50 }} />
+            <Avatar
+              src={post.authorImg}
+              alt={post.authorName}
+              sx={{ marginRight: 2, width: 50, height: 50 }}
+            />
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               {post.authorName}
             </Typography>
           </Box>
 
-          <Typography variant="h4" sx={{ marginBottom: 1, color: "#3f51b5", fontWeight: "bold" }}>
+          <Typography
+            variant="h4"
+            sx={{ marginBottom: 1, color: "#3f51b5", fontWeight: "bold" }}
+          >
             {post.title}
           </Typography>
-          <Typography variant="body1" sx={{ marginBottom: 1, color: "#616161" }}>
+          <Typography
+            variant="body1"
+            sx={{ marginBottom: 1, color: "#616161" }}
+          >
             {post.text}
           </Typography>
           {postImages?.map((imgUrl, index) => (
@@ -644,28 +693,45 @@ export default function PostDetail() {
               style={{ maxWidth: "100%", marginTop: 10, borderRadius: 8 }}
             />
           ))}
-          <Typography variant="caption" color="textSecondary" sx={{ display: "block", marginTop: 2 }}>
+          <Typography
+            variant="caption"
+            color="textSecondary"
+            sx={{ display: "block", marginTop: 2 }}
+          >
             Posted on {new Date(post.createdAt).toLocaleDateString()}{" "}
-            {post.updatedAt && `| Updated on ${new Date(post.updatedAt).toLocaleDateString()}`}
+            {post.updatedAt &&
+              `| Updated on ${new Date(post.updatedAt).toLocaleDateString()}`}
           </Typography>
 
           <Box mt={2} display="flex" alignItems="center">
-            <IconButton onClick={toggleLike} aria-label="like" sx={{ color: hasLiked ? "blue" : "inherit" }}>
+            <IconButton
+              onClick={toggleLike}
+              aria-label="like"
+              sx={{ color: hasLiked ? "blue" : "inherit" }}
+            >
               <ThumbUp />
               <Typography variant="body2" sx={{ marginLeft: 1 }}>
                 {post.likes.length}
               </Typography>
             </IconButton>
-            <IconButton onClick={toggleDislike} aria-label="dislike" sx={{ color: hasDisliked ? "red" : "inherit" }}>
+            <IconButton
+              onClick={toggleDislike}
+              aria-label="dislike"
+              sx={{ color: hasDisliked ? "red" : "inherit" }}
+            >
               <ThumbDown />
               <Typography variant="body2" sx={{ marginLeft: 1 }}>
                 {post.dislikes.length}
               </Typography>
             </IconButton>
-            
+
             <ReportBtn type="post" id={post.postId} />
 
-            <IconButton onClick={toggleComments} aria-label="comments" sx={{ marginLeft: "auto" }}>
+            <IconButton
+              onClick={toggleComments}
+              aria-label="comments"
+              sx={{ marginLeft: "auto" }}
+            >
               <Comment />
               <Typography variant="body2" sx={{ marginLeft: 1 }}>
                 {commentCount}
@@ -673,10 +739,18 @@ export default function PostDetail() {
             </IconButton>
             {isOwner && (
               <>
-                <IconButton onClick={() => setEditDialogOpen(true)} aria-label="edit" sx={{ marginLeft: 1 }}>
+                <IconButton
+                  onClick={() => setEditDialogOpen(true)}
+                  aria-label="edit"
+                  sx={{ marginLeft: 1 }}
+                >
                   <Edit />
                 </IconButton>
-                <IconButton onClick={() => setDeleteDialogOpen(true)} aria-label="delete" sx={{ marginLeft: 1 }}>
+                <IconButton
+                  onClick={() => setDeleteDialogOpen(true)}
+                  aria-label="delete"
+                  sx={{ marginLeft: 1 }}
+                >
                   <Delete />
                 </IconButton>
               </>
@@ -684,12 +758,19 @@ export default function PostDetail() {
           </Box>
 
           {/* Comments Accordion */}
-          <Accordion className="commentsAccordionSytle" expanded={isCommentsOpen} sx={{ width: "100%", marginTop: 2 }}>
-            <AccordionSummary  expandIcon={<ExpandMore />} onClick={toggleComments}>
-              <Typography >Comments ({commentCount})</Typography>
+          <Accordion
+            className="commentsAccordionSytle"
+            expanded={isCommentsOpen}
+            sx={{ width: "100%", marginTop: 2 }}
+          >
+            <AccordionSummary
+              expandIcon={<ExpandMore />}
+              onClick={toggleComments}
+            >
+              <Typography>Comments ({commentCount})</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <CommentSection postId={post.postId}  />
+              <CommentSection postId={post.postId} />
             </AccordionDetails>
           </Accordion>
 
@@ -705,16 +786,28 @@ export default function PostDetail() {
           />
 
           {/* Delete Confirmation Dialog */}
-          <Dialog open={isDeleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+          <Dialog
+            open={isDeleteDialogOpen}
+            onClose={() => setDeleteDialogOpen(false)}
+          >
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogContent>
-              <Typography>Are you sure you want to delete this post?</Typography>
+              <Typography>
+                Are you sure you want to delete this post?
+              </Typography>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+              <Button
+                onClick={() => setDeleteDialogOpen(false)}
+                color="primary"
+              >
                 Cancel
               </Button>
-              <Button onClick={handleDelete} color="secondary" variant="contained">
+              <Button
+                onClick={handleDelete}
+                color="secondary"
+                variant="contained"
+              >
                 Delete
               </Button>
             </DialogActions>

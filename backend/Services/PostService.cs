@@ -49,10 +49,89 @@ namespace backend.Services
 
         //     return postsResponse;
         // }
+
+        public async Task<List<Post>> GetPostsByUser(string userId, string? currentUserId)
+        {
+            CollectionReference postsRef = _firestoreDb.Collection("posts");
+
+            Query query = postsRef
+                .WhereEqualTo("AuthorId", userId);
+
+
+            QuerySnapshot snapshot = await query.GetSnapshotAsync();
+            List<Post> posts = new List<Post>();
+
+            bool isFriend = false;
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                var friendshipRef = _firestoreDb.Collection("friendships").Document($"{currentUserId}_{userId}");
+                var friendship = await friendshipRef.GetSnapshotAsync();
+                isFriend = friendship.Exists;
+            }
+
+            foreach (DocumentSnapshot document in snapshot.Documents)
+            {
+                if (document.Exists)
+                {
+                    Post post = document.ConvertTo<Post>();
+
+                    if (post.Visibility.Equals("public"))
+                    {
+                        posts.Add(post);
+                    }
+                    else if (post.Visibility.Equals("private") && isFriend)
+                    {
+                        posts.Add(post); 
+                    }
+                }
+            }
+
+            return posts.OrderByDescending(p => p.CreatedAt).ToList();
+        }
+
+        public async Task<List<Post>> GetPostsByCommunity(string communityId, string? currentUserId)
+        {
+            CollectionReference postsRef = _firestoreDb.Collection("posts");
+
+            Query query = postsRef
+                .WhereEqualTo("CommunityId", communityId);
+
+
+            QuerySnapshot snapshot = await query.GetSnapshotAsync();
+            List<Post> posts = new List<Post>();
+
+            bool isFriend = false;
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                var friendshipRef = _firestoreDb.Collection("friendships").Document($"{currentUserId}_{communityId}");
+                var friendship = await friendshipRef.GetSnapshotAsync();
+                isFriend = friendship.Exists;
+            }
+
+            foreach (DocumentSnapshot document in snapshot.Documents)
+            {
+                if (document.Exists)
+                {
+                    Post post = document.ConvertTo<Post>();
+
+                    if (post.Visibility.Equals("public"))
+                    {
+                        posts.Add(post);
+                    }
+                    else if (post.Visibility.Equals("private") && isFriend)
+                    {
+                        posts.Add(post);
+                    }
+                }
+            }
+
+            return posts.OrderByDescending(p => p.CreatedAt).ToList();
+        }
+
         public async Task<List<Post>> GetPosts(int limit, int page = 1)
         {
             CollectionReference postsRef = _firestoreDb.Collection("posts");
-            Query query = postsRef.Limit(limit);
+            Query query = postsRef.OrderByDescending("CreatedAt").Limit(limit);
 
             // Calculate the number of posts to skip based on the page number
             int skipCount = (page - 1) * limit;
@@ -66,16 +145,16 @@ namespace backend.Services
                 if (document.Exists)
                 {
                     Post post = document.ConvertTo<Post>();
-                    if (post.Visibility != "only-me")
+                    if (post.Visibility == "public")
                     {
                         posts.Add(post);
                     }
-                    
+
                 }
             }
 
             // Skip the required number of posts for pagination
-            return posts.Skip(skipCount).Take(limit).ToList();
+            return posts.OrderByDescending(p => p.CreatedAt).Skip(skipCount).Take(limit).ToList();
         }
         public async Task<List<Post>> GetOnlyMePostsByUser(string userId)
         {
@@ -100,8 +179,55 @@ namespace backend.Services
             }
 
             // Skip the required number of posts for pagination
-            return [.. posts];
+            return posts.OrderByDescending(p => p.CreatedAt).ToList();
         }
+
+        public async Task<List<Post>> GetFriendsAndUserPosts(string userId)
+        {
+            // Step 1: Fetch all friendship documents where the document ID is the userId
+            CollectionReference friendshipsRef = _firestoreDb.Collection("friendships");
+            Query friendshipQuery = friendshipsRef.WhereEqualTo("UserId", userId);
+            QuerySnapshot friendshipSnapshot = await friendshipQuery.GetSnapshotAsync();
+
+            List<string> friendIds = new List<string>();
+
+            // Collect friend IDs from friendship documents
+            foreach (DocumentSnapshot friendshipDoc in friendshipSnapshot.Documents)
+            {
+                if (friendshipDoc.Exists)
+                {
+                    // Assuming the friendship document contains a field "FriendId" that stores the friend's user ID
+                    string friendId = friendshipDoc.GetValue<string>("FriendId");
+                    friendIds.Add(friendId);
+                }
+            }
+
+            // Step 2: Fetch all posts where Visibility is not "only-me"
+            CollectionReference postsRef = _firestoreDb.Collection("posts");
+            Query postQuery = postsRef.WhereNotEqualTo("Visibility", "only-me");
+            QuerySnapshot postSnapshot = await postQuery.GetSnapshotAsync();
+
+            List<Post> combinedPosts = new List<Post>();
+
+            // Step 3: Check each post's visibility and author ID
+            foreach (DocumentSnapshot postDoc in postSnapshot.Documents)
+            {
+                if (postDoc.Exists)
+                {
+                    Post post = postDoc.ConvertTo<Post>();
+
+                    // Check if the post's AuthorId is in the friendIds list or if it matches the userId
+                    if (friendIds.Contains(post.AuthorId) || post.AuthorId == userId)
+                    {
+                        combinedPosts.Add(post);
+                    }
+                }
+            }
+
+            return combinedPosts.OrderByDescending(p => p.CreatedAt).ToList();
+        }
+
+
 
 
         public async Task CreatePost(Post post)
@@ -182,7 +308,7 @@ namespace backend.Services
                 }
             }
 
-            return posts;
+            return posts.OrderByDescending(p => p.CreatedAt).ToList();
         }
 
         //public async Task<Dictionary<string, int>> GetPostCountsLastFiveDaysAsync()

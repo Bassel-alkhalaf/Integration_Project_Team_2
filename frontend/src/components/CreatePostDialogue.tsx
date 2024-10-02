@@ -12,8 +12,12 @@ import {
   InputLabel,
   FormControl,
   Stack,
+  
 } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
+import {Public,
+  Lock,
+  Group,}from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -25,6 +29,8 @@ import { UserCommunitySelect } from "./UserCommunitySelect";
 import { useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
 import { useCreatePost } from "../hooks";
+import { storage } from "../config";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 interface PostCreationFormProps {
   open: boolean;
@@ -65,12 +71,24 @@ export const CreatePostDialog: React.FC<PostCreationFormProps> = ({
   const images = watch("images");
 
   // Handle image upload
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const imageUrls = Array.from(event.target.files).map((file) =>
-        URL.createObjectURL(file)
-      );
-      setValue("images", imageUrls);
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const files = Array.from(e.target.files);
+    const uploadedURLs: string[] = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const storageRef = ref(storage, `images/${file.name}-${Date.now()}`);
+        await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+        uploadedURLs.push(downloadURL);
+      }
+
+      setValue('images', uploadedURLs); 
+    } catch (error) {
+      console.error('Error uploading images:', error);
     }
   };
 
@@ -142,9 +160,9 @@ export const CreatePostDialog: React.FC<PostCreationFormProps> = ({
                 {...register("visibility")}
                 label="Visibility"
               >
-                <MenuItem value="public">Public</MenuItem>
-                <MenuItem value="private">Private</MenuItem>
-                <MenuItem value="only-me">Only Me</MenuItem>
+                <MenuItem value="public"><Public />&nbsp; Public</MenuItem>
+                <MenuItem value="private"><Group />&nbsp; Friends</MenuItem>
+                <MenuItem value="only-me"><Lock />&nbsp; Only Me</MenuItem>
               </Select>
             </FormControl>
 

@@ -28,7 +28,7 @@ const PostCountLastFiveDays: React.FC = () => {
         // ];
 
         const res = await sendRequest({
-          endpoint: 'counts/last-5-days',
+          endpoint: 'Post/counts/last-5-days',
           method: 'GET'
         });        
 

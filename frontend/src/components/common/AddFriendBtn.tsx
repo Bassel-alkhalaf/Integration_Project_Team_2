@@ -14,7 +14,9 @@ export function AddFriendBtn({ receiverId }: AddFriendsProps) {
 	const queryClient = useQueryClient();
 	const { mutate: sendFriendRequest, isPending } = useCreateFriendRequest(accessToken as string);
 
-	const handleBtnClick = () => {
+	const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		e.stopPropagation();
+
 		sendFriendRequest(receiverId, {
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: friendRequestQueryKeys.type('sent') });
@@ -25,7 +27,7 @@ export function AddFriendBtn({ receiverId }: AddFriendsProps) {
 	};
 
 	return (
-		<LoadingButton loading={isPending} onClick={handleBtnClick} size='small'>
+		<LoadingButton loading={isPending} onClick={handleBtnClick} variant='contained'>
 			Add Friend
 		</LoadingButton>
 	);

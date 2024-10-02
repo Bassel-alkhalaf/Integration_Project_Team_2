@@ -1,5 +1,6 @@
 import { ListItem, ListItemAvatar, ListItemText, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import { useNavigate } from 'react-router-dom';
 import { CloseFriendBtn, DeleteFriendBtn, UserAvatar } from '../../components';
 import { FriendshipT } from '../../types';
 
@@ -8,7 +9,7 @@ interface PropsI {
 }
 
 export function FriendItem({ friendship }: PropsI) {
-	// const navigate = useNavigate();
+	const navigate = useNavigate();
 	const {
 		friend,
 		friend: { id, firstName, lastName, email, bio },
@@ -16,7 +17,7 @@ export function FriendItem({ friendship }: PropsI) {
 
 	return (
 		<ListItem
-			// onClick={() => navigate(`/user/${id}`)}
+			onClick={() => navigate(`/profile/${id}`)}
 			sx={{
 				transition: '0.5s',
 				'&:hover': { bgcolor: grey[100], cursor: 'pointer' },

@@ -1,33 +1,27 @@
 import { Box, Button, Card, CardActions, CardContent, Stack, Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
 import dayjs from 'dayjs';
-import { useNavigate } from 'react-router-dom';
 import { useToggleOpenEl, useUserCommunityRelationship } from '../hooks';
 import { CommunityT } from '../types';
 import { JoinCommunityBtn, LeaveCommunityBtn, UserCommunityStarBtn } from './common';
-import { CommunityInputFormDialog } from './CommunityInputFormDialog';
 import { ReportBtn } from './common/ReportBtn';
+import { CommunityInputFormDialog } from './CommunityInputFormDialog';
 
 interface PropsI {
 	community: CommunityT;
 }
 
 export function CommunityCard({ community }: PropsI) {
-	const navigate = useNavigate();
 	const { isOpen, isMobile, openEl, closeEl } = useToggleOpenEl();
 	const { id, name, userCount, description, createdAt } = community;
 	const { isJoined, isCreator } = useUserCommunityRelationship(id);
 
 	return (
 		<Card
-			onClick={() => navigate(`/community/${id}`)}
 			sx={{
+				p: 1,
+				backgroundColor: '#f0f4f8',
 				position: 'relative',
-				minWidth: 'fit-content',
-				transition: '0.5s',
-				'&:hover': { bgcolor: grey[100], cursor: 'pointer' },
-			}}
-			variant='outlined'>
+			}}>
 			<CardContent>
 				{isJoined && (
 					<Stack sx={{ position: 'absolute', right: 6, top: 6 }}>
@@ -49,7 +43,9 @@ export function CommunityCard({ community }: PropsI) {
 			<CardActions>
 				{isCreator ? (
 					<>
-						<Button onClick={openEl}>Edit</Button>
+						<Button onClick={openEl} variant='contained'>
+							Edit
+						</Button>
 						<CommunityInputFormDialog
 							isOpen={isOpen}
 							isMobile={isMobile}
@@ -58,23 +54,15 @@ export function CommunityCard({ community }: PropsI) {
 						/>
 					</>
 				) : isJoined ? (
-                    <Box
-                        display="flex"
-                        gap=".5rem"
-                    >
-                        <LeaveCommunityBtn community={community} />
-                        <ReportBtn type='community' id={id}/>
-                    </Box>
-
+					<Box display='flex' gap='.5rem'>
+						<LeaveCommunityBtn community={community} />
+						<ReportBtn type='community' id={id} />
+					</Box>
 				) : (
-					
-                    <Box
-                        display="flex"
-                        gap=".5rem"
-                    >
-                        <JoinCommunityBtn community={community} isJoined={!!isJoined} />
-                        <ReportBtn type='community' id={id}/>
-                    </Box>                   
+					<Box display='flex' gap='.5rem'>
+						<JoinCommunityBtn community={community} isJoined={!!isJoined} />
+						<ReportBtn type='community' id={id} />
+					</Box>
 				)}
 			</CardActions>
 		</Card>
