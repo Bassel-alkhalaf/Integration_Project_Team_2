@@ -64,7 +64,9 @@ export function UserCommunityList() {
 
 		if (isError) return <Alert severity='error'>An error occurred.</Alert>;
 
-		const itemsToRender = isCreator ? data?.filter(community => community.isCreator) : data;
+		const itemsToRender = isCreator
+			? data?.filter(community => community.isCreator)
+			: data?.filter(community => !community.isCreator);
 
 		if (itemsToRender?.length === 0)
 			return (
@@ -78,11 +80,7 @@ export function UserCommunityList() {
 
 	return (
 		<>
-			<ListCollapse title='Moderation' endingDivider={false}>
-				{renderList(true)}
-			</ListCollapse>
-
-			<ListCollapse title='My Communities'>
+			<ListCollapse title='My Communities' endingDivider={false}>
 				<ListItem disablePadding>
 					<ListItemButton onClick={openEl}>
 						<ListItemIcon>
@@ -95,8 +93,10 @@ export function UserCommunityList() {
 				</ListItem>
 				<CommunityInputFormDialog isOpen={isOpen} isMobile={isMobile} closeEl={closeEl} />
 
-				{renderList()}
+				{renderList(true)}
 			</ListCollapse>
+
+			<ListCollapse title='Joined Communities'>{renderList()}</ListCollapse>
 		</>
 	);
 }
