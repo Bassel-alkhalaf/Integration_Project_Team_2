@@ -4,7 +4,7 @@ import { PostCount } from "../../../types/post.type";
 
 // Hook
 export const useFetchPostCountsLastFiveDays = () => {
-  return useQuery<Record<string, number>, Error>({
+  return useQuery<Record<string, number>, Error, PostCount[]>({
     queryKey: ["postCountsLastFiveDays"],
     queryFn: fetchPostCountsLastFiveDays,
     select: (data: Record<string, number>) => {

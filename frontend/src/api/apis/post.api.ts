@@ -85,6 +85,13 @@ export const fetchPostsByDate = async (
 };
 
 // Fetch post counts for the last five days
+// export const fetchPostCountsLastFiveDays = async (): Promise<Record<string, number>> => {
+//   const response = await fetch('/posts/counts/last-5-days');
+//   if (!response.ok) {
+//     throw new Error('Network response was not ok');
+//   }
+//   return response.json(); 
+// };
 export const fetchPostCountsLastFiveDays = async (): Promise<Record<string, number>> => {
   try {
     const url = `${POST_ENDPOINT}/counts/last-5-days`; // Replace with the actual endpoint

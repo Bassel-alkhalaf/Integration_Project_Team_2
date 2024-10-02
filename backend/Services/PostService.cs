@@ -185,44 +185,93 @@ namespace backend.Services
             return posts;
         }
 
+        //public async Task<Dictionary<string, int>> GetPostCountsLastFiveDaysAsync()
+        //{
+        //    var today = System.DateTime.UtcNow.Date;
+        //    var fiveDaysAgo = today.AddDays(-5);
+
+        //    // 
+        //    var startTimestamp = Timestamp.FromDateTime(fiveDaysAgo.ToUniversalTime());
+        //    var endTimestamp = Timestamp.FromDateTime(today.AddDays(1).ToUniversalTime());
+
+        //    // 
+        //    var query = _firestoreDb.Collection("posts")
+        //        .WhereGreaterThanOrEqualTo("CreatedAt", startTimestamp)
+        //        .WhereLessThan("CreatedAt", endTimestamp);
+
+        //    var snapshot = await query.GetSnapshotAsync();
+
+        //    // 
+        //    var postCounts = new Dictionary<string, int>();
+
+        //    // 
+        //    for (var date = fiveDaysAgo; date <= today; date = date.AddDays(1))
+        //    {
+        //        postCounts[date.ToString("yyyy-MM-dd")] = 0; 
+        //    }
+
+        //    // 
+        //    foreach (var document in snapshot.Documents)
+        //    {
+        //        if (document.Exists && document.ContainsField("CreatedAt"))
+        //        {
+        //            // 
+        //            var timestamp = document.GetValue<Timestamp>("CreatedAt");
+
+        //            // 
+        //            var createdAtDate = timestamp.ToDateTime().Date;
+
+        //            // 
+        //            var dateKey = createdAtDate.ToString("yyyy-MM-dd");
+
+        //            // 
+        //            if (postCounts.ContainsKey(dateKey))
+        //            {
+        //                postCounts[dateKey]++;
+        //            }
+        //        }
+        //    }
+        //    return postCounts; 
+        //}
+
         public async Task<Dictionary<string, int>> GetPostCountsLastFiveDaysAsync()
         {
-            var today = System.DateTime.UtcNow.Date;
+            TimeZoneInfo easternTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+
+
+            var today = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, easternTimeZone).Date;
             var fiveDaysAgo = today.AddDays(-5);
 
-            // 
-            var query = _firestoreDb.Collection("Posts")
-                .WhereGreaterThanOrEqualTo("CreatedAt", fiveDaysAgo)  
-                .WhereLessThanOrEqualTo("CreatedAt", today);          
-
-            var snapshot = await query.GetSnapshotAsync();
-
-            // 
+            // create a dic
             var postCounts = new Dictionary<string, int>();
 
             // 
             for (var date = fiveDaysAgo; date <= today; date = date.AddDays(1))
             {
-                postCounts[date.ToString("yyyy-MM-dd")] = 0; 
+                // one day time
+                var startTimestamp = Timestamp.FromDateTime(date.ToUniversalTime());
+                var endTimestamp = Timestamp.FromDateTime(date.AddDays(1).ToUniversalTime());
+
+                // search from one day
+                var query = _firestoreDb.Collection("posts")
+                    .WhereGreaterThanOrEqualTo("CreatedAt", startTimestamp)
+                    .WhereLessThan("CreatedAt", endTimestamp);
+
+                var snapshot = await query.GetSnapshotAsync();
+
+                // count post number
+                postCounts[date.ToString("yyyy-MM-dd")] = snapshot.Documents.Count(document => document.Exists);
             }
 
-            // 
-            foreach (var document in snapshot.Documents)
-            {
-                if (document.Exists && document.ContainsField("CreatedAt"))
-                {
-                    var createdAt = document.GetValue<System.DateTime>("CreatedAt").Date; 
+            //// check today's posts
+            //var todayCountQuery = _firestoreDb.Collection("posts")
+            //    .WhereGreaterThanOrEqualTo("CreatedAt", Timestamp.FromDateTime(today.ToUniversalTime()))
+            //    .WhereLessThan("CreatedAt", Timestamp.FromDateTime(today.AddDays(1).ToUniversalTime()));
 
-                    // 
-                    var dateKey = createdAt.ToString("yyyy-MM-dd");
-                    if (postCounts.ContainsKey(dateKey))
-                    {
-                        postCounts[dateKey]++;
-                    }
-                }
-            }
+            //var todaySnapshot = await todayCountQuery.GetSnapshotAsync();
+            //postCounts[today.ToString("yyyy-MM-dd")] = todaySnapshot.Documents.Count(document => document.Exists);
 
-            return postCounts; 
+            return postCounts;
         }
 
 
