@@ -14,7 +14,7 @@ export const useFetchPostsByUser = (userId?: string) => {
 	return useQuery({
 		queryKey: postQueryKeys.user(id),
 		queryFn: () =>
-			fetchPostsByUser(id)
+			fetchPostsByUser(id, user?.id)
 				.then(res => res)
 				.catch((err: AxiosError) => {
 					console.error(err);

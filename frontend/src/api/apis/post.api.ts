@@ -17,8 +17,12 @@ export const fetchPosts = async ({ pageParam = 1 }: { pageParam?: number }) => {
 };
 
 //Fetch the posts by author
-export const fetchPostsByUser = async (userId: string) => {
-	const url = `${POST_ENDPOINT}/userId/${userId}`;
+export const fetchPostsByUser = async (userId: string, currentUserId?: string) => {
+	let url = `${POST_ENDPOINT}/userId/${userId}`;
+	if (currentUserId) {
+		url += `?currentUserId=${currentUserId}`;
+	}
+
 	const res = await sendRequest({
 		endpoint: url,
 		method: 'GET',

@@ -50,7 +50,7 @@ namespace backend.Services
         //     return postsResponse;
         // }
 
-        public async Task<List<Post>> GetPostsByUser(string userId)
+        public async Task<List<Post>> GetPostsByUser(string userId, string? currentUserId)
         {
             CollectionReference postsRef = _firestoreDb.Collection("posts");
 
@@ -61,12 +61,28 @@ namespace backend.Services
             QuerySnapshot snapshot = await query.GetSnapshotAsync();
             List<Post> posts = new List<Post>();
 
+            bool isFriend = false;
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                var friendshipRef = _firestoreDb.Collection("friendships").Document($"{currentUserId}_{userId}");
+                var friendship = await friendshipRef.GetSnapshotAsync();
+                isFriend = friendship.Exists;
+            }
+
             foreach (DocumentSnapshot document in snapshot.Documents)
             {
                 if (document.Exists)
                 {
                     Post post = document.ConvertTo<Post>();
-                    posts.Add(post);
+
+                    if (post.Visibility.Equals("public"))
+                    {
+                        posts.Add(post);
+                    }
+                    else if (post.Visibility.Equals("private") && isFriend)
+                    {
+                        posts.Add(post); 
+                    }
                 }
             }
 
