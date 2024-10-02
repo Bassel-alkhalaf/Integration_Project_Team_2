@@ -93,13 +93,14 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 	};
 
 	// Handle submitting edited post data
-	const handleEditSubmit = (data: { title: string; text: string; images?: string[] }) => {
+	const handleEditSubmit = (data: { title: string; text: string; images?: string[]; visibility: "public" | "private" | "only-me" }) => {
 		const updatedPost: Post = {
 			...post, // Spread existing post object to retain unchanged fields
 			title: data.title,
 			text: data.text,
 			images: data.images || post.images, // Keep existing images if no new ones are provided
 			updatedAt: new Date(),
+			visibility: data.visibility
 		};
 		editPost(updatedPost, {
 			onSuccess: () => {
@@ -274,6 +275,7 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 				handleEditSubmit={handleEditSubmit}
 				title={post.title}
 				text={post.text}
+				visibility={post.visibility}
 			/>
 
 			{/* Delete Confirmation Dialog */}

@@ -10,7 +10,7 @@ export interface Post {
   createdAt: Date;
   updatedAt?: Date;
   commentCount: number;
-  visibility: string;  // "public", "private", or "friends"
+  visibility:  "public" | "private" | "only-me";  // "public", "private", or "friends"
   likes: string[];
   dislikes: string[];
 }

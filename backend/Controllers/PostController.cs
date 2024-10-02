@@ -109,13 +109,13 @@ namespace backend.Controllers
         [HttpPut("{postId}")]
         public async Task<IActionResult> EditPost(string postId, [FromBody] EditPostRequest request)
         {
-            if (request == null || string.IsNullOrEmpty(request.title) || string.IsNullOrEmpty(request.text))
+            if (request == null || string.IsNullOrEmpty(request.Title) || string.IsNullOrEmpty(request.Text)|| string.IsNullOrEmpty(request.Visibility))
             {
                 return BadRequest("Invalid post data.");
             }
-            string[] postImages = request.images ?? Array.Empty<string>();
+            string[] postImages = request.Images ?? Array.Empty<string>();
 
-            bool result = await _postService.EditPostAsync(postId, request.title, request.text, postImages);
+            bool result = await _postService.EditPostAsync(postId, request.Title, request.Text, postImages, request.Visibility);
 
             if (result)
             {

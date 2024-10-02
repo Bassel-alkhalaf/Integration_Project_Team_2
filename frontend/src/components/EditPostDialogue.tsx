@@ -7,13 +7,14 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Select,
 } from "@mui/material";
 import { EditPostFormData } from "../types/editPost.type"; // Import the Zod schema
 import { editPostSchema } from "../schemas/editPost.schema";
-
-
-
-
+import { Group, Public, Lock } from "@mui/icons-material";
 
 interface EditPostDialogProps {
   isEditDialogOpen: boolean;
@@ -23,7 +24,7 @@ interface EditPostDialogProps {
   handleEditSubmit: (data: EditPostFormData) => void;
   title: string;
   text: string;
-  
+  visibility: "public" | "private" | "only-me";
 }
 
 const EditPostDialog: React.FC<EditPostDialogProps> = ({
@@ -33,25 +34,34 @@ const EditPostDialog: React.FC<EditPostDialogProps> = ({
   removeImage,
   handleEditSubmit,
   title,
-  text
+  text,
+  visibility,
 }) => {
   // Initialize react-hook-form with Zod resolver
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<EditPostFormData>({
     resolver: zodResolver(editPostSchema),
     defaultValues: {
       title: title,
       text: text,
       images: images || [],
+      visibility: visibility as "public" | "private" | "only-me",
     },
   });
 
   const imagesCount = (images ?? []).length;
   // Define the onSubmit handler with type-safe data
-  const onSubmit: SubmitHandler<EditPostFormData> = (data: { title: string; text: string; images?: string[] }) => {
+  const onSubmit: SubmitHandler<EditPostFormData> = (data: {
+    title: string;
+    text: string;
+    images?: string[];
+    visibility:  "public" | "private" | "only-me";
+  }) => {
+    console.log(data);
     handleEditSubmit(data);
     setEditDialogOpen(false);
   };
@@ -82,7 +92,30 @@ const EditPostDialog: React.FC<EditPostDialogProps> = ({
             error={!!errors.text}
             helperText={errors.text ? errors.text.message : ""}
           />
-          {imagesCount > 0 && ( 
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="visibility-label">Visibility</InputLabel>
+            <Select
+              labelId="visibility-label"
+              {...register("visibility")}
+              defaultValue={visibility} // Set default value from props
+              label="Visibility"
+              value={watch("visibility")}
+            >
+              <MenuItem value="public">
+                <Public />
+                &nbsp; Public
+              </MenuItem>
+              <MenuItem value="private">
+                <Group />
+                &nbsp; Friends
+              </MenuItem>
+              <MenuItem value="only-me">
+                <Lock />
+                &nbsp; Only Me
+              </MenuItem>
+            </Select>
+          </FormControl>
+          {imagesCount > 0 && (
             <div style={{ marginTop: 10 }}>
               {images?.map((imgUrl, index) => (
                 <div
