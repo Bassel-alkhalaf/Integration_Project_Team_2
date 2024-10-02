@@ -42,6 +42,19 @@ namespace backend.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [HttpGet("communityId/{communityId}")]
+        public async Task<IActionResult> GetPostsByCommunity(string communityId, [FromQuery] string? currentUserId)
+        {
+            try
+            {
+                List<Post> posts = await _postService.GetPostsByCommunity(communityId, currentUserId);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
         [HttpGet("only-me")]
         public async Task<IActionResult> GetOnlyMePosts([FromQuery] string userId)
         {

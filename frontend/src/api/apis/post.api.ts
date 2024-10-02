@@ -27,7 +27,22 @@ export const fetchPostsByUser = async (userId: string, currentUserId?: string) =
 		endpoint: url,
 		method: 'GET',
 	});
-	console.log('fetchPostsByUser ', res.data, userId);
+	
+	return res.data as Post[];
+};
+
+//Fetch the posts by community
+export const fetchPostsByCommunity = async (communityId: string, currentUserId?: string) => {
+	let url = `${POST_ENDPOINT}/communityId/${communityId}`;
+	if (currentUserId) {
+		url += `?currentUserId=${currentUserId}`;
+	}
+
+	const res = await sendRequest({
+		endpoint: url,
+		method: 'GET',
+	});
+
 	return res.data as Post[];
 };
 

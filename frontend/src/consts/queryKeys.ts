@@ -32,6 +32,7 @@ export const friendshipQueryKeys = {
 export const postQueryKeys = {
 	all: () => ['posts'] as const,
 	user: (userId: string) => [...postQueryKeys.all(), 'user', userId] as const,
+	community: (communityId: string) => [...postQueryKeys.all(), 'community', communityId] as const,
 	current: (postId: string) => [...postQueryKeys.all(), postId] as const,
 	liked: (postId: string) => [...postQueryKeys.all(), 'liked', postId] as const,
 	disliked: (postId: string) => [...postQueryKeys.all(), 'disliked', postId] as const,

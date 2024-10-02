@@ -89,6 +89,45 @@ namespace backend.Services
             return posts.OrderByDescending(p => p.CreatedAt).ToList();
         }
 
+        public async Task<List<Post>> GetPostsByCommunity(string communityId, string? currentUserId)
+        {
+            CollectionReference postsRef = _firestoreDb.Collection("posts");
+
+            Query query = postsRef
+                .WhereEqualTo("CommunityId", communityId);
+
+
+            QuerySnapshot snapshot = await query.GetSnapshotAsync();
+            List<Post> posts = new List<Post>();
+
+            bool isFriend = false;
+            if (!string.IsNullOrEmpty(currentUserId))
+            {
+                var friendshipRef = _firestoreDb.Collection("friendships").Document($"{currentUserId}_{communityId}");
+                var friendship = await friendshipRef.GetSnapshotAsync();
+                isFriend = friendship.Exists;
+            }
+
+            foreach (DocumentSnapshot document in snapshot.Documents)
+            {
+                if (document.Exists)
+                {
+                    Post post = document.ConvertTo<Post>();
+
+                    if (post.Visibility.Equals("public"))
+                    {
+                        posts.Add(post);
+                    }
+                    else if (post.Visibility.Equals("private") && isFriend)
+                    {
+                        posts.Add(post);
+                    }
+                }
+            }
+
+            return posts.OrderByDescending(p => p.CreatedAt).ToList();
+        }
+
         public async Task<List<Post>> GetPosts(int limit, int page = 1)
         {
             CollectionReference postsRef = _firestoreDb.Collection("posts");
