@@ -1,4 +1,4 @@
-import { Stack, Typography } from '@mui/material';
+import { Grid2 as Grid, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { CommunityCard, Loading } from '../../components';
 import PostItem from '../../components/PostItem';
@@ -16,10 +16,14 @@ export function Community() {
 	if (isLoading || isPostLoading) return <Loading />;
 
 	return (
-		<Stack gap={2}>
-			<CommunityCard community={data as CommunityT} />
-
-			<Stack>
+		<Grid container spacing={2}>
+			<Grid
+				size={{ xs: 12, lg: 4, xl: 3 }}
+				order={{ xs: 1, lg: 2 }}
+				sx={{ position: { lg: 'sticky' }, top: { lg: '20px' }, alignSelf: { lg: 'flex-start' } }}>
+				<CommunityCard community={data as CommunityT} />
+			</Grid>
+			<Grid size={{ xs: 12, lg: 8, xl: 9 }} order={{ xs: 2, lg: 1 }}>
 				{posts && posts.length > 0 ? (
 					posts.map((post, index) => <PostItem key={index} post={post} user={currentUser} />)
 				) : (
@@ -27,7 +31,7 @@ export function Community() {
 						No posts yet.
 					</Typography>
 				)}
-			</Stack>
-		</Stack>
+			</Grid>
+		</Grid>
 	);
 }
