@@ -263,13 +263,6 @@ namespace backend.Services
                 postCounts[date.ToString("yyyy-MM-dd")] = snapshot.Documents.Count(document => document.Exists);
             }
 
-            //// check today's posts
-            //var todayCountQuery = _firestoreDb.Collection("posts")
-            //    .WhereGreaterThanOrEqualTo("CreatedAt", Timestamp.FromDateTime(today.ToUniversalTime()))
-            //    .WhereLessThan("CreatedAt", Timestamp.FromDateTime(today.AddDays(1).ToUniversalTime()));
-
-            //var todaySnapshot = await todayCountQuery.GetSnapshotAsync();
-            //postCounts[today.ToString("yyyy-MM-dd")] = todaySnapshot.Documents.Count(document => document.Exists);
 
             return postCounts;
         }
