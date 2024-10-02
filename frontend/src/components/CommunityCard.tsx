@@ -28,9 +28,7 @@ export function CommunityCard({ community }: PropsI) {
 					direction='row'
 					gap={1}
 					sx={{
-						position: 'absolute',
-						right: 15,
-						top: 15,
+						float: 'right',
 					}}>
 					{!isCreator && <ReportBtn type='community' id={id} />}
 					{isJoined && <UserCommunityStarBtn community={isJoined} />}
@@ -38,7 +36,15 @@ export function CommunityCard({ community }: PropsI) {
 
 				<Stack gap={1}>
 					<Stack direction='row' gap={2} alignItems='baseline'>
-						<Typography variant='h4' component='div' sx={{ color: '#3f51b5', fontWeight: 'bold' }}>
+						<Typography
+							variant='h4'
+							component='div'
+							sx={{
+								color: '#3f51b5',
+								fontWeight: 'bold',
+								wordWrap: 'break-word',
+								wordBreak: 'break-all',
+							}}>
 							{name}
 						</Typography>
 						{isCreator ? (

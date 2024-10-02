@@ -7,6 +7,7 @@ export interface EditPostData {
         text: string;
         images?: string[];
         updatedAt: Date;
+        visibility: "public" | "private" | "only-me";
 }
 
 export type EditPostFormData = z.infer<typeof editPostSchema>;

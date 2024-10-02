@@ -246,15 +246,16 @@ namespace backend.Services
             await docRef.DeleteAsync();
         }
 
-        public async Task<bool> EditPostAsync(string postId, string Title, string Text, string[]? images)
+        public async Task<bool> EditPostAsync(string postId, string title, string text, string[]? images, string visiblity)
         {
             var postRef = _firestoreDb.Collection("posts").Document(postId);
 
             var postData = new
             {
-                title = Title,
-                text = Text,
-                images = images ?? [] // Use an empty array if no images are provided
+                Title = title,
+                Text = text,
+                Images = images ?? [], // Use an empty array if no images are provided
+                Visibility = visiblity
             };
 
             try
@@ -368,7 +369,7 @@ namespace backend.Services
             var today = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, easternTimeZone).Date;
             var fiveDaysAgo = today.AddDays(-5);
 
-            // create a dic
+          
             var postCounts = new Dictionary<string, int>();
 
             // 

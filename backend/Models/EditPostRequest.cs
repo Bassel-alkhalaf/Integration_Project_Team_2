@@ -1,6 +1,7 @@
 public class EditPostRequest
 {
-    public string title { get; set; }
-    public string text { get; set; }
-    public string[]? images { get; set; }
+    public required string Title { get; set; }
+    public required string Text { get; set; }
+    public string[]? Images { get; set; }
+    public required string Visibility { get; set; }
 }
