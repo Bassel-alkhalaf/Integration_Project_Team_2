@@ -29,6 +29,19 @@ namespace backend.Controllers
                 return StatusCode(500, $"Error fetching posts: {ex.Message}");
             }
         }
+        [HttpGet("userId/{userId}")]
+        public async Task<IActionResult> GetPostsByUser(string userId, [FromQuery] string? currentUserId)
+        {
+            try
+            {
+                List<Post> posts = await _postService.GetPostsByUser(userId, currentUserId);
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
         [HttpGet("only-me")]
         public async Task<IActionResult> GetOnlyMePosts([FromQuery] string userId)
         {
