@@ -1,18 +1,22 @@
-import { Grid2 as Grid } from '@mui/material';
+import { Grid2 as Grid, Typography } from '@mui/material';
 import { Navigate, useParams } from 'react-router-dom';
 import { Loading } from '../../components';
-import { useGetUserInfo } from '../../hooks';
+import PostItem from '../../components/PostItem';
+import { useAuth } from '../../contexts';
+import { useFetchPostsByUser, useGetUserInfo } from '../../hooks';
 import { UserInfoDTO } from '../../types';
 import Profile from './Profile';
 
 export function ProfilePage() {
 	const { id } = useParams<{ id: string }>();
+	const { user: currentUser } = useAuth();
 
-	const { data: user, isLoading, isError } = useGetUserInfo(id);
+	const { data: user, isLoading: isUserLoading, isError: isUserError } = useGetUserInfo(id);
+	const { data: posts, isLoading: isPostLoading, isError: isPostError } = useFetchPostsByUser(id);
 
-	if (isLoading) return <Loading />;
+	if (isUserLoading || isPostLoading) return <Loading />;
 
-	if (isError) return <Navigate to='/server-error' />;
+	if (isUserError || isPostError) return <Navigate to='/server-error' />;
 
 	return (
 		<Grid container spacing={2}>
@@ -20,7 +24,13 @@ export function ProfilePage() {
 				<Profile user={user as UserInfoDTO} />
 			</Grid>
 			<Grid size={{ xs: 12, lg: 8, xl: 9 }} order={{ xs: 2, lg: 1 }}>
-				user's posts
+				{posts && posts.length > 0 ? (
+					posts.map((post, index) => <PostItem key={index} post={post} user={currentUser} />)
+				) : (
+					<Typography variant='body1' textAlign='center' color='text.secondary'>
+						No posts yet.
+					</Typography>
+				)}
 			</Grid>
 		</Grid>
 	);

@@ -49,6 +49,30 @@ namespace backend.Services
 
         //     return postsResponse;
         // }
+
+        public async Task<List<Post>> GetPostsByUser(string userId)
+        {
+            CollectionReference postsRef = _firestoreDb.Collection("posts");
+
+            Query query = postsRef
+                .WhereEqualTo("AuthorId", userId);
+
+
+            QuerySnapshot snapshot = await query.GetSnapshotAsync();
+            List<Post> posts = new List<Post>();
+
+            foreach (DocumentSnapshot document in snapshot.Documents)
+            {
+                if (document.Exists)
+                {
+                    Post post = document.ConvertTo<Post>();
+                    posts.Add(post);
+                }
+            }
+
+            return posts.OrderByDescending(p => p.CreatedAt).ToList();
+        }
+
         public async Task<List<Post>> GetPosts(int limit, int page = 1)
         {
             CollectionReference postsRef = _firestoreDb.Collection("posts");
