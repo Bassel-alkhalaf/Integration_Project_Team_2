@@ -1,4 +1,5 @@
-import { LoadingButton } from '@mui/lab';
+import { Cancel } from '@mui/icons-material';
+import { Chip } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { enqueueSnackbar } from 'notistack';
 import { userCommunityQueryKeys } from '../../consts';
@@ -25,7 +26,7 @@ export function LeaveCommunityBtn({ community }: PropsI) {
 		});
 	};
 
-	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.stopPropagation();
 
 		leaveCommunity(communityId, {
@@ -42,8 +43,13 @@ export function LeaveCommunityBtn({ community }: PropsI) {
 	};
 
 	return (
-		<LoadingButton loading={isPending} size='small' onClick={handleClick} color='error'>
-			Leave
-		</LoadingButton>
+		<Chip
+			icon={<Cancel />}
+			label={isPending ? 'Leaving...' : 'Leave'}
+			disabled={isPending}
+			onClick={handleClick}
+			color='error'
+			variant='outlined'
+		/>
 	);
 }

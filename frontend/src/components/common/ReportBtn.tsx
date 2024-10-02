@@ -1,4 +1,5 @@
-import {Button, Box, FormControl, Select, InputLabel, MenuItem, Typography, IconButton} from '@mui/material';
+import { Flag } from "@mui/icons-material";
+import { Box, Button, FormControl, IconButton, InputLabel, MenuItem, Select, Tooltip, Typography } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -7,9 +8,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { enqueueSnackbar } from 'notistack';
 import { useState } from "react";
 import { sendRequest } from '../../api';
-import { useAuth } from '../../contexts';
-import { Flag } from "@mui/icons-material";
 import { REPORT_ENDPOINT } from '../../api/endpoints';
+import { useAuth } from '../../contexts';
 
 
 
@@ -72,9 +72,11 @@ export const ReportBtn = ({ type, id }: Props) => {
           Report {type}
         </Button> */}
 
-        <IconButton onClick={handleClickOpen} aria-label="report" color="error">
+        <Tooltip title={"Report " + type}>
+          <IconButton onClick={handleClickOpen} aria-label="report" color="error">
               <Flag />
-        </IconButton>
+          </IconButton>
+        </Tooltip>
 
         <Dialog
           open={open}

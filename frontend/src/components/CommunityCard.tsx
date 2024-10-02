@@ -1,4 +1,5 @@
-import { Box, Button, Card, CardActions, CardContent, Stack, Typography } from '@mui/material';
+import { Cake, Edit, Lock, PeopleAlt, Public } from '@mui/icons-material';
+import { Card, CardContent, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import { useToggleOpenEl, useUserCommunityRelationship } from '../hooks';
 import { CommunityT } from '../types';
@@ -12,7 +13,7 @@ interface PropsI {
 
 export function CommunityCard({ community }: PropsI) {
 	const { isOpen, isMobile, openEl, closeEl } = useToggleOpenEl();
-	const { id, name, userCount, description, createdAt } = community;
+	const { id, name, userCount, description, createdAt, visibility } = community;
 	const { isJoined, isCreator } = useUserCommunityRelationship(id);
 
 	return (
@@ -23,48 +24,63 @@ export function CommunityCard({ community }: PropsI) {
 				position: 'relative',
 			}}>
 			<CardContent>
-				{isJoined && (
-					<Stack sx={{ position: 'absolute', right: 6, top: 6 }}>
-						<UserCommunityStarBtn community={isJoined} />
-					</Stack>
-				)}
+				<Stack
+					direction='row'
+					gap={1}
+					sx={{
+						position: 'absolute',
+						right: 15,
+						top: 15,
+					}}>
+					{!isCreator && <ReportBtn type='community' id={id} />}
+					{isJoined && <UserCommunityStarBtn community={isJoined} />}
+				</Stack>
 
-				<Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-					Since {dayjs(createdAt).format('MM/DD/YYYY')}
-				</Typography>
-				<Typography variant='h5' component='div'>
-					{name}
-				</Typography>
-				<Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
-					{userCount} {userCount > 1 ? 'members' : 'member'}
-				</Typography>
-				<Typography variant='body2'>{description}</Typography>
+				<Stack gap={1}>
+					<Stack direction='row' gap={2} alignItems='baseline'>
+						<Typography variant='h4' component='div' sx={{ color: '#3f51b5', fontWeight: 'bold' }}>
+							{name}
+						</Typography>
+						{isCreator ? (
+							<>
+								<Tooltip title='Edit Community'>
+									<IconButton onClick={openEl}>
+										<Edit />
+									</IconButton>
+								</Tooltip>
+								<CommunityInputFormDialog
+									isOpen={isOpen}
+									isMobile={isMobile}
+									closeEl={closeEl}
+									formData={community}
+								/>
+							</>
+						) : isJoined ? (
+							<LeaveCommunityBtn community={community} />
+						) : (
+							<JoinCommunityBtn community={community} isJoined={!!isJoined} />
+						)}
+					</Stack>
+					<Typography variant='h6'>{description}</Typography>
+
+					<Stack direction='row' gap={2} sx={{ color: 'text.secondary' }}>
+						<Cake />
+						<Typography>Created {dayjs(createdAt).format('MM/DD/YYYY')}</Typography>
+					</Stack>
+
+					<Stack direction='row' gap={2} sx={{ color: 'text.secondary' }}>
+						<PeopleAlt />
+						<Typography>
+							{userCount} {userCount > 1 ? 'members' : 'member'}
+						</Typography>
+					</Stack>
+
+					<Stack direction='row' gap={2} sx={{ color: 'text.secondary' }}>
+						{visibility === 'Public' ? <Public /> : <Lock />}
+						<Typography>{visibility}</Typography>
+					</Stack>
+				</Stack>
 			</CardContent>
-			<CardActions>
-				{isCreator ? (
-					<>
-						<Button onClick={openEl} variant='contained'>
-							Edit
-						</Button>
-						<CommunityInputFormDialog
-							isOpen={isOpen}
-							isMobile={isMobile}
-							closeEl={closeEl}
-							formData={community}
-						/>
-					</>
-				) : isJoined ? (
-					<Box display='flex' gap='.5rem'>
-						<LeaveCommunityBtn community={community} />
-						<ReportBtn type='community' id={id} />
-					</Box>
-				) : (
-					<Box display='flex' gap='.5rem'>
-						<JoinCommunityBtn community={community} isJoined={!!isJoined} />
-						<ReportBtn type='community' id={id} />
-					</Box>
-				)}
-			</CardActions>
 		</Card>
 	);
 }
