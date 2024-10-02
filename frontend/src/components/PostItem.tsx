@@ -3,7 +3,6 @@ import {
 	Accordion,
 	AccordionDetails,
 	AccordionSummary,
-	Avatar,
 	Button,
 	Card,
 	CardActions,
@@ -14,6 +13,7 @@ import {
 	DialogContent,
 	DialogTitle,
 	IconButton,
+	Stack,
 	Typography,
 } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
@@ -29,6 +29,7 @@ import { Post } from '../types/post.type';
 import { UserInfoDTO } from '../types/user.type';
 import CommentSection from './CommentSection';
 import EditPostDialogue from './EditPostDialogue';
+import { UserAvatar } from './UserAvatar';
 
 interface PostProps {
 	post: Post;
@@ -142,6 +143,8 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 		}
 	};
 
+	const navigateToAuthorProfile = () => navigate(`/profile/${post.authorId}`);
+
 	const removeImage = (index: number) => {
 		const updatedImages = [...postImages];
 		updatedImages.splice(index, 1); // Remove the image at the specified index
@@ -149,7 +152,7 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 	};
 
 	return (
-		<Card sx={{ marginBottom: 2, padding: 2, position: 'relative' }}>
+		<Card sx={{ mt: 2, padding: 2, position: 'relative' }}>
 			<CardContent>
 				<Chip
 					sx={{ position: 'absolute', top: 16, right: 16 }} // Position the chip
@@ -169,15 +172,22 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 					variant='outlined'
 				/>
 				<div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-					<Avatar src={post.authorImg} alt={post.authorName} sx={{ marginRight: 2 }} />
-					<Typography variant='h6'>{post.authorName}</Typography>
+					<Stack
+						sx={{ marginRight: 2, width: 50, height: 50, cursor: 'pointer', justifyContent: 'center', alignItems: 'center' }}
+						onClick={navigateToAuthorProfile}>
+						<UserAvatar name={post.authorName} />
+					</Stack>
+					<Typography variant='h6' onClick={navigateToAuthorProfile} sx={{ cursor: 'pointer' }}>{post.authorName}</Typography>
 				</div>
 				{/* Clicking on the title or text navigates to PostDetail */}
 				<Typography
 					variant='h5'
 					gutterBottom
 					onClick={navigateToPostDetail}
-					sx={{ cursor: 'pointer' }} // Make it clickable
+					sx={{
+						cursor: 'pointer',
+						color: '#3f51b5',
+					}}
 				>
 					{post.title}
 				</Typography>
@@ -192,7 +202,7 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 				{postImages?.length > 0 && (
 					<div style={{ marginTop: 10 }}>
 						{postImages.map((imgUrl: string, index: number) => (
-							<img key={index} src={imgUrl} alt={`Post image ${index}`} style={{ maxWidth: '100%' }} />
+							<img key={index} src={imgUrl} alt={`Post image ${index}`} style={{ maxHeight: '300px', maxWidth: '100%' }} />
 						))}
 					</div>
 				)}

@@ -2,11 +2,12 @@ import { Avatar, SxProps, Theme } from '@mui/material';
 import { UserInfoDTO } from '../types';
 
 interface Props {
-	user: UserInfoDTO;
+	user?: UserInfoDTO;
+	name?: string;
 	sx?: SxProps<Theme>;
 }
 
-export function UserAvatar({ user, sx }: Props) {
+export function UserAvatar({ user, name, sx }: Props) {
 	function stringToColor(string: string) {
 		let hash = 0;
 		let i;
@@ -38,15 +39,14 @@ export function UserAvatar({ user, sx }: Props) {
 		};
 	}
 
-	const { email, firstName, lastName, profileImageUrl } = user;
-	const fullName = `${firstName} ${lastName}`;
+	const fullName = user ? `${user.firstName} ${user.lastName}` : name;
 
 	return (
 		<>
-			{profileImageUrl ? (
-				<Avatar alt={email} src={profileImageUrl} sx={{ ...sx }} />
+			{user?.profileImageUrl ? (
+				<Avatar alt={user?.email || ''} src={user?.profileImageUrl || ''} sx={{ ...sx }} />
 			) : (
-				<Avatar {...stringAvatar(fullName)} />
+				<Avatar {...stringAvatar(fullName || 'Unknown User')} />
 			)}
 		</>
 	);

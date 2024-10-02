@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Box, Typography, IconButton, TextField, Button, Card, Avatar, Accordion, AccordionSummary, AccordionDetails
+    Box, Typography, IconButton, TextField, Button, Card, Accordion, AccordionSummary, AccordionDetails,
+    Stack
 } from '@mui/material';
 import { Comment } from '../types/comment.type'; // Adjust the import paths as needed
 import { useFetchComments } from '../hooks/apiHooks/comment/useFetchComments';
@@ -13,6 +14,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { commentQueryKeys } from '../consts';
 import { Edit, Delete, ExpandMore } from '@mui/icons-material';
 import { ReportBtn } from './common/ReportBtn';
+import { UserAvatar } from './UserAvatar';
+import { useNavigate } from 'react-router-dom';
 
 interface CommentSectionProps {
     postId: string;
@@ -25,6 +28,7 @@ interface CommentWithUser extends Comment {
 }
 
 const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [newCommentText, setNewCommentText] = useState('');
     const { data: comments } = useFetchComments(postId); // Fetch comments using the hook
@@ -181,11 +185,12 @@ const FullCommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
 
                             return (
                                 <Card key={index} sx={{ display: 'flex', alignItems: 'flex-start', padding: 2, marginBottom: 2, backgroundColor: '#f8f9fa' }}>
-                                    {comment.avatarUrl ? (
-                                        <Avatar src={comment.avatarUrl} sx={{ marginRight: 2 }} />
-                                    ) : (
-                                        <Avatar sx={{ marginRight: 2 }}>{comment.firstName?.[0]}</Avatar>
-                                    )}
+                                    <Stack
+                                        sx={{ marginRight: 2, width: 50, height: 50, cursor: 'pointer', justifyContent: 'center', alignItems: 'center' }}
+                                        onClick={() => navigate(`/profile/${comment.UserId}`)}>
+                                        <UserAvatar name={`${comment.firstName} ${comment.lastName}`} />
+                                    </Stack>
+                                    
                                     <Box className='CommentSectionpageComments' sx={{ flexGrow: 1 }}>
                                         <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#2d4059' }}>
                                             {comment.firstName} {comment.lastName}

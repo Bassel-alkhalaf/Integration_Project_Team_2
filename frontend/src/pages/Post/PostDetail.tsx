@@ -441,12 +441,11 @@
 //     );
 // }
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Box,
   Typography,
-  Avatar,
   IconButton,
   Accordion,
   AccordionSummary,
@@ -457,6 +456,7 @@ import {
   DialogContent,
   DialogActions,
   Chip,
+  Stack,
 } from "@mui/material";
 import {
   ThumbUp,
@@ -469,7 +469,7 @@ import {
   Lock,
   Group,
 } from "@mui/icons-material";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { getPostDetails } from "../../api/apis/post.api";
 import { useDeletePost } from "../../hooks/apiHooks/post/useDeletePost";
@@ -491,6 +491,7 @@ import { useDislikePost } from "../../hooks/apiHooks/post/useDislikePost";
 import { useAuth } from "../../contexts";
 
 import { ReportBtn } from "../../components/common/ReportBtn";
+import { UserAvatar } from "../../components";
 
 export default function PostDetail() {
   const { postId } = useParams<{ postId: string }>();
@@ -622,6 +623,8 @@ export default function PostDetail() {
   // Toggle comments visibility
   const toggleComments = () => setCommentsOpen((prev) => !prev);
 
+  const navigateToAuthorProfile = () => post && navigate(`/profile/${post.authorId}`);
+
   if (isLoading) return <Typography variant="h6">Loading post...</Typography>;
 
   return (
@@ -663,12 +666,12 @@ export default function PostDetail() {
             variant="outlined"
           />
           <Box display="flex" alignItems="center" mb={2}>
-            <Avatar
-              src={post.authorImg}
-              alt={post.authorName}
-              sx={{ marginRight: 2, width: 50, height: 50 }}
-            />
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            <Stack
+              sx={{ marginRight: 2, width: 50, height: 50, cursor: 'pointer', justifyContent: 'center', alignItems: 'center' }}
+              onClick={navigateToAuthorProfile}>
+              <UserAvatar name={post.authorName} />
+            </Stack>
+            <Typography variant="h6" sx={{ fontWeight: "bold", cursor: 'pointer' }} onClick={navigateToAuthorProfile}>
               {post.authorName}
             </Typography>
           </Box>
@@ -814,7 +817,7 @@ export default function PostDetail() {
           </Dialog>
         </Box>
       ) : (
-        <Typography variant="h6">Post not found</Typography>
+        <Navigate to="/not-found" replace />
       )}
     </Container>
   );

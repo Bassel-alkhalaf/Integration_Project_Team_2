@@ -1,36 +1,38 @@
-import React, { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Group,
+  Lock,
+  Public,
+} from "@mui/icons-material";
+import UploadIcon from "@mui/icons-material/Upload";
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
+  FormControl,
   IconButton,
+  InputLabel,
   MenuItem,
   Select,
-  InputLabel,
-  FormControl,
   Stack,
-  
+  TextField,
 } from "@mui/material";
-import UploadIcon from "@mui/icons-material/Upload";
-import {Public,
-  Lock,
-  Group,}from "@mui/icons-material";
+import { useQueryClient } from "@tanstack/react-query";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { enqueueSnackbar } from "notistack";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useParams } from "react-router-dom";
+import { storage } from "../config";
+import { useCreatePost } from "../hooks";
 import {
-  createPostSchema,
   CreatePostFormData,
+  createPostSchema,
 } from "../schemas/createPost.schema";
 import { Post } from "../types/post.type"; // Adjust the path if needed
 import { UserCommunitySelect } from "./UserCommunitySelect";
-import { useQueryClient } from "@tanstack/react-query";
-import { enqueueSnackbar } from "notistack";
-import { useCreatePost } from "../hooks";
-import { storage } from "../config";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 interface PostCreationFormProps {
   open: boolean;
@@ -49,8 +51,11 @@ export const CreatePostDialog: React.FC<PostCreationFormProps> = ({
 
   const { mutate: createPost } = useCreatePost();
 
-  const [communityId, setCommunityId] = useState<string>("");
-   
+  const { communityId: urlCommunityId } = useParams<{ communityId: string }>();
+  const [communityId, setCommunityId] = useState<string>(urlCommunityId || "");
+  
+  useEffect(() => setCommunityId(urlCommunityId || ""), [urlCommunityId]);
+
   const {
     register,
     handleSubmit,

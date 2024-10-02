@@ -5,6 +5,7 @@ export * from './Admin';
 export * from './common';
 export * from './CommunityCard';
 export * from './CommunityInputFormDialog';
+export * from './CreatePostBtn';
 export * from './FriendshipActionBtn';
 export * from './GlobalSearch';
 export * from './NavItem';
