@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
+import { sendRequest } from '../../api';
 
 // interface PostCount {
 //   date: string;
@@ -26,14 +27,12 @@ const PostCountLastFiveDays: React.FC = () => {
         //   { date: '2024-09-29', count: 12 }
         // ];
 
+        const res = await sendRequest({
+          endpoint: 'counts/last-5-days',
+          method: 'GET'
+        });        
 
-        const response = await fetch('/posts/counts/last-5-days'); // Call the new API endpoint
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data: Record<string, number> = await response.json();
-        setPostCounts(data); // Set the retrieved post counts
+        setPostCounts(res.data); // Set the retrieved post counts
 
         //For debugging, set static data
         //setPostCounts(staticData);
