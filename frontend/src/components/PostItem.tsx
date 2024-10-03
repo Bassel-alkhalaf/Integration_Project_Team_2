@@ -240,7 +240,7 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 						{commentCount}
 					</Typography>
 				</IconButton>
-				{isOwner && !isAdmin ? (
+				{(isOwner && isAdmin) || (isOwner && !isAdmin)? (
 					<>
 						<IconButton onClick={() => setEditDialogOpen(true)} aria-label='edit'>
 							<Edit />
