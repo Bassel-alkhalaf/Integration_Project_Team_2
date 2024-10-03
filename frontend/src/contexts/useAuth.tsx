@@ -10,6 +10,8 @@ interface AuthContextProps {
 	user: UserInfoDTO | null;
 	accessToken: string | null;
 	logout: () => Promise<void>;
+	isAuthLoading: boolean;
+	setIsAuthLoading: (isLoading: boolean) => void;
 }
 
 interface AuthProviderProps {
@@ -20,11 +22,14 @@ const AuthContext = createContext<AuthContextProps>({
 	user: null,
 	accessToken: null,
 	logout: async () => {},
+	isAuthLoading: true,
+	setIsAuthLoading: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+	const [isAuthLoading, setIsAuthLoading] = useState(true);
 	const [user, setUser] = useState<UserInfoDTO | null>(() => {
 		const storedUser = localStorage.getItem('user');
 		return storedUser ? JSON.parse(storedUser) : null;
@@ -50,6 +55,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				localStorage.clear();
 				queryClient.clear();
 			}
+			setIsAuthLoading(false);
 		});
 
 		return () => unsubscribe();
@@ -63,5 +69,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		localStorage.clear();
 	};
 
-	return <AuthContext.Provider value={{ user, accessToken, logout }}>{children}</AuthContext.Provider>;
+	return (
+		<AuthContext.Provider value={{ user, accessToken, logout, isAuthLoading, setIsAuthLoading }}>
+			{children}
+		</AuthContext.Provider>
+	);
 };

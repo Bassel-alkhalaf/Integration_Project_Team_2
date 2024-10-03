@@ -575,6 +575,7 @@ export default function PostDetail() {
     title: string;
     text: string;
     images?: string[];
+    visibility: "public" | "private" | "only-me" 
   }) => {
     if (!post) return;
     const updatedPost: Post = {
@@ -583,11 +584,13 @@ export default function PostDetail() {
       text: data.text,
       images: data.images || postImages,
       updatedAt: new Date(),
+      visibility: data.visibility
     };
     editPost(updatedPost, {
       onSuccess: () => {
         enqueueSnackbar("Post updated successfully!", { variant: "success" });
         queryClient.invalidateQueries({ queryKey: ["posts"] });
+        setPost(updatedPost);
         setEditDialogOpen(false);
       },
     });
@@ -786,6 +789,7 @@ export default function PostDetail() {
             handleEditSubmit={handleEditSubmit}
             title={post.title}
             text={post.text}
+            visibility={post.visibility}
           />
 
           {/* Delete Confirmation Dialog */}
