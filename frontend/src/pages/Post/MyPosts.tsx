@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import React from "react";
 import PostItem from "../../components/PostItem";
 import { useAuth } from "../../contexts";
@@ -13,6 +14,10 @@ export const MyPosts: React.FC = () => {
   const res = useFetchOnlyMePosts(userId);
   return (
     <div>
+      <Typography variant='h4' sx={{ color: '#3f51b5', fontWeight: 'bold' }}>
+				Only-Me Posts
+      </Typography>
+      
       <div className="post-list">
         {!res || res.data?.data.length == 0 ? (
           <div style={{ textAlign: "center", margin: "20px" }}>

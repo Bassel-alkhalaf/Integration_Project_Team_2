@@ -1,28 +1,23 @@
-import { Button } from '@mui/material';
-import React, { useMemo, useState } from 'react';
-import { CreatePostDialog } from '../../components/CreatePostDialogue';
+import React from 'react';
 import PostItem from '../../components/PostItem';
 import { useAuth } from '../../contexts';
 
+import { Typography } from '@mui/material';
 import { useBlockContext } from '../../contexts/useBlockContext';
 import { useFetchPrivatePosts } from '../../hooks/apiHooks/post/useFetchPrivateposts';
 import { Post } from '../../types/post.type';
 
 export const Home: React.FC = () => {
-	const [open, setOpen] = useState(false);
-
 	const { user } = useAuth();
-	const authorInfo = useMemo(() => {
-		return { authorId: user?.id || '', authorName: `${user?.firstName || ''} ${user?.lastName || ''}` };
-	}, [user]);
-	const { authorId, authorName } = authorInfo;
-	const handleOpen = () => setOpen(true);
-	const handleClose = () => setOpen(false);
 
 	const { blockedUserIds } = useBlockContext();
 	const res = useFetchPrivatePosts(user?.id!);
 	return (
 		<div>
+			<Typography variant='h4' sx={{ color: '#3f51b5', fontWeight: 'bold' }}>
+				Your Feed
+			</Typography>
+
 			<div className='post-list'>
 				{!res || res.data?.data.length == 0 ? (
 					<div style={{ textAlign: 'center', margin: '20px' }}>
@@ -37,21 +32,6 @@ export const Home: React.FC = () => {
 					})
 				)}
 			</div>
-
-			{/* Create Post Button */}
-			<div className='actions'>
-				<Button variant='contained' color='primary' onClick={handleOpen}>
-					Create a Post
-				</Button>
-			</div>
-
-			{/* Create Post Dialog */}
-			<CreatePostDialog
-				authorName={authorName} // Replace with dynamic data
-				authorId={authorId}
-				open={open}
-				onClose={handleClose}
-			/>
 		</div>
 	);
 };

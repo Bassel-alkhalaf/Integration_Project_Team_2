@@ -227,7 +227,7 @@
 // export default CommentSection;
 
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, IconButton, TextField, Button, Card, Avatar } from '@mui/material';
+import { Box, Typography, IconButton, TextField, Button, Card, Stack } from '@mui/material';
 import { Comment } from '../types/comment.type'; // Adjust the import paths as needed
 import { useFetchComments } from '../hooks/apiHooks/comment/useFetchComments';
 import { useDeleteComment } from '../hooks/apiHooks/comment/useDeleteComment';
@@ -238,9 +238,10 @@ import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { useQueryClient } from '@tanstack/react-query';
 import { commentQueryKeys } from '../consts';
 import { Edit, Delete } from '@mui/icons-material';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { Link, useNavigate } from 'react-router-dom'; // Import Link for navigation
 import { ReportBtn } from './common/ReportBtn';
 import { useBlockContext } from '../contexts/useBlockContext';
+import { UserAvatar } from './UserAvatar';
 
 interface CommentSectionProps {
     postId: string;
@@ -254,6 +255,7 @@ interface CommentWithUser extends Comment {
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount }) => {
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [newCommentText, setNewCommentText] = useState('');
     const { data: comments } = useFetchComments(postId); // Fetch comments using the hook
@@ -399,11 +401,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
 
                 return (
                     <Card  key={index} sx={{ display: 'flex', alignItems: 'flex-start', padding: 2, marginBottom: 2, backgroundColor: '#f8f9fa' }}>
-                        {comment.avatarUrl ? (
-                            <Avatar src={comment.avatarUrl} sx={{ marginRight: 2 }} />
-                        ) : (
-                            <Avatar sx={{ marginRight: 2 }}>{comment.firstName?.[0]}</Avatar>
-                        )}
+                        <Stack
+                            sx={{ marginRight: 2, width: 50, height: 50, cursor: 'pointer', justifyContent: 'center', alignItems: 'center' }}
+                            onClick={() => navigate(`/profile/${comment.UserId}`)}>
+                            <UserAvatar name={`${comment.firstName} ${comment.lastName}`} />
+                        </Stack>
+                        
                         <Box className='CommentSectionpageComments'  sx={{ flexGrow: 1 }}>
                             <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#2d4059' }}>
                                 {comment.firstName} {comment.lastName}
@@ -425,7 +428,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId, commentCount })
                                     {comment.content}
                                 </Typography>
                             )}
-                            {(isOwner ) && ( // Allow Admin to delete or edit any comment
+                            {(isOwner && userRole === 'Admin') || ((isOwner && userRole !== 'Admin')) && ( // Allow Admin to delete or edit any comment
                                 <Box className='CommentSectionpageComments'>
                                     <IconButton color="primary" onClick={() => handleEditComment(comment.commentId, comment.content)} sx={{ color: '#1d3557' }}>
                                         <Edit />
