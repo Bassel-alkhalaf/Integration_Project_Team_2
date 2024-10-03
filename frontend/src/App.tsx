@@ -32,12 +32,12 @@
 
 // App.tsx
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { SnackbarProvider } from 'notistack';
 import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from './components/Theme/ThemeContext'; // Import ThemeContext
 import { AuthProvider } from './contexts';
 import { BlockProvider } from './contexts/useBlockContext';
-import { ThemeProvider } from './components/Theme/ThemeContext'; // Import ThemeContext
 import Routes from './routes';
 
 function App() {
@@ -56,7 +56,7 @@ function App() {
                 >
                 <Routes />
                 </SnackbarProvider>
-                <ReactQueryDevtools initialIsOpen={false} />
+                {/* <ReactQueryDevtools initialIsOpen={false} /> */}
             </BrowserRouter>
             </ThemeProvider>
         </BlockProvider>

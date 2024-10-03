@@ -1,26 +1,21 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { useFetchPosts } from '../../hooks/apiHooks';
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import PostItem from '../../components/PostItem';
 import { Post } from '../../types/post.type';
-
 import { useAuth } from '../../contexts';
-import { CreatePostDialog } from '../../components/CreatePostDialogue';
-
 
 export const AllPosts: React.FC = () => {
   
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useFetchPosts();
-  const [open, setOpen] = useState(false);
-
   const { user } = useAuth();
-  const authorInfo = useMemo(() => { return { authorId: user?.id || '', authorName: `${user?.firstName || ''} ${user?.lastName || ''}`} }, [user]);
-  const {authorId, authorName} =  authorInfo;
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
  
   return (
     <div>
+      <Typography variant='h4' sx={{ color: '#3f51b5', fontWeight: 'bold' }}>
+				All Posts
+      </Typography>
+
       <div className="post-list">
         {(!data || !data.pages || data.pages.length === 0) ? (
           <div style={{ textAlign: 'center', margin: '20px' }}>
@@ -49,18 +44,6 @@ export const AllPosts: React.FC = () => {
           </Button>
         </div>
       )}
-
-      {/* Create Post Button */}
-      <div className="actions">
-        <Button variant="contained" color="primary" onClick={handleOpen}>
-          Create a Post
-        </Button>
-      </div>
-
-      {/* Create Post Dialog */}
-      <CreatePostDialog
-        authorName={authorName} // Replace with dynamic data
-        authorId={authorId} open={open} onClose={handleClose}/>
     </div>
   );
 };

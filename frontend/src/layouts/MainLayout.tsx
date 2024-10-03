@@ -1,6 +1,7 @@
 import { Box, CssBaseline, Stack, Toolbar } from '@mui/material';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { CreatePostBtn } from '../components';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { Nav } from './Nav';
@@ -48,6 +49,8 @@ export function MainLayout() {
 
 					<Footer />
 				</Stack>
+
+				<CreatePostBtn />
 			</Stack>
 		</Box>
 	);
