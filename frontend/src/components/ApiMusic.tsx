@@ -56,14 +56,14 @@ export function PlaylistComponent() {
   }, [token]);
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 1 }}>
       {playlistData ? (
         <iframe
           title="Spotify Embed: Recommendation Playlist"
           src={`https://open.spotify.com/embed/playlist/6NIrf8ILqP2hLpgiOC6VzA?utm_source=generator&theme=0`}
           width="100%"
           height="100%"
-          style={{ minHeight: "360px" }}
+          style={{ minHeight: "360px", border: "none" }}
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           loading="lazy"
         />
