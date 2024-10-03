@@ -31,7 +31,7 @@ export const useDeleteComment = () => {
 
   return useMutation({
     mutationFn: deleteCommentInFirestore,
-    onSuccess: (_, commentId) => {
+    onSuccess: (_, _commentId) => {
       // Optionally, invalidate all comments or add the specific postId to invalidate
       queryClient.invalidateQueries({ queryKey: ['comments'] });
     },

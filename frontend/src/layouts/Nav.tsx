@@ -13,7 +13,7 @@ import {
 import { Box, Divider, Drawer, List, Toolbar } from '@mui/material';
 import { NavItem, UserCommunityList } from '../components';
 import { useAuth } from '../contexts';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { PlaylistComponent} from './../components/ApiMusic';
 
 const MemoizedPlaylistComponent = React.memo(PlaylistComponent);
