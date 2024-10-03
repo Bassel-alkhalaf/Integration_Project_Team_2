@@ -28,7 +28,7 @@ export function Community() {
 					posts.map((post, index) => <PostItem key={index} post={post} user={currentUser} />)
 				) : (
 					<Typography variant='body1' textAlign='center' color='text.secondary'>
-						No posts yet.
+						No posts yet. Be the first to create a post!
 					</Typography>
 				)}
 			</Grid>

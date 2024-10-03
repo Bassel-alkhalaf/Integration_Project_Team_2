@@ -57,8 +57,6 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 	if (userId) {
 		hasLiked = post.likes.includes(userId);
 		hasDisliked = post.dislikes.includes(userId);
-	} else {
-		console.error('User ID is not defined');
 	}
 
 	const isOwner = user != null ? user.id === post.authorId : false; // Check if the user owns the post
@@ -94,14 +92,19 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 	};
 
 	// Handle submitting edited post data
-	const handleEditSubmit = (data: { title: string; text: string; images?: string[]; visibility: "public" | "private" | "only-me" }) => {
+	const handleEditSubmit = (data: {
+		title: string;
+		text: string;
+		images?: string[];
+		visibility: 'public' | 'private' | 'only-me';
+	}) => {
 		const updatedPost: Post = {
 			...post, // Spread existing post object to retain unchanged fields
 			title: data.title,
 			text: data.text,
 			images: data.images || post.images, // Keep existing images if no new ones are provided
 			updatedAt: new Date(),
-			visibility: data.visibility
+			visibility: data.visibility,
 		};
 		editPost(updatedPost, {
 			onSuccess: () => {
@@ -115,6 +118,8 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 	// Toggle like status
 	const toggleLike = () => {
 		const userId = user?.id;
+		if (!userId) navigate('/login');
+
 		if (hasLiked) {
 			unlikePostMutation.mutate(userId!);
 		} else {
@@ -125,6 +130,8 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 	// Toggle dislike status
 	const toggleDislike = () => {
 		const userId = user?.id;
+		if (!userId) navigate('/login');
+
 		if (hasDisliked) {
 			undislikePostMutation.mutate(userId!);
 		} else {
@@ -153,7 +160,7 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 	};
 
 	return (
-		<Card sx={{ mt: 2, padding: 2, position: 'relative' }}>
+		<Card sx={{ padding: 2, position: 'relative' }}>
 			<CardContent>
 				<Chip
 					sx={{ position: 'absolute', top: 16, right: 16 }} // Position the chip
@@ -174,11 +181,20 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 				/>
 				<div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
 					<Stack
-						sx={{ marginRight: 2, width: 50, height: 50, cursor: 'pointer', justifyContent: 'center', alignItems: 'center' }}
+						sx={{
+							marginRight: 2,
+							width: 50,
+							height: 50,
+							cursor: 'pointer',
+							justifyContent: 'center',
+							alignItems: 'center',
+						}}
 						onClick={navigateToAuthorProfile}>
 						<UserAvatar name={post.authorName} />
 					</Stack>
-					<Typography variant='h6' onClick={navigateToAuthorProfile} sx={{ cursor: 'pointer' }}>{post.authorName}</Typography>
+					<Typography variant='h6' onClick={navigateToAuthorProfile} sx={{ cursor: 'pointer' }}>
+						{post.authorName}
+					</Typography>
 				</div>
 				{/* Clicking on the title or text navigates to PostDetail */}
 				<Typography
@@ -188,8 +204,7 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 					sx={{
 						cursor: 'pointer',
 						color: '#3f51b5',
-					}}
-				>
+					}}>
 					{post.title}
 				</Typography>
 				<Typography
@@ -203,7 +218,12 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 				{postImages?.length > 0 && (
 					<div style={{ marginTop: 10 }}>
 						{postImages.map((imgUrl: string, index: number) => (
-							<img key={index} src={imgUrl} alt={`Post image ${index}`} style={{ maxHeight: '300px', maxWidth: '100%' }} />
+							<img
+								key={index}
+								src={imgUrl}
+								alt={`Post image ${index}`}
+								style={{ maxHeight: '300px', maxWidth: '100%' }}
+							/>
 						))}
 					</div>
 				)}
@@ -240,7 +260,7 @@ const PostItem: React.FC<PostProps> = ({ post, user }) => {
 						{commentCount}
 					</Typography>
 				</IconButton>
-				{(isOwner && isAdmin) || (isOwner && !isAdmin)? (
+				{(isOwner && isAdmin) || (isOwner && !isAdmin) ? (
 					<>
 						<IconButton onClick={() => setEditDialogOpen(true)} aria-label='edit'>
 							<Edit />

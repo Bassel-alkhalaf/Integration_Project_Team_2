@@ -7,16 +7,17 @@ interface NavItemProps {
 	icon: React.ReactNode;
 	selectedIcon?: React.ReactNode;
 	sx?: SxProps<Theme>;
+	secondary?: React.ReactNode;
 }
 
-export function NavItem({ path, label, icon, selectedIcon = icon, sx }: NavItemProps) {
+export function NavItem({ path, label, icon, selectedIcon = icon, sx, secondary }: NavItemProps) {
 	const { pathname: currentPath } = useLocation();
 	const navigate = useNavigate();
 
 	const isSelected = path === '/' ? currentPath === path : currentPath.startsWith(path);
 
 	return (
-		<ListItem disablePadding sx={sx}>
+		<ListItem disablePadding sx={sx} secondaryAction={secondary}>
 			<ListItemButton selected={isSelected} onClick={() => navigate(path)} sx={{ height: '56px' }}>
 				<ListItemIcon sx={{ color: isSelected ? 'primary.main' : undefined }}>
 					{isSelected ? selectedIcon : icon}
