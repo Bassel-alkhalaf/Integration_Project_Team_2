@@ -1,20 +1,20 @@
 import {
 	AccountCircle as AccountCircleIcon,
 	AccountCircleOutlined as AccountCircleOutlinedIcon,
+	AdminPanelSettings as AdminPanelSettingsIcon,
+	AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon,
 	Feed as FeedIcon,
 	FeedOutlined as FeedOutlinedIcon,
 	Home as HomeIcon,
 	HomeOutlined as HomeOutlinedIcon,
 	PeopleAlt as PeopleAltIcon,
 	PeopleAltOutlined as PeopleAltOutlinedIcon,
-	AdminPanelSettings as AdminPanelSettingsIcon,
-	AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon,
 } from '@mui/icons-material';
 import { Box, Divider, Drawer, List, Toolbar } from '@mui/material';
+import React from 'react';
 import { NavItem, UserCommunityList } from '../components';
 import { useAuth } from '../contexts';
-import React from 'react';
-import { PlaylistComponent} from './../components/ApiMusic';
+import { PlaylistComponent } from './../components/ApiMusic';
 
 const MemoizedPlaylistComponent = React.memo(PlaylistComponent);
 
@@ -66,9 +66,7 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 			{user && <UserCommunityList />}
 
 			{/*add API */}
-      <Box sx={{ width: drawerWidth, height: drawerWidth, margin: 'auto' }}>
-        <MemoizedPlaylistComponent />
-      </Box>
+        	<MemoizedPlaylistComponent />
 		</>
 	);
 
