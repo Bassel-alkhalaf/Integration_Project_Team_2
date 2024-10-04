@@ -106,12 +106,13 @@ function AppRoutes() {
 	return (
 		<Routes>
 			<Route path='/' element={<MainLayout />}>
+				<Route index element={<AllPosts />} />
+
 				{/* Protect Home, Friends, and All Posts */}
 				<Route element={<RoleBasedRoute allowedRoles={[Role.User, Role.Admin]} />}>
-					<Route index element={<Home />} />
+					<Route path='/feed' element={<Home />} />
 					<Route path='/friends' element={<Friends />} />
 					<Route path='/posts/me' element={<MyPosts />} />
-					<Route path='/posts/all' element={<AllPosts />} />
 					<Route path='/posts/:postId' element={<PostDetail />} />
 					<Route path='/search' element={<Search />} /> {/* Added Search Route */}
 					<Route path='/community/:communityId' element={<Community />} /> {/* Added Community Route */}

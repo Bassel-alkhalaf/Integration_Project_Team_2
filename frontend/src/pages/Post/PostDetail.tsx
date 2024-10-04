@@ -491,7 +491,7 @@ import { useDislikePost } from "../../hooks/apiHooks/post/useDislikePost";
 import { useAuth } from "../../contexts";
 
 import { ReportBtn } from "../../components/common/ReportBtn";
-import { UserAvatar } from "../../components";
+import { Loading, UserAvatar } from "../../components";
 
 export default function PostDetail() {
   const { postId } = useParams<{ postId: string }>();
@@ -628,7 +628,7 @@ export default function PostDetail() {
 
   const navigateToAuthorProfile = () => post && navigate(`/profile/${post.authorId}`);
 
-  if (isLoading) return <Typography variant="h6">Loading post...</Typography>;
+  if (isLoading) return <Loading />;
 
   return (
     <Container>

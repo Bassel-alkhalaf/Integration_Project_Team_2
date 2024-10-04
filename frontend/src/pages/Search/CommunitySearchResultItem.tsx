@@ -1,5 +1,5 @@
 import { Forum as ForumIcon } from '@mui/icons-material';
-import { Avatar, Button, ListItem, ListItemAvatar, ListItemText, Stack, Tooltip, Typography } from '@mui/material';
+import { Avatar, Box, Button, ListItem, ListItemAvatar, ListItemText, Stack, Tooltip, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { useNavigate } from 'react-router-dom';
 import { JoinCommunityBtn, LeaveCommunityBtn } from '../../components';
@@ -20,21 +20,22 @@ export function CommunitySearchResultItem({ community }: PropsI) {
 			onClick={() => navigate(`/community/${id}`)}
 			sx={{ transition: '0.5s', '&:hover': { bgcolor: grey[100], cursor: 'pointer' } }}
 			alignItems='flex-start'
-			secondaryAction={
-				isCreator ? (
-					<Tooltip title='You cannot leave your own community'>
-						<span>
-							<Button disabled size='small'>
-								Joined
-							</Button>
-						</span>
-					</Tooltip>
-				) : isJoined ? (
-					<LeaveCommunityBtn community={community} />
-				) : (
-					<JoinCommunityBtn community={community} isJoined={!!isJoined} />
-				)
-			}>
+			// secondaryAction={
+			// 	isCreator ? (
+			// 		<Tooltip title='You cannot leave your own community'>
+			// 			<span>
+			// 				<Button disabled size='small'>
+			// 					Joined
+			// 				</Button>
+			// 			</span>
+			// 		</Tooltip>
+			// 	) : isJoined ? (
+			// 		<LeaveCommunityBtn community={community} />
+			// 	) : (
+			// 		<JoinCommunityBtn community={community} isJoined={!!isJoined} />
+			// 	)
+			// }>
+		>
 			<ListItemAvatar>
 				<Avatar>
 					<ForumIcon />
@@ -53,6 +54,22 @@ export function CommunitySearchResultItem({ community }: PropsI) {
 					</Stack>
 				}
 			/>
+
+			<Box alignSelf='center' pl={2}>
+				{isCreator ? (
+					<Tooltip title='You cannot leave your own community'>
+						<span>
+							<Button disabled size='small'>
+								Joined
+							</Button>
+						</span>
+					</Tooltip>
+				) : isJoined ? (
+					<LeaveCommunityBtn community={community} />
+				) : (
+					<JoinCommunityBtn community={community} isJoined={!!isJoined} />
+				)}
+			</Box>
 		</ListItem>
 	);
 }

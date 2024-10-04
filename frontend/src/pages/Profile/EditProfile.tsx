@@ -3,8 +3,7 @@ import { Container, TextField, Button, Typography, MenuItem, Box } from '@mui/ma
 import { getProfileInfo, updateProfileInfo } from '../../api/apis/profile.api';
 import { UserUpdateDTO } from '../../types/user.type';
 import { useNavigate } from 'react-router-dom';
-import { getAuth } from 'firebase/auth';
-import dayjs from 'dayjs';
+// import { getAuth } from 'firebase/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { userQueryKeys } from '../../consts';
 
@@ -18,7 +17,7 @@ export default function EditProfile() {
     profileImageUrl: '',
   });
 
-  const auth = getAuth();
+  // const auth = getAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 

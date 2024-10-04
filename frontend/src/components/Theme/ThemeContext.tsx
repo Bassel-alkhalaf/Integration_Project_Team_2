@@ -1,5 +1,5 @@
 // ThemeContext.tsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 // Create the context
 const ThemeContext = createContext({
@@ -36,9 +36,9 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (darkMode) {
-      loadCSS('../../public/style/dark.css'); // Adjust the path as needed
+      loadCSS('../../style/dark.css'); // Adjust the path as needed
     } else {
-      loadCSS('../../public/style/light.css'); // Adjust the path as needed
+      loadCSS('../../style/light.css'); // Adjust the path as needed
     }
   }, [darkMode]);
 

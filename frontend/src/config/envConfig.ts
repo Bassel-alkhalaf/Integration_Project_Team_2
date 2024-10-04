@@ -15,7 +15,7 @@ const getEnvConfig = (): ENVConfigT => {
 			return {
 				...baseConfig,
 
-				BASE_API: 'https://ourforum-api.com',
+				BASE_API: 'https://integration-project-team-2.onrender.com',
 			};
 		case 'dev':
 			return {
