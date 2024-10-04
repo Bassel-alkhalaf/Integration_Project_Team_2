@@ -1,4 +1,4 @@
-import { Grid2 as Grid, Typography } from '@mui/material';
+import { Grid2 as Grid, Stack, Typography } from '@mui/material';
 import { Navigate, useParams } from 'react-router-dom';
 import { Loading } from '../../components';
 import PostItem from '../../components/PostItem';
@@ -25,10 +25,14 @@ export function ProfilePage() {
 			</Grid>
 			<Grid size={{ xs: 12, lg: 8, xl: 9 }} order={{ xs: 2, lg: 1 }}>
 				{posts && posts.length > 0 ? (
-					posts.map((post, index) => <PostItem key={index} post={post} user={currentUser} />)
+					<Stack gap={2}>
+						{posts.map((post, index) => (
+							<PostItem key={index} post={post} user={currentUser} />
+						))}
+					</Stack>
 				) : (
-					<Typography variant='body1' textAlign='center' color='text.secondary'>
-						No posts yet.
+					<Typography variant='body1' textAlign='center' color='text.secondary' my={3}>
+						{!id ? 'You have ' : 'This user has '} not posted anything yet.
 					</Typography>
 				)}
 			</Grid>

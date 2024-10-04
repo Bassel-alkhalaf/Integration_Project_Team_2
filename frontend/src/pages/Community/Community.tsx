@@ -1,4 +1,4 @@
-import { Grid2 as Grid, Typography } from '@mui/material';
+import { Grid2 as Grid, Stack, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { CommunityCard, Loading } from '../../components';
 import PostItem from '../../components/PostItem';
@@ -25,7 +25,11 @@ export function Community() {
 			</Grid>
 			<Grid size={{ xs: 12, lg: 8, xl: 9 }} order={{ xs: 2, lg: 1 }}>
 				{posts && posts.length > 0 ? (
-					posts.map((post, index) => <PostItem key={index} post={post} user={currentUser} />)
+					<Stack gap={2}>
+						{posts.map((post, index) => (
+							<PostItem key={index} post={post} user={currentUser} />
+						))}
+					</Stack>
 				) : (
 					<Typography variant='body1' textAlign='center' color='text.secondary'>
 						No posts yet. Be the first to create a post!
