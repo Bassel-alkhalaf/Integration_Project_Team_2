@@ -1,20 +1,21 @@
 import {
-	AccountCircle as AccountCircleIcon,
 	AccountCircleOutlined as AccountCircleOutlinedIcon,
-	Feed as FeedIcon,
-	FeedOutlined as FeedOutlinedIcon,
-	Home as HomeIcon,
-	HomeOutlined as HomeOutlinedIcon,
-	PeopleAlt as PeopleAltIcon,
-	PeopleAltOutlined as PeopleAltOutlinedIcon,
+	AccountCircleTwoTone as AccountCircleTwoToneIcon,
 	AdminPanelSettings as AdminPanelSettingsIcon,
 	AdminPanelSettingsOutlined as AdminPanelSettingsOutlinedIcon,
+	FeedOutlined as FeedOutlinedIcon,
+	FeedTwoTone as FeedTwoToneIcon,
+	PeopleAltOutlined as PeopleAltOutlinedIcon,
+	PeopleAltTwoTone as PeopleAltTwoToneIcon,
+	Public as PublicIcon,
+	PublicTwoTone as PublicTwoToneIcon,
 } from '@mui/icons-material';
-import { Box, Divider, Drawer, List, Toolbar } from '@mui/material';
+import { Badge, Box, Divider, Drawer, List, Toolbar } from '@mui/material';
+import React from 'react';
 import { NavItem, UserCommunityList } from '../components';
 import { useAuth } from '../contexts';
-import React, { useState, useEffect } from 'react';
-import { PlaylistComponent} from './../components/ApiMusic';
+import { usePendingFriendRequests } from '../hooks';
+import { PlaylistComponent } from './../components/ApiMusic';
 
 const MemoizedPlaylistComponent = React.memo(PlaylistComponent);
 
@@ -27,27 +28,35 @@ interface PropsI {
 
 export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTransitionEnd }: PropsI) {
 	const { user } = useAuth();
+	const pendingCount = usePendingFriendRequests(user?.id!);
 
 	const drawer = (
 		<>
 			<Toolbar />
 			<Divider />
 			<List disablePadding>
-				<NavItem path='/' label='Home' icon={<HomeOutlinedIcon />} selectedIcon={<HomeIcon />} />
+				<NavItem path='/' label='Explore' icon={<PublicIcon />} selectedIcon={<PublicTwoToneIcon />} />
 
 				{user && (
 					<>
 						<NavItem
+							path='/feed'
+							label='My Feed'
+							icon={<FeedOutlinedIcon />}
+							selectedIcon={<FeedTwoToneIcon />}
+						/>
+						<NavItem
 							path='/friends'
 							label='My Friends'
 							icon={<PeopleAltOutlinedIcon />}
-							selectedIcon={<PeopleAltIcon />}
+							selectedIcon={<PeopleAltTwoToneIcon />}
+							secondary={<Badge badgeContent={pendingCount} color='error' sx={{ mx: 1 }} />}
 						/>
 						<NavItem
 							path='/posts/me'
 							label='My Posts'
 							icon={<AccountCircleOutlinedIcon />}
-							selectedIcon={<AccountCircleIcon />}
+							selectedIcon={<AccountCircleTwoToneIcon />}
 						/>
 						{user.role === 'Admin' && (
 							<NavItem
@@ -59,21 +68,17 @@ export function Nav({ drawerWidth, mobileOpen, handleDrawerClose, handleDrawerTr
 						)}
 					</>
 				)}
-
-				<NavItem path='/posts/all' label='All Posts' icon={<FeedOutlinedIcon />} selectedIcon={<FeedIcon />} />
 			</List>
 
 			{user && <UserCommunityList />}
 
 			{/*add API */}
-      <Box sx={{ width: drawerWidth, height: drawerWidth, margin: 'auto' }}>
-        <MemoizedPlaylistComponent />
-      </Box>
+			<MemoizedPlaylistComponent />
 		</>
 	);
 
 	return (
-		<Box component='nav' className="nav-page" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
+		<Box component='nav' className='nav-page' sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}>
 			<Drawer
 				variant='temporary'
 				open={mobileOpen}

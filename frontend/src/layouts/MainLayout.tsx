@@ -2,6 +2,7 @@ import { Box, CssBaseline, Stack, Toolbar } from '@mui/material';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { CreatePostBtn } from '../components';
+import { useAuth } from '../contexts';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { Nav } from './Nav';
@@ -9,6 +10,7 @@ import { Nav } from './Nav';
 const drawerWidth = 240;
 
 export function MainLayout() {
+	const { user } = useAuth();
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const [isClosing, setIsClosing] = useState(false);
 
@@ -50,7 +52,7 @@ export function MainLayout() {
 					<Footer />
 				</Stack>
 
-				<CreatePostBtn />
+				{user && <CreatePostBtn />}
 			</Stack>
 		</Box>
 	);

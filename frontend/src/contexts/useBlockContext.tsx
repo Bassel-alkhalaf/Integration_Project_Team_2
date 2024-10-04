@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { sendRequest } from '../api';
 import { useAuth } from './useAuth';
 
@@ -63,7 +63,7 @@ export const BlockProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   // Fetch blocked users once when the app starts
   useEffect(() => {
     fetchBlockedUsers();
-  }, []);
+  }, [accessToken]);
 
   return (
     <BlockContext.Provider value={{ blockedUserIds, fetchBlockedUsers, blockUser, unBlockUser  }}>
