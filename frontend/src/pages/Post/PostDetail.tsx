@@ -744,22 +744,22 @@ export default function PostDetail() {
               </Typography>
             </IconButton>
             {isOwner && (
-              <>
-                <IconButton
-                  onClick={() => setEditDialogOpen(true)}
-                  aria-label="edit"
-                  sx={{ marginLeft: 1 }}
-                >
-                  <Edit />
-                </IconButton>
-                <IconButton
-                  onClick={() => setDeleteDialogOpen(true)}
-                  aria-label="delete"
-                  sx={{ marginLeft: 1 }}
-                >
-                  <Delete />
-                </IconButton>
-              </>
+              <IconButton
+                onClick={() => setEditDialogOpen(true)}
+                aria-label="edit"
+                sx={{ marginLeft: 1 }}
+              >
+                <Edit />
+              </IconButton>
+            )}
+            {isOwner || user?.role === "Admin" && (
+              <IconButton
+                onClick={() => setDeleteDialogOpen(true)}
+                aria-label="delete"
+                sx={{ marginLeft: 1 }}
+              >
+                <Delete />
+              </IconButton>
             )}
           </Box>
 
